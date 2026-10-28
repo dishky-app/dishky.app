@@ -1,0 +1,493 @@
+/* ═══════════════════════════════════════════
+   Sidebar.css — Modern Premium Admin Sidebar
+   Dishky Admin Panel
+═══════════════════════════════════════════ */
+
+/* ── Root & Base ─────────────────────────── */
+.sidebar {
+  background: #ffffff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-right: 1px solid #f0f0f0;
+  position: relative;
+  will-change: width;
+  /* Subtle inner shadow for depth */
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+}
+
+/* ── Brand / Toggle ──────────────────────── */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  height: 64px;
+  border-bottom: 1px solid #f3f3f3;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #f5f5f5;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+.brand-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid #ededed;
+  overflow: visible;
+}
+
+.brand-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-logo-wrap {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.brand-logo-img {
+  width: 90px;
+  object-fit: contain;
+  display: block;
+}
+
+.sidebar-toggle-icon {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  flex-shrink: 0;
+  transition: background 0.18s, color 0.18s;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-floating-menu {
+  position: fixed;
+  min-width: 200px;
+  max-width: calc(100vw - 20px);
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  padding: 6px;
+  z-index: 9999;
+  /* increase */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  animation: fadeSlide 0.15s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateX(6px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Improve sublink inside floating */
+.sidebar-floating-menu .sidebar-sublink {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* ── Nav Container ───────────────────────── */
+.sidebar-nav {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 10px 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: none;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  display: none !important;
+  width: 0;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: #e8e8e8;
+  border-radius: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Sidebar Link (base) ─────────────────── */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #666;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    font-weight 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.sidebar-link:hover {
+  background: #f5f5f5;
+  color: #111;
+}
+
+/* Active state for NavLink */
+.sidebar-link-active {
+  background: #f0f0f0;
+  color: #111;
+  font-weight: 600;
+}
+
+/* Active state indicator bar — fades and slides in rather than
+   snapping into place, so switching links feels continuous. */
+.sidebar-link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 3px;
+  background: #111;
+  border-radius: 0 3px 3px 0;
+  opacity: 0;
+  transform: scaleY(0.4);
+  transform-origin: center;
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.sidebar-link-active::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* ── Icon Wrap ───────────────────────────── */
+.sidebar-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-link:hover .sidebar-icon-wrap,
+.sidebar-link-active .sidebar-icon-wrap {
+  background: #ebebeb;
+}
+
+.sidebar-icon-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  filter: grayscale(30%);
+  transition: filter 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-link:hover .sidebar-icon-img,
+.sidebar-link-active .sidebar-icon-img {
+  filter: grayscale(0%);
+}
+
+/* ── Label ───────────────────────────────── */
+.sidebar-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Chevron ─────────────────────────────── */
+.sidebar-chevron {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  color: #bbb;
+  flex-shrink: 0;
+  transition: color 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-link:hover .sidebar-chevron {
+  color: #888;
+}
+
+/* ── Group ───────────────────────────────── */
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ── Submenu ─────────────────────────────── */
+.sidebar-submenu {
+  overflow: hidden;
+}
+
+.sidebar-submenu-inner {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 0 4px 12px;
+  gap: 1px;
+  /* Vertical line connecting sublinks */
+  border-left: 2px solid #f0f0f0;
+  margin-left: 27px;
+  margin-top: 2px;
+}
+
+.sidebar-sublink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #888;
+  font-size: 13px;
+  font-weight: 400;
+  transition: background 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.24s cubic-bezier(0.4, 0, 0.2, 1),
+    font-weight 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar-sublink:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.sublink-active {
+  background: #f0f0f0;
+  color: #111;
+  font-weight: 600;
+}
+
+.sublink-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Footer ──────────────────────────────── */
+.sidebar-footer {
+  border-top: 1px solid #f3f3f3;
+  padding: 12px 10px;
+  flex-shrink: 0;
+}
+
+.sidebar-footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+}
+
+.sidebar-footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.sidebar-footer-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-footer-role {
+  font-size: 11px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+/* ── Collapsed state adjustments ─────────── */
+/* When collapsed (width=72), center the icon */
+@media (max-width: 9999px) {
+  /* These kick in when sidebar is narrow — handled by JS width animation */
+}
+
+/* Tooltip on hover when collapsed */
+.sidebar-link[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 7px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+
+@media (max-width: 1080px) {
+  .sidebar-brand {
+    height: 58px;
+  }
+
+  .brand-logo-img {
+    width: 78px;
+  }
+}
+
+/* 992px and below: sidebar becomes a fixed overlay drawer
+   (positioning handled in Common.css .app > .sidebar). A dimmed
+   backdrop appears behind it whenever it's expanded. */
+@media (max-width: 992px) {}
+
+@media (max-width: 768px) {
+  .sidebar-link {
+    padding: 11px 12px;
+    font-size: 14px;
+  }
+
+  .sidebar-icon-wrap {
+    width: 30px;
+    height: 30px;
+  }
+
+  .sidebar-floating-menu {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 578px) {
+  .sidebar-brand {
+    height: 54px;
+    padding: 0 10px;
+  }
+
+  .brand-icon-wrap {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-logo-img {
+    width: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  /* On the smallest screens the drawer takes the full width so
+     labels stay fully readable rather than a cramped mid-width panel. */
+  .app>.sidebar {
+    width: 82vw;
+    max-width: 300px;
+  }
+
+  .sidebar-menu {
+    padding: 8px 6px;
+  }
+
+  .sidebar-sublink {
+    font-size: 12.5px;
+  }
+}
+.sidebar-footer-inner { justify-content: space-between; }
+.sidebar-upgrade {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: #f59e0b;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+}
+.sidebar-upgrade-icon { flex-shrink: 0; }
+.sidebar-upgrade:hover {
+  color: #d97706;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.28);
+}
+.sidebar-upgrade:active { transform: translateY(0); }

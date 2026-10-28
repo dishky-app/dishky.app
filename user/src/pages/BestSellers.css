@@ -1,0 +1,20 @@
+.best-sellers-subtitle {
+  padding: 0 16px 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.best-seller-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 2px 0 6px;
+}
+
+.best-seller-badge--rosette {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+
+  width: 70px;
+}

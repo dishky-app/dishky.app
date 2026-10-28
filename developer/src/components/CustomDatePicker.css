@@ -1,0 +1,395 @@
+/* ═══════════════════════════════════════════════════════
+   CUSTOM DATE PICKER
+═══════════════════════════════════════════════════════ */
+.cdp-wrap {
+    position: relative;
+    display: inline-block;
+    min-width: 160px;
+}
+
+.cdp-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    padding: 0 16px;
+    border: 1.5px solid #e0e0e0;
+    background: #f9f9f9;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    width: 100%;
+}
+
+.cdp-trigger:hover {
+    border-color: var(--color-offwhite);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-white);
+}
+
+.cdp-trigger:focus {
+    outline: none;
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 3px rgba(77, 60, 231, 0.1);
+    background: #fff;
+}
+
+.cdp-trigger-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.cdp-arrow {
+    flex-shrink: 0;
+    margin-left: 10px;
+    font-size: 14px;
+    color: #111;
+}
+
+.cdp-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.cdp-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111;
+}
+
+/* ── Overlay backdrop (matches modal overlay pattern) ── */
+.cdp-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+@keyframes cdpOverlayFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes cdpOverlayFadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+/* ── Shared open/close animation, driven by usePopupAnimation.js ── */
+.cdp-overlay.popup-anim-in {
+    animation: cdpOverlayFadeIn 0.16s ease-out both;
+}
+
+.cdp-overlay.popup-anim-out {
+    animation: cdpOverlayFadeOut 0.14s ease-in both;
+    pointer-events: none;
+}
+
+.cdp-popup {
+    position: relative;
+    z-index: 999;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    padding: 16px;
+    width: 280px;
+    height: 310px;
+}
+
+.cdp-popup.popup-anim-in {
+    animation: cdpFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cdp-popup.popup-anim-out {
+    animation: cdpFadeOut 0.16s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes cdpFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(8px) scale(0.97);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cdp-overlay.popup-anim-in,
+    .cdp-overlay.popup-anim-out,
+    .cdp-popup.popup-anim-in,
+    .cdp-popup.popup-anim-out {
+        animation: none !important;
+    }
+}
+
+.cdp-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid #dedede;
+    background: #f0f0f0;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: #555;
+}
+
+.cdp-close-btn:hover {
+    background: #e8e8e8;
+    color: #222;
+}
+
+@keyframes cdpFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.cdp-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    /* Room for the absolutely-positioned close button in the corner */
+    padding-right: 30px;
+}
+
+.cdp-nav-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid #f0f0f0;
+    background: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: #555;
+}
+
+.cdp-nav-btn:hover {
+    background: #f5f5f5;
+    border-color: #ddd;
+}
+
+.cdp-nav-center {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.cdp-nav-lbl {
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+.cdp-nav-lbl:hover {
+    background: #f5f5f5;
+}
+
+.cdp-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.cdp-weekdays span {
+    font-size: 10px;
+    font-weight: 700;
+    color: #bbb;
+    text-transform: uppercase;
+    padding: 4px 0;
+}
+
+.cdp-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.cdp-day {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cdp-day.cdp-dis {
+    cursor: not-allowed !important;
+    color: #979797;
+}
+
+.cdp-day:hover:not(.cdp-dis) {
+    background: #f0f4ff;
+    color: #4361ee;
+}
+
+.cdp-day.cdp-today {
+    font-weight: 700;
+    color: #4361ee;
+}
+
+.cdp-day.cdp-sel {
+    background: var(--color-blue) !important;
+    color: var(--color-white) !important;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.cdp-month-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 4px 0;
+}
+
+.cdp-month-btn {
+    padding: 10px 4px;
+    border-radius: 10px;
+    border: 1.5px solid #f0f0f0;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.cdp-month-btn:hover {
+    background: #f0f4ff;
+    border-color: #c7d2fe;
+}
+
+.cdp-month-btn.cdp-sel {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
+.cdp-year-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 4px 0;
+}
+
+.cdp-year-btn {
+    padding: 10px 4px;
+    border-radius: 10px;
+    border: 1.5px solid #f0f0f0;
+    background: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.cdp-year-btn:hover {
+    background: #f0f4ff;
+    border-color: #c7d2fe;
+}
+
+.cdp-year-btn.cdp-sel {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 578px) {
+    .cdp-popup {
+        width: min(280px, 88vw);
+        height: auto;
+    }
+
+    .cdp-wrap,
+    .cdp-trigger {
+        width: 100%;
+    }
+
+    .cdp-day {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cdp-trigger {
+        padding: 0 10px;
+        font-size: 12px;
+    }
+
+    .cdp-popup {
+        width: 72vw;
+        padding: 12px;
+    }
+
+    .cdp-day {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+    }
+
+    .cdp-year-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

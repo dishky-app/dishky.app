@@ -1,0 +1,27 @@
+
+# Environment files and secrets
+.env
+.env.*
+.env*
+!.env.example
+!.env.sample
+!**/.env.example
+!**/.env.sample
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Hosting configuration
+.vercel/
+.railway/
+
+# Logs and local files
+*.log
+.DS_Store
+Thumbs.db

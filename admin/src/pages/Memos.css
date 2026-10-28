@@ -1,0 +1,632 @@
+/**
+ * Memos.css  —  Dishky Admin Panel
+ * Built on shared .table-wrapper/.header/.filter-bar/.admin-modal/.mat
+ * classes in Common.css/ModalCSS.css. Adds: priority/status/resolution
+ * badges, the memo create-form section headings, the multi-staff
+ * picker, evidence preview list, and the details-page timeline +
+ * corrective-action / compensation / verification cards.
+ */
+
+/* ── Form field helpers used across the create/edit forms ───────
+   (.file-wrap/.file-input/.file-label, .mat error states, .rf-req,
+   .field-error-msg) live in page-specific CSS files elsewhere in the
+   app (StaffModules.css, EvtCommon.css, Orders.css, BankAccount.css)
+   that Memos.js/MemoDetails.js don't import — defined locally here
+   instead of pulling in unrelated page styles. */
+.file-wrap {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100% !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.file-label {
+  display: block;
+  padding: 9px 12px;
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #4b5563;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.rf-req {
+  color: #e74c3c !important;
+  margin-left: 2px;
+}
+
+.field-error-msg {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.mat-textarea {
+  min-height: 90px;
+}
+
+.mat-input.mat-error {
+  border-bottom-color: #ef4444 !important;
+  caret-color: #ef4444;
+  animation: memo-mat-shake 0.35s ease;
+}
+
+.mat-label.mat-label-error,
+label.mat-label-error {
+  color: #ef4444 !important;
+}
+
+.mat-bar.mat-bar-error {
+  background: #ef4444 !important;
+}
+
+.mat-select-error .mat-select {
+  border-bottom-color: #ef4444 !important;
+}
+
+.mat-select-error .mat-label {
+  color: #ef4444 !important;
+}
+
+.mat-select-error .mat-bar {
+  background: #ef4444 !important;
+}
+
+@keyframes memo-mat-shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* ── Table cell helpers ───────────────────────────────────────── */
+.memo-issue-cell {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Priority badges ──────────────────────────────────────────── */
+.memo-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.memo-priority-low {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.memo-priority-normal {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.memo-priority-high {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.memo-priority-critical {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1.5px solid #dc2626;
+  font-weight: 800;
+}
+
+/* ── Memo lifecycle status badges ─────────────────────────────── */
+.memo-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.memo-status-open {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.memo-status-under-investigation {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.memo-status-action-required {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.memo-status-in-progress {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.memo-status-awaiting-verification {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.memo-status-resolved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.memo-status-closed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.memo-status-cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* ── Resolution status badges (distinct concept from memo status) ── */
+.memo-resolution-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.memo-resolution-verified,
+.memo-resolution-closed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.memo-resolution-fixed,
+.memo-resolution-solved,
+.memo-resolution-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.memo-resolution-investigating,
+.memo-resolution-action-taken {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* Create/edit forms now reuse Dishes' exact layout — simple fields
+   sit flat as .admin-form-group/.mat directly in .admin-modal-body
+   (no per-section heading + .border box), and .border form-group is
+   reserved for genuinely list-like sub-blocks (Evidence), the same
+   way Dishes only boxes Ingredients/Variants. Modal keeps the app's
+   standard 560px width, no memo-specific override. */
+
+/* ── Multi-select dropdown (Involved Staff / Witnesses) — same
+   cdd-option rows and red cdd-sel highlight as the app's standard
+   single-select CustomDropdown (e.g. "Select Ingredient" on Dishes);
+   the only differences here are that more than one row can carry
+   cdd-sel at once, clicking a row doesn't close the popup, and the
+   popup is a bit wider since "Name — Role Title" labels run longer
+   than a typical single-select option. No checkbox — selection is
+   shown the same way the rest of the app shows it, as the solid
+   highlighted row. ──────────────────────────────────────────────── */
+.memo-picker-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.cdd-popup-multi {
+  width: 320px;
+}
+
+.cdd-multi-done {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.cdd-multi-done:hover {
+  opacity: 0.9;
+}
+
+.memo-picker-empty {
+  padding: 10px;
+  color: #9ca3af;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ── Evidence preview list (create form) ──────────────────────── */
+.memo-evidence-preview-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.memo-evidence-preview-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: #374151;
+}
+
+.memo-evidence-preview-list button {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* ── Order picker modal ───────────────────────────────────────── */
+.memo-order-picker-modal {
+  max-width: 480px;
+}
+
+.memo-order-picker-close {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px 8px;
+}
+
+.memo-order-picker-date-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.memo-order-picker-clear-dates {
+  border: none;
+  background: transparent;
+  color: #4338ca;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.memo-order-picker-list {
+  max-height: 340px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.memo-order-picker-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.memo-order-picker-row:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.memo-order-picker-row-main {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #1f2937;
+}
+
+.memo-order-picker-row-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 11.5px;
+  color: #9ca3af;
+}
+
+/* ── Selected order display (create form) ───────────────────────── */
+.memo-selected-order {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #f9fafb;
+}
+
+.memo-selected-order-id {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #1f2937;
+}
+
+.memo-selected-order-customer {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* ── Details page: header meta row ────────────────────────────── */
+.memo-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+/* ── Details page: evidence cards ─────────────────────────────── */
+.memo-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.memo-evidence-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  font-size: 11.5px;
+  color: #4b5563;
+  background: #fff;
+}
+
+.memo-evidence-card img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.memo-evidence-card .memo-evidence-icon {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: #f3f4f6;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.memo-evidence-card-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Corrective action cards ──────────────────────────────────── */
+.memo-ca-card {
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.memo-ca-card.memo-ca-completed {
+  border-left-color: #16a34a;
+}
+
+.memo-ca-card.memo-ca-overdue {
+  border-left-color: #dc2626;
+}
+
+.memo-ca-card.memo-ca-in-progress {
+  border-left-color: #d97706;
+}
+
+.memo-ca-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.memo-ca-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ── Timeline (Section 23) ────────────────────────────────────── */
+.memo-timeline {
+  position: relative;
+  padding-left: 22px;
+}
+
+.memo-timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.memo-timeline-item {
+  position: relative;
+  padding-bottom: 18px;
+}
+
+.memo-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.memo-timeline-dot {
+  position: absolute;
+  left: -22px;
+  top: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4338ca;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #e0e7ff;
+}
+
+.memo-timeline-action {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #1f2937;
+}
+
+.memo-timeline-time {
+  font-size: 11.5px;
+  color: #9ca3af;
+  margin-left: 8px;
+  font-weight: 500;
+}
+
+.memo-timeline-by {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.memo-timeline-notes {
+  font-size: 12.5px;
+  color: #4b5563;
+  margin-top: 3px;
+}
+
+/* ── Compensation / verification summary blocks ───────────────── */
+.memo-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.memo-summary-item {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.memo-summary-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #9ca3af;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.memo-summary-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ── Reopen history ────────────────────────────────────────────── */
+.memo-reopen-entry {
+  border-left: 3px solid #f59e0b;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: #fffbeb;
+  border-radius: 0 8px 8px 0;
+  font-size: 12.5px;
+}
+/* ── Story & progress tracker ─────────────────────────────────── */
+.memo-stage-tracker { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.memo-stage { display: flex; align-items: center; gap: 6px; flex: 1 1 90px; padding: 6px 8px; border-radius: 8px; background: #f3f4f6; color: #9ca3af; font-size: 12px; font-weight: 600; }
+.memo-stage-dot { width: 20px; height: 20px; border-radius: 50%; background: #e5e7eb; color: #6b7280; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.memo-stage.done { background: #ecfdf5; color: #047857; }
+.memo-stage.done .memo-stage-dot { background: #10b981; color: #fff; }
+.memo-stage.current { background: #e0e7ff; color: #3730a3; }
+.memo-stage.current .memo-stage-dot { background: #4338ca; color: #fff; }
+.memo-story-text { white-space: pre-wrap; font-size: 14px; line-height: 1.55; color: #1f2937; background: #f9fafb; border-left: 3px solid #4338ca; border-radius: 6px; padding: 10px 14px; }
+.memo-story-empty { color: #9ca3af; font-style: italic; }
+.memo-story-hint { font-size: 12px; color: #6b7280; margin-top: 4px; }
+.memo-story-add { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.memo-story-textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 13px; resize: none; background: transparent; color: inherit; }
+.memo-story-input { min-height: 90px; }
+
+/* ── Timeline hover tooltip (shows the entry's story) ─────────── */
+.memo-timeline-item.has-story { cursor: help; outline: none; }
+.memo-timeline-item.has-story:hover .memo-timeline-action,
+.memo-timeline-item.has-story:focus .memo-timeline-action { text-decoration: underline dotted; }
+.memo-timeline-tooltip {
+  position: absolute; left: 0; top: 22px; z-index: 20;
+  width: min(360px, 90vw); padding: 10px 12px; border-radius: 10px;
+  background: #111827; color: #f9fafb; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  opacity: 0; visibility: hidden; transform: translateY(4px); pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease, visibility .15s;
+}
+.memo-timeline-item.has-story:hover .memo-timeline-tooltip,
+.memo-timeline-item.has-story:focus .memo-timeline-tooltip { opacity: 1; visibility: visible; transform: translateY(0); }
+.memo-timeline-tooltip-title { font-size: 11px; font-weight: 700; color: #a5b4fc; margin-bottom: 4px; }
+.memo-timeline-tooltip-body { font-size: 12.5px; line-height: 1.5; white-space: pre-wrap; max-height: 180px; overflow-y: auto; }
+.memo-timeline-tooltip-by { font-size: 11px; color: #9ca3af; margin-top: 6px; }

@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════════════════════
+   Favourites.css  —  Dishky Admin  —  Favourites page
+   Depends on Common.css
+═══════════════════════════════════════════════════════ */
+
+/* ---------- IMAGE ---------- */
+.favourites-image {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+}
+
+.favourites-image img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- CLICKABLE ---------- */
+.clickable {
+  cursor: pointer;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 578px) {
+  .favourites-image {
+    width: 30px;
+    height: 30px;
+  }
+}

@@ -1,0 +1,332 @@
+
+
+/* CLICKABLE */
+.clickable {
+  cursor: pointer;
+}
+
+/* ROW */
+.act-row {
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.act-row td {
+  padding: 11px 12px;
+  font-size: 13px;
+  border: none;
+  border-top: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.act-row td:first-child {
+  border-left: 1px solid #f5f5f5;
+  border-radius: 12px 0 0 12px;
+}
+
+.act-row td:last-child {
+  border-right: 1px solid #f5f5f5;
+  border-radius: 0 12px 12px 0;
+}
+
+.act-row:hover {
+  background: #fafafa;
+  transform: translateX(2px);
+}
+
+.act-name {
+  font-weight: 600;
+}
+
+.act-id-small {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.act-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.act-email {
+  font-size: 11px;
+  color: #888;
+}
+
+/* ══════════════════════════════════════
+   DISH PICKER (Tab 2)
+══════════════════════════════════════ */
+.act-dish-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* DISH GRID → row list */
+.act-dish-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  /* fills remaining height in the picker */
+  min-height: 0;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.act-dish-empty {
+  text-align: center;
+  padding: 24px;
+  color: #aaa;
+  font-size: 13px;
+}
+
+/* DISH CARD → styled as ae-dish-item row */
+.act-dish-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s;
+  border: none;
+  background: transparent;
+}
+
+.act-dish-card:hover {
+  background: #f5f5f5;
+}
+
+.act-dish-card.selected {
+  background: #fff5f5;
+}
+
+.act-dish-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.act-dish-name {
+  font-weight: 500;
+  color: #222;
+  font-size: 13px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.act-dish-cat {
+  font-size: 10px;
+  color: #888;
+  background: #f3f4f6;
+  padding: 1px 6px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.act-dish-price {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-red, #e74c3c);
+  flex-shrink: 0;
+}
+
+/* ── Right panel split header (fixed) ── */
+.ae-dishes-right-header {
+  font-weight: 600;
+  font-size: 13px;
+  color: #111;
+  padding-bottom: 10px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 8px;
+}
+
+/* ══════════════════════════════════════
+   ADDRESS GRID — Admin Catering Modal
+══════════════════════════════════════ */
+.ae-addr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+/* chip disabled */
+.chip-disabled {
+  opacity: 0.45;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .ae-addr-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.evt-pre-call-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.evt-pre-call-tooltip {
+  min-width: 200px;
+  background: #fff;
+  color: #111;
+  border-radius: 10px;
+  padding: 10px 12px;
+  z-index: 99999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border: 1px solid #f0f0f0;
+  pointer-events: none;
+}
+
+.evt-pre-call-tooltip-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #222;
+  margin-bottom: 6px;
+}
+
+.evt-pre-call-tooltip-row {
+  font-size: 12px;
+  color: #555;
+  padding: 3px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.evt-pre-call-tooltip-row:last-child {
+  border-bottom: none;
+}
+
+/* ══════════════════════════════════════════════
+   LOCATION & ITEMS HOVER TOOLTIPS
+══════════════════════════════════════════════ */
+
+/* Wrapper divs (inline) */
+.cat-loc-wrap,
+.cat-items-wrap {
+  display: inline-block;
+  position: relative;
+}
+
+/* Shared tooltip base */
+.cat-addr-tooltip,
+.cat-items-tooltip {
+  min-width: 200px;
+  max-width: 300px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  border: 1px solid #e5e7eb;
+  animation: catTooltipFadeIn 0.15s ease;
+}
+
+@keyframes catTooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 6px));
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-100% - 10px));
+  }
+}
+
+/* Tooltip title row */
+.cat-addr-tooltip-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #555;
+  margin-bottom: 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Address body */
+.cat-addr-tooltip-body {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.55;
+}
+
+/* Items tooltip rows */
+.cat-items-tooltip {
+  min-width: 220px;
+}
+
+.cat-items-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  font-size: 12px;
+  color: #444;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.cat-items-tooltip-row:last-of-type {
+  border-bottom: none;
+}
+
+.cat-items-tooltip-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.cat-items-tooltip-price {
+  font-weight: 700;
+  color: #e74c3c;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.cat-items-tooltip-total {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0 2px;
+  margin-top: 4px;
+  border-top: 2px solid #e5e7eb;
+  font-size: 12px;
+  font-weight: 800;
+  color: #111;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+}
+
+@media (max-width: 768px) {
+
+  .ae-addr-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 578px) {
+}

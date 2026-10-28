@@ -1,0 +1,146 @@
+/**
+ * BankAccount.css  —  Dishky Admin Panel
+ * Built on the shared .inner-page/.header/.admin-form-group/.mat classes
+ * in Common.css. This file adds only the read-only summary card and
+ * form-action row specific to this single-record settings page.
+ */
+
+.ba-subtitle {
+  color: var(--text-secondary, #666);
+  font-size: 13px;
+  margin: -6px 0 16px;
+}
+
+/* Summary: bank-card visual on the left, details grid on the right */
+.ba-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+  margin-bottom: 4px;
+}
+
+.ba-visual {
+  position: relative;
+  min-height: 210px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #7c3aed 100%);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.3);
+}
+
+.ba-visual::before,
+.ba-visual::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.ba-visual::before { width: 220px; height: 220px; right: -70px; top: -90px; }
+.ba-visual::after { width: 160px; height: 160px; right: 40px; bottom: -90px; }
+
+.ba-visual > * { position: relative; z-index: 1; }
+
+.ba-visual-top,
+.ba-visual-bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ba-visual-bank { font-size: 16px; font-weight: 700; letter-spacing: 0.02em; }
+.ba-visual-icon { opacity: 0.9; flex: none; }
+.ba-visual-number { font-size: 22px; font-weight: 600; letter-spacing: 0.14em; font-family: monospace; }
+.ba-visual-right { text-align: right; }
+.ba-visual-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7; margin-bottom: 2px; }
+.ba-visual-value { display: block; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+
+.ba-card {
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.1));
+  border-radius: 20px;
+  padding: 22px 24px;
+  box-shadow: 0 2px 12px rgba(17, 24, 39, 0.05);
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.ba-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+}
+
+.ba-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-light, rgba(0, 0, 0, 0.08));
+}
+
+.ba-item-wide { grid-column: 1 / -1; }
+
+.ba-label {
+  color: var(--text-secondary, #666);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ba-value {
+  color: var(--text-primary, #111);
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .ba-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .ba-grid { grid-template-columns: 1fr; }
+}
+
+.ba-masked {
+  letter-spacing: 1px;
+  font-family: monospace;
+}
+
+.ba-warning {
+  color: #b45309;
+  font-weight: 600;
+  font-size: 12px;
+  text-align: right;
+}
+
+.ba-empty {
+  color: var(--text-secondary, #888);
+  padding: 40px;
+  text-align: center;
+}
+
+.field-error-msg {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.field-hint {
+  color: var(--text-secondary, #888);
+  font-size: 11px;
+  margin-top: 4px;
+  line-height: 1.4;
+}

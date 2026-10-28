@@ -1,0 +1,181 @@
+/* Super Admin extras — ONLY what has no equivalent in the Admin Panel stylesheets
+   (Common.css, Sidebar.css, Topbar.css, Login.css, admin-shared.css).
+   Everything below uses the admin's tokens and colours. */
+
+/* status pill tone the admin doesn't define (neutral) — same palette as .audit-status-badge--default */
+.status-muted { background: #e5e7eb; color: #374151; }
+.kpi-card.warning h3 { color: #b45309; }
+.kpi-card h3 { overflow-wrap: anywhere; }
+.sa-warn-text { color: #b45309; font-weight: 600; }
+.sa-bad-text { color: #dc2626; font-weight: 600; }
+
+/* sidebar: animated width (admin uses framer-motion for this) + brand mark (admin uses logo images) */
+.sidebar { transition: width 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.sa-brand-mark { font-weight: 800; font-size: 18px; color: var(--color-blue); }
+.sa-brand-text { font-weight: 800; font-size: 16px; color: #111; letter-spacing: 0.02em; white-space: nowrap; }
+.sa-brand-text span { color: var(--color-blue); font-weight: 600; }
+.sidebar-icon-wrap svg { display: block; }
+.sa-auth-brand { position: relative; z-index: 1; font-size: 34px; font-weight: 800; color: #1f1f1f; letter-spacing: 0.02em; }
+.sa-auth-brand span { color: var(--color-blue); font-weight: 600; }
+
+/* layout helpers */
+.inner-page > .details-body { padding: 6px; }
+.details-body > .chart-card { flex: none; gap: 12px; }
+.chart-card { gap: 10px; }
+.dashboard-kpis { flex-wrap: wrap; }
+.dashboard-kpis > .kpi-card { flex: 1 1 200px; width: auto; }
+.sa-cols-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.sa-narrow { max-width: 480px; flex: none; }
+.sa-pager { padding-top: 10px; flex-shrink: 0; align-items: center; flex-wrap: wrap; gap: 10px; }
+.sa-pager .header-btn-container { gap: 14px; }
+.sa-inline { margin: 2px 0; }
+.sa-stack { display: flex; flex-direction: column; gap: 14px; }
+.table-wrapper table th.sa-right, .table-wrapper table td.sa-right { text-align: right; }
+.table-wrapper.sa-inset { flex: none; max-height: 360px; }
+.header-btn-container .status { margin-left: 4px; }
+
+/* meters / bars (admin has no equivalent) */
+.sa-meter { height: 8px; background: var(--color-offwhite); border-radius: 99px; overflow: hidden; margin-top: 4px; }
+.sa-meter-fill { height: 100%; background: var(--color-blue); border-radius: 99px; }
+.sa-meter-hot { background: var(--color-red); }
+.sa-bars { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.sa-bars li { display: grid; grid-template-columns: 110px 1fr auto; align-items: center; gap: 10px; font-size: 14px; }
+.sa-bars-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sa-bars-track { height: 10px; background: var(--color-offwhite); border-radius: 99px; overflow: hidden; }
+.sa-bars-track > span { display: block; height: 100%; background: var(--color-blue); border-radius: 99px; }
+.sa-bars-n { font-variant-numeric: tabular-nums; text-align: right; }
+.sa-wide { min-width: 64px; }
+
+/* detail field list */
+.sa-fields { margin: 0; display: grid; gap: 10px; }
+.sa-field { display: grid; grid-template-columns: 140px 1fr; gap: 10px; font-size: 14px; }
+.sa-field dt { color: #888; }
+.sa-field dd { margin: 0; overflow-wrap: anywhere; }
+code { background: #f3f4f6; padding: 1px 5px; border-radius: 5px; font-size: 12.5px; }
+
+@media (max-width: 900px) {
+  .sa-cols-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 578px) {
+  .sa-field { grid-template-columns: 1fr; gap: 2px; }
+  .inner-page { overflow-y: auto; }
+  .inner-page > .details-body { overflow: visible; flex: none; }
+}
+
+/* polish */
+a.clickable { text-decoration: none; }
+.inner-page > .details-body { padding: 10px 8px 12px; }
+.sa-bars li { grid-template-columns: 110px 1fr 40px; }
+.sa-bars li:has(.sa-wide) { grid-template-columns: 110px 1fr auto; }
+@media (max-width: 578px) {
+  .sa-pager .header-btn-container { flex-direction: row; }
+}
+
+/* ── Account page (ac-) ─────────────────────────────────────────────────── */
+.ac-grid { display: grid; grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); gap: 16px; align-items: stretch; width: 100%; box-sizing: border-box; padding: 2px; }
+.ac-card { background: #fff; border: 1px solid #ececec; border-radius: 18px; box-shadow: 0 2px 12px rgba(17, 24, 39, 0.05); padding: 22px; box-sizing: border-box; min-width: 0; }
+.ac-profile { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
+.ac-avatar { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; font-size: 34px; font-weight: 700; color: #fff; background: linear-gradient(135deg, #2563eb, #7c3aed); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28); margin-bottom: 6px; }
+.ac-name { margin: 0; font-size: 20px; font-weight: 700; color: #111827; overflow-wrap: anywhere; }
+.ac-email { margin: 0; font-size: 13px; color: #6b7280; overflow-wrap: anywhere; }
+.ac-role { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.ac-meta { width: 100%; margin: 16px 0 0; padding: 14px 0 0; border-top: 1px solid #f0f0f0; display: grid; gap: 10px; text-align: left; }
+.ac-meta-row { display: flex; flex-direction: column; gap: 2px; }
+.ac-meta-row dt { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.06em; }
+.ac-meta-row dd { margin: 0; font-size: 14px; color: #111827; overflow-wrap: anywhere; }
+.ac-section-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0; }
+.ac-section-icon { flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: #eff6ff; color: #2563eb; }
+.ac-section-head h4 { margin: 0; font-size: 17px; font-weight: 700; color: #111827; }
+.ac-section-head p { margin: 2px 0 0; font-size: 13px; color: #6b7280; }
+.ac-form { display: grid; gap: 6px; max-width: 460px; }
+.ac-form .form-group { margin: 0 0 8px; }
+.ac-strength { display: grid; gap: 6px; margin: 2px 0 6px; }
+.ac-strength-track { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ac-strength-track span { height: 5px; border-radius: 99px; background: #e5e7eb; transition: background 0.2s ease; }
+.ac-strength-track span.on-1 { background: #ef4444; }
+.ac-strength-track span.on-2 { background: #f59e0b; }
+.ac-strength-track span.on-3 { background: #84cc16; }
+.ac-strength-track span.on-4 { background: #22c55e; }
+.ac-strength-label { font-size: 12px; font-weight: 600; color: #6b7280; }
+.ac-rules { list-style: none; margin: 4px 0 8px; padding: 0; display: grid; gap: 4px; font-size: 12.5px; color: #6b7280; }
+.ac-rules li { display: flex; align-items: center; gap: 8px; }
+.ac-rules li::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #d1d5db; flex: none; }
+.ac-rules li.ok { color: #15803d; }
+.ac-rules li.ok::before { background: #22c55e; }
+.ac-actions { display: flex; gap: 10px; margin-top: 6px; }
+@media (max-width: 900px) { .ac-grid { grid-template-columns: 1fr; } }
+
+/* ── Roles & Permissions (rp-): page fills the full height; only the permissions table scrolls ── */
+.inner-page.rp-page { overflow: hidden !important; }
+.inner-page.rp-page > .collapse-section.rp-body { flex: 1 1 0; min-height: 0; }
+.inner-page.rp-page > .collapse-section.rp-body > .collapse-section-inner {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 0;
+  min-height: 0;
+  height: 100%;
+}
+.inner-page.rp-page .rp-body > .collapse-section-inner > .subtitle { flex: none; margin: 0 0 10px; }
+.inner-page.rp-page .rp-body > .collapse-section-inner > .table-wrapper { flex: 1 1 auto !important; min-height: 160px; max-height: none !important; overflow: auto; }
+.inner-page.rp-page .rp-body > .collapse-section-inner > .tk-card { flex: none; }
+@media (max-width: 768px) {
+  .inner-page.rp-page { overflow: visible !important; }
+  .inner-page.rp-page > .collapse-section.rp-body > .collapse-section-inner { height: auto; }
+  .inner-page.rp-page .rp-body > .collapse-section-inner > .table-wrapper { flex: none !important; }
+}
+
+/* ── Overview KPI tiles: equal-width responsive grid (the ticket tiles are wrapped in links, so they
+   used to shrink to their content and the 4th tile dropped to a full-width second row) ── */
+.dashboard-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  /* room for the neumorphic kpi-card shadows, which the collapse wrapper would otherwise clip */
+  padding: 6px 8px 12px;
+  box-sizing: border-box;
+}
+.dashboard-kpis > .kpi-card,
+.dashboard-kpis > .tk-kpi-link { min-width: 0; width: auto; }
+.dashboard-kpis > .tk-kpi-link { display: block; }
+.dashboard-kpis > .tk-kpi-link .kpi-card { height: 100%; box-sizing: border-box; }
+/* never let the Overview sections get squashed on top of each other inside the scrolling body */
+.details-body > .sa-cols-2,
+.details-body > .collapse-section,
+.details-body > .chart-card,
+.details-body > div { flex-shrink: 0; }
+.sa-cols-2 > .chart-card { min-width: 0; }
+
+.ac-avatar { overflow: hidden; }
+.ac-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ac-profile-actions { display: flex; gap: 10px; width: 100%; margin-top: 18px; padding-top: 16px; border-top: 1px solid #f0f0f0; }
+.ac-profile-actions > * { flex: 1; }
+.ac-edit-photo { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+.ac-edit-photo .ac-avatar { margin: 0; flex-shrink: 0; }
+.ac-edit-photo-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+/* ── No tinted (pale-blue) background when the browser auto-fills an input ── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: currentColor !important;
+  caret-color: currentColor;
+  background-color: transparent !important;
+  background-clip: text !important;
+  transition: background-color 600000s 0s, color 600000s 0s !important;
+}
+input:autofill,
+textarea:autofill,
+select:autofill {
+  background-color: transparent !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: currentColor !important;
+}

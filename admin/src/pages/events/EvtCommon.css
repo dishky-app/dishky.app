@@ -1,0 +1,468 @@
+/* ═══════════════════════════════════════════════════════
+   EvtCommon.css  —  Shared styles for event-type pages
+   (Events, Reservations, Catering, PreBookings, Celebrations)
+   Depends on Common.css and ModalCSS.css.
+═══════════════════════════════════════════════════════ */
+
+/* ── Header ── */
+.evt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.evt-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 2px;
+  color: #111;
+}
+
+.evt-subtitle {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+
+/* ── KPI row ── */
+.evt-kpi-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+.evt-kpi {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: inset 5px 5px 10px #bbb, inset -5px -5px 10px #fff;
+  flex: 1;
+  min-width: 80px;
+}
+
+.evt-kpi-val {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.evt-kpi-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+
+/* ── Filter bar ── */
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+  margin-bottom: 14px;
+  width: 100%;
+}
+
+.filter-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.filter-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+  margin-right: 1px;
+}
+
+/* ── Event modal overlay ── */
+.event-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  animation: evt-overlay-in 0.22s ease;
+}
+
+/* ── Progressive-reveal fields (slot picker / time picker appearing
+   after an earlier field is filled in) ── */
+.evt-reveal {
+  animation: evt-reveal-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top;
+}
+
+@keyframes evt-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+@keyframes evt-overlay-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+/* ── Event modal card ── */
+.event-modal {
+  padding: 20px;
+  background: #ffffff;
+  width: 80%;
+  min-height: 85vh;
+  max-height: 85vh;
+  border-radius: 20px;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.28),
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 10px;
+  animation: evt-modal-rise 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes evt-modal-rise {
+  from {
+    transform: scale(0.92) translateY(24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.event-modal .cdp-wrap,
+.event-modal .ctp-wrap {
+  max-width: 300px;
+}
+
+.event-modal-body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.event-modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: #fff;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  margin-top: auto;
+}
+
+.event-package-body {
+  display: flex;
+  gap: 16px;
+  max-height: 400px;
+}
+
+/* Activity modal */
+.act-modal {
+  width: 80%;
+  max-width: 96vw;
+}
+
+.act-modal-body {
+  padding: 8px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Split tab: manages all scroll internally */
+.act-modal-body--split {
+  overflow: visible !important;
+  max-height: none !important;
+  padding: 0;
+}
+
+
+/* ── Stepper ── */
+.evt-stepper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9fafb;
+  height: 32px;
+  width: fit-content;
+}
+
+.evt-stepper button {
+  width: 36px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.evt-stepper button:hover {
+  background: #f0f0f0;
+}
+
+.evt-stepper span {
+  min-width: 40px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+
+/* ── Form section label ── */
+.evt-res-form-section-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  border-bottom: 1px solid #c0c0c0;
+  margin-top: 10px;
+}/* ── Validation error states ── */
+
+/* Input underline */
+.mat-input.mat-error {
+  border-bottom-color: #ef4444 !important;
+  caret-color: #ef4444;
+  animation: mat-shake 0.35s ease;
+}/* Label */
+.mat-label.mat-label-error,
+.mat-area-label.mat-label-error,
+label.mat-label-error {
+  color: #ef4444 !important;
+}/* Animated underline bar */
+.mat-bar.mat-bar-error,
+.mat-area-bar.mat-bar-error {
+  background: #ef4444 !important;
+}.mat-bar.mat-bar-error::before,
+.mat-bar.mat-bar-error::after,
+.mat-area-bar.mat-bar-error::before,
+.mat-area-bar.mat-bar-error::after {
+  width: 50% !important;
+  background: #ef4444 !important;
+}
+
+/* Textarea variant */
+.mat-area .mat-input.mat-error {
+  border-bottom-color: #ef4444 !important;
+}
+
+/* Dropdown (mat-select) error */
+.mat-select-error .mat-select,
+.mat-select-error .dishes-status-dropdown {
+  border-bottom-color: #ef4444 !important;
+}
+
+.mat-select-error .mat-label {
+  color: #ef4444 !important;
+}
+
+.mat-select-error .mat-bar {
+  background: #ef4444 !important;
+}
+
+.mat-select-error .mat-bar::before,
+.mat-select-error .mat-bar::after {
+  width: 50% !important;
+  background: #ef4444 !important;
+}
+
+/* File upload error */
+.file-wrap.file-error {
+  border: 1.5px solid #ef4444 !important;
+  border-radius: 8px;
+}
+
+.file-label.file-label-error {
+  color: #ef4444 !important;
+}
+
+/* Shake animation */
+@keyframes mat-shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+
+/* ── Responsive ── */
+@media screen and (max-width: 768px) {
+  .evt-kpi-row {
+    width: 100%;
+  }
+
+  .evt-kpi {
+    min-width: 50px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1200 /1080 / 992 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 1400px) {
+  .evt-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 1080px) {
+  .evt-kpi-row {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 992px) {
+  .evt-title {
+    font-size: 20px;
+  }
+
+  .evt-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 578px) {
+  .evt-title {
+    font-size: 17px;
+  }
+
+  .evt-subtitle {
+    font-size: 12px;
+  }
+
+  .evt-kpi-val {
+    font-size: 17px;
+  }
+
+  .evt-kpi {
+    min-width: 42%;
+    padding: 8px;
+  }
+
+  .event-modal {
+    width: 98vw;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — evt-details-* shared grid (used by
+   CateringDetails / CelebrationDetails / PreBookingDetails /
+   ReservationDetails) — 992 / 768 / 578
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+  .evt-details-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+
+  .evt-details-info-grid,
+  .evt-details-extras-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 578px) {
+
+  .evt-details-info-grid,
+  .evt-details-extras-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-group {
+    flex-wrap: wrap;
+  }
+
+  .evt-kpi {
+    flex-basis: 48%;
+  }
+
+  .event-package-body {
+    flex-direction: column;
+  }
+
+  .ae-live-summary {
+    min-height: 200px;
+  }
+}

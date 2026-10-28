@@ -1,0 +1,189 @@
+/**
+ * CustomDropdown
+ * A single, canonical floating-label dropdown used across the entire admin panel.
+ *
+ * USAGE
+ * -----
+ * import CustomDropdown from "../components/CustomDropdown";
+ *
+ * <CustomDropdown
+ *   label="Status"          // floating label (optional)
+ *   required                // adds red asterisk (optional)
+ *   value={form.status}
+ *   onChange={val => setForm(p => ({ ...p, status: val }))}
+ *   options={[
+ *     { value: "active",   label: "Active"   },
+ *     { value: "inactive", label: "Inactive" },
+ *   ]}
+ *   placeholder="Select status"   // shown as first "clear" item (default: "Select…")
+ * />
+ *
+ * OPTIONS FORMAT
+ * --------------
+ * Accepts either:
+ *   - { value, label }  objects  (preferred)
+ *   - plain strings              (value === label)
+ *
+ * CLEARING
+ * --------
+ * Clicking the placeholder row calls onChange(""), clearing the selection.
+ * Pass placeholder={null} to suppress the clear row entirely.
+ */
+
+/**
+ * CustomDropdown
+ * A single, canonical floating-label dropdown used across the entire admin panel.
+ *
+ * USAGE
+ * -----
+ * import CustomDropdown from "../components/CustomDropdown";
+ *
+ * <CustomDropdown
+ *   label="Status"          // floating label (optional)
+ *   required                // adds red asterisk (optional)
+ *   value={form.status}
+ *   onChange={val => setForm(p => ({ ...p, status: val }))}
+ *   options={[
+ *     { value: "active",   label: "Active"   },
+ *     { value: "inactive", label: "Inactive" },
+ *   ]}
+ *   placeholder="Select status"   // shown as first "clear" item (default: "Select…")
+ * />
+ *
+ * OPTIONS FORMAT
+ * --------------
+ * Accepts either:
+ *   - { value, label }  objects  (preferred)
+ *   - plain strings              (value === label)
+ *
+ * CLEARING
+ * --------
+ * Clicking the placeholder row calls onChange(""), clearing the selection.
+ * Pass placeholder={null} to suppress the clear row entirely.
+ *
+ * OVERLAY BEHAVIOR
+ * -----------------
+ * Mirrors CustomDatePicker: the option list opens as a centered overlay
+ * (dimmed backdrop + popup card) rather than an inline absolute-positioned
+ * menu. Selecting an option — or clicking the clear/placeholder row —
+ * closes it, same as picking a date closes the date picker. The backdrop does
+ * NOT dismiss it; use the Close button (or pick an option).
+ */
+
+import React, { useRef } from "react";
+import { createPortal } from "react-dom";
+import "./CustomDropdown.css";
+import usePopupAnimation from "../hooks/usePopupAnimation";
+
+const CustomDropdown = ({
+  value,
+  onChange,
+  options = [],
+  placeholder = "Select…",
+  label,
+  required,
+  disabled = false,
+  hasError = false,
+  className = "",
+}) => {
+  const popup = usePopupAnimation();
+  const open = popup.shouldRender;
+  const ref = useRef(null);
+
+  /* Resolve display label from current value */
+  const resolveOption = (v) =>
+    options.find((o) => (o.value !== undefined ? o.value : o) === v);
+
+  const selected = resolveOption(value);
+  const displayLabel = selected
+    ? selected.label !== undefined
+      ? selected.label
+      : selected
+    : "";
+
+  const wrapperCls = [
+    "mat-select",
+    value !== "" && value !== null && value !== undefined ? "has-value" : "",
+    popup.isOpen ? "is-open" : "",
+    hasError ? "mat-select-error" : "",
+    disabled ? "mat-select-disabled" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    if (!disabled) popup.toggle();
+  };
+
+  return (
+    <div className={wrapperCls} ref={ref}>
+      {label && (
+        <label className={`mat-label${hasError ? " mat-label-error" : ""}`}>
+          {label}
+          {required && <span className="rf-req">*</span>}
+        </label>
+      )}
+
+      <div className="dishes-dropdown-wrapper">
+        <button
+          type="button"
+          className="dishes-status-dropdown"
+          onClick={handleToggle}
+          disabled={disabled}
+        >
+          {displayLabel || ""}
+        </button>
+
+        {open && createPortal(
+          <div className={`cdd-overlay ${popup.animClass}`}>
+            <div className={`cdd-popup ${popup.animClass}`} onMouseDown={(e) => e.stopPropagation()}>
+              {label && <div className="cdd-popup-title">{label}</div>}
+
+              <div className="cdd-options">
+                {/* Clear / placeholder row */}
+                {placeholder !== null && (
+                  <div
+                    className={`cdd-option cdd-option-placeholder${!selected ? " cdd-sel" : ""}`}
+                    onClick={() => {
+                      onChange("");
+                      popup.close();
+                    }}
+                  >
+                    {placeholder}
+                  </div>
+                )}
+
+                {options.map((o, i) => {
+                  const val = o.value !== undefined ? o.value : o;
+                  const lbl = o.label !== undefined ? o.label : o;
+                  return (
+                    <div
+                      key={i}
+                      className={`cdd-option${val === value ? " cdd-sel" : ""}`}
+                      onClick={() => {
+                        onChange(val);
+                        popup.close();
+                      }}
+                    >
+                      {lbl}
+                    </div>
+                  );
+                })}
+              </div>
+              <button type="button" className="cdd-close-btn" onClick={() => popup.close()}>
+                Close
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
+      </div>
+
+      <span className={`mat-bar${hasError ? " mat-bar-error" : ""}`} />
+    </div>
+  );
+};
+
+export default CustomDropdown;

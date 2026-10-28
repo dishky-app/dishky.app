@@ -1,0 +1,79 @@
+/**
+ * InfiniteScrollLoader.css — Dishky Admin Panel
+ * Styles for the shared infinite-scroll sentinel, inline loading row,
+ * and full-table overlay loader.
+ */
+
+.isl-sentinel {
+  width: 100%;
+  height: 1px;
+}
+
+.isl-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.isl-row td.isl-cell {
+  padding: 0;
+  border: none;
+}
+
+.isl-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 0;
+  width: 100%;
+  color: #888;
+  font-size: 13px;
+}
+
+.isl-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: var(--color-blue, #e74c3c);
+  border-radius: 50%;
+  animation: isl-spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+.isl-label {
+  font-weight: 500;
+}
+
+@keyframes isl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Full-table inline overlay (item 5: infinite scroll loading state) ──
+   Sits absolutely inside the same position:relative scroll wrapper as
+   the <table>, covering it with a translucent scrim + centered spinner
+   while the next batch of rows is appended. Doesn't block the table's
+   own scroll, since it's shown only briefly during the load step. */
+.isl-table-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(1px);
+  z-index: 5;
+  pointer-events: none;
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+}
+
+.isl-table-overlay .isl-spinner {
+  width: 20px;
+  height: 20px;
+  border-width: 2.5px;
+}

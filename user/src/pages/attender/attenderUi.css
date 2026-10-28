@@ -1,0 +1,358 @@
+/* attenderUi.css — table switcher pill, sheet, panel and tables page. */
+
+/* ── floating pill (bottom-left; the customer bell lives here for guests) ── */
+.att-pill {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 1500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 48px);
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 2px solid var(--color-red);
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: "Geom", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+}
+
+.att-pill:active {
+  transform: scale(0.97);
+}
+
+.att-pill-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.att-pill-count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: var(--color-red);
+  color: #fff;
+  font-size: 12px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.att-pill-caret {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .att-pill {
+    left: 14px;
+    bottom: 80px; /* above the mobile footer nav */
+  }
+}
+
+/* ── switcher sheet ── */
+.att-sheet-overlay {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.att-sheet {
+  position: relative;
+  width: min(100%, 460px);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 18px 18px 22px;
+  border-radius: 20px 20px 0 0;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+@media (min-width: 601px) {
+  .att-sheet-overlay {
+    align-items: center;
+  }
+
+  .att-sheet {
+    border-radius: 20px;
+  }
+}
+
+.att-sheet-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ── panel ── */
+.att-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: "Geom", system-ui, sans-serif;
+  color: var(--text-primary);
+}
+
+.att-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 36px; /* room for the sheet's close button */
+}
+
+.att-panel-hello {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--color-red);
+}
+
+.att-panel-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.att-logout {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.att-panel-section-title {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-light);
+}
+
+.att-table-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.att-table-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  border-radius: 14px;
+  border: 1px solid var(--border-lighter);
+  background: var(--bg-very-light);
+}
+
+.att-table-row.is-active {
+  border-color: var(--color-red);
+  box-shadow: 0 0 0 2px rgba(243, 55, 22, 0.18);
+}
+
+.att-table-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.att-table-badge {
+  flex: 0 0 auto;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background: var(--color-red);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 40px;
+  text-align: center;
+}
+
+.att-table-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.att-table-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.att-table-sub {
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.att-table-remove {
+  flex: 0 0 auto;
+  width: 40px;
+  border: none;
+  border-left: 1px solid var(--border-lighter);
+  border-radius: 0 14px 14px 0;
+  background: transparent;
+  color: var(--text-light);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.att-table-remove:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.att-add {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.att-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.att-chip {
+  min-width: 44px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-red);
+  background: transparent;
+  color: var(--color-red);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.att-chip:active {
+  background: var(--color-red);
+  color: #fff;
+}
+
+.att-add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.att-input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border-dark);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+}
+
+.att-add-error {
+  font-size: 13px;
+  color: var(--border-error);
+}
+
+.att-add .att-add-btn {
+  width: 100%;
+}
+
+/* ── tables page ── */
+.att-tables-page {
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 28px 14px 40px;
+  background: var(--bg-theme);
+}
+
+.att-tables-card {
+  width: min(100%, 460px);
+  padding: 20px 18px 24px;
+  border-radius: 20px;
+  background: var(--bg-main);
+  box-shadow: var(--shadow-primary);
+}
+
+/* ── Welcome-page notice while an attender session is active ── */
+.att-notice-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.att-notice {
+  width: min(100%, 380px);
+  padding: 22px 20px;
+  border-radius: 18px;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  text-align: center;
+  font-family: "Geom", system-ui, sans-serif;
+  box-shadow: var(--shadow-primary);
+}
+
+.att-notice h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+
+.att-notice p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-light);
+}
+
+.att-notice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.att-notice-actions .btn-3d {
+  width: 100%;
+}

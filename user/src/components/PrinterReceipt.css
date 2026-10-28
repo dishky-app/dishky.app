@@ -1,0 +1,520 @@
+/* ===== UIVERSE PRINTER CORE ===== */
+/* .printer-receipt-container is the flex column that owns the
+   Header → Bill → Footer layout. It replaces the old .wrapper for
+   structural layout purposes. .printer-receipt-header now plays
+   .wrapper's other original role too: it's the position: relative
+   anchor that .printer's decorative pseudo-elements and the digital
+   display position against, so the printer artwork renders exactly
+   as before. */
+.printer-receipt-container {
+  --printer-color: #dcdac4;
+  --printer-color-2: #c0beaa;
+  --receipt-color: #f5f5f5;
+  font-size: 20px;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ===== HEADER — printer graphic, natural flex position at the top ===== */
+.printer-receipt-header {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.printer {
+  flex-shrink: 0;
+  width: 400px;
+  height: 100px;
+  border-radius: 0 0 8px 8px;
+  background-color: var(--printer-color);
+  background-image: url(data:image/png;base64,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);
+  border: 2px solid var(--printer-color-2);
+  box-shadow: 0 16px 32px 0px #0002, 0 -30px 16px 0px #0001;
+}
+
+/* Decorative printer pseudo-elements — position relative to
+   .printer-receipt-header (the nearest positioned ancestor, matching
+   the original .wrapper relationship), not to .printer itself, since
+   .printer is intentionally left position: static/auto so these
+   render at exactly the same spot as before the refactor. */
+.printer::before {
+  content: "";
+  position: absolute;
+  top: -38px;
+  left: 0;
+  width: 100%;
+  height: 88px;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 2px solid #0003;
+  box-shadow: 0 12px 16px -12px var(--bg-main)5 inset, 0 -6px 16px -6px #0003 inset, 0 6px 8px -6px #0004;
+  box-sizing: border-box;
+  background-color: inherit;
+  background-image: inherit;
+  filter: brightness(1.12);
+  z-index: 2;
+}
+
+.printer::after {
+  content: "";
+  position: absolute;
+  top: 26px !important;
+  left: 38px;
+  width: 324px;
+  height: 50px;
+  border-radius: 0 0 4px 4px;
+  border-bottom: 1px solid #0003;
+  background-color: inherit;
+  background-image: linear-gradient(to top, var(--printer-color), 60%, var(--printer-color-2));
+  box-shadow: 0 4px 4px -2px #0004;
+  z-index: 1;
+}
+
+/* The digital display positions relative to .printer-receipt-header
+   (the nearest positioned ancestor — same relationship .printer::before/
+   ::after use above), not relative to the page/modal — this is not
+   structural layout positioning, just how the printer artwork's
+   pieces are pinned to each other. */
+.printer-display {
+  z-index: 2;
+  display: flex;
+  padding: 6px 10px;
+  position: absolute;
+  top: 16px;
+  left: 38px;
+  width: 200px;
+  height: 40px;
+  background-color: #000;
+  background-image: linear-gradient(transparent 0, var(--bg-main)2 90%, transparent 100%);
+  background-size: 100% 8px;
+  background-repeat: no-repeat;
+  border: 3px solid var(--printer-color-2);
+  border-radius: 6px;
+  box-sizing: border-box;
+  box-shadow: -1px -1px 2px 0 var(--bg-main)9 inset, 1px 1px 5px 1px #000 inset, 0 0 1px 2px #0002;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8em;
+  color: #5aff5a;
+  filter: drop-shadow(1px 1px 1px #0002);
+  align-items: center;
+}
+
+/* ===== BILL — flexible middle section, the only scrollable area ===== */
+.printer-receipt-bill {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.receipt-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  filter: drop-shadow(0 0 12px #0001);
+  transform: translateY(-100%);
+  clip-path: inset(100% -100px -100px -100px);
+  transition: clip-path 0.5s;
+  padding: 20px 0;
+}
+
+.receipt {
+  z-index: 2;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55em;
+  padding: 16px;
+  width: 280px;
+  min-height: 200px;
+  font-size: 0.7em;
+  font-family: "Azeret Mono", "Roboto Mono", monospace;
+  font-weight: 400;
+  color: #444;
+  background-color: var(--receipt-color);
+  box-shadow: 0 12px 12px 0 #0001, 0 24px 24px 0 #0001, 0 36px 36px 0 #0001;
+}
+
+.receipt::before,
+.receipt::after {
+  --angle: 45deg;
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0px;
+  width: 100%;
+  height: 12px;
+  background: linear-gradient(calc(var(--angle) * -1), var(--receipt-color) 4px, transparent 0),
+    linear-gradient(var(--angle), var(--receipt-color) 4px, transparent 0);
+  background-position: 4px 0;
+  background-repeat: repeat-x;
+  background-size: 8px 8px;
+}
+
+.receipt::before {
+  top: -6px;
+  background-position: 4px 0;
+}
+
+.receipt::after {
+  bottom: -6px;
+  background-position: 0 100%;
+  --angle: 225deg;
+}
+
+.receipt-header,
+.receipt-subheader,
+.receipt-message {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.2em 0;
+}
+
+.receipt-header {
+  font-size: 1.05em;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.receipt-subheader {
+  border-bottom: 1px dashed var(--border-dark);
+  padding-bottom: 0.5em;
+  line-height: 1.7;
+}
+
+.receipt-message {
+  justify-content: center;
+  text-align: center;
+  padding: 0 1em;
+}
+
+.receipt .logo {
+  width: 48px;
+  font-size: 2.8em;
+  transform: rotate(10deg);
+  filter: grayscale(1);
+}
+
+.receipt-subtotal td {
+  border-top: 1px dashed var(--border-dark);
+  padding-top: 4px;
+}
+
+.receipt-total td {
+  border-top: 1px dashed var(--border-dark);
+  font-weight: 600;
+  padding-top: 4px;
+}
+
+.receipt-table {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  line-height: 1.6em;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.receipt-table th {
+  border-bottom: 1px dashed var(--border-dark);
+  padding-bottom: 3px;
+}
+
+.receipt-table th:last-child,
+.receipt-table td:last-child {
+  text-align: right;
+  min-width: 90px;
+}
+
+.receipt-table td:last-child::after {
+  content: " ₹";
+}
+
+.letter-wrapper {
+  position: inherit;
+  display: flex;
+}
+
+.letter {
+  display: inline-block;
+  opacity: 0;
+}
+
+/* ===== AUTO-TRIGGER via .printing class ===== */
+.printer-receipt-container.printing .receipt-wrapper {
+  animation:
+    print 1.2s 1 forwards ease-in,
+    display-receipt 0.4s 1 forwards cubic-bezier(0, 0.63, 0.96, 1.1);
+  animation-delay: 0s, 1.35s;
+}
+
+.printer-receipt-container.printing .printer-message {
+  opacity: 0;
+}
+
+.printer-receipt-container.printing .letter {
+  animation: show-text 0.6s 1 forwards linear;
+}
+
+.printer-receipt-container.printing .letter:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(2) {
+  animation-delay: 0.10s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(4) {
+  animation-delay: 0.20s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(6) {
+  animation-delay: 0.30s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(8) {
+  animation-delay: 0.40s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(9) {
+  animation-delay: 0.45s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(10) {
+  animation-delay: 0.50s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(11) {
+  animation-delay: 0.55s;
+}
+
+.printer-receipt-container.printing .letter:nth-child(12) {
+  animation-delay: 0.60s;
+}
+
+@keyframes print {
+  100% {
+    transform: translateY(10%);
+    clip-path: inset(-20% -100px -100px -100px);
+  }
+}
+
+/* The "pop out of the printer" flourish (scale up, shift up) is now a
+   transient mid-animation effect only — it must settle back to a
+   neutral transform at 100%. Previously .receipt-wrapper was
+   position: absolute, so ending on a permanent translateY(-40%)
+   scale(1.2) was harmless (it never affected any parent's layout
+   size). Now that it's a normal in-flow flex child, leaving that
+   transform applied permanently would make the rendered receipt
+   ~20% bigger than its actual box and shifted upward, which both
+   throws off .printer-receipt-bill's scroll area and visually spills
+   the receipt outside the bill region. */
+@keyframes display-receipt {
+  30% {
+    transform: translateY(22%) rotate3d(1, 0, 1, -5deg);
+  }
+
+  70% {
+    z-index: 5;
+    transform: translateY(-10%) scale(1.08);
+  }
+
+  100% {
+    z-index: 5;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes show-text {
+
+  10%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ===== OVERLAY — modal backdrop, fills the viewport ===== */
+/* position: fixed is intentional here — this is the modal overlay,
+   not the receipt's internal layout, so it's kept per the brief. */
+.pr-overlay {
+  position: fixed;
+  inset: 0;
+  /* inset: 0 on a fixed element already tracks the dynamic viewport in
+     modern browsers; this is a belt-and-braces fallback for engines
+     that need an explicit dynamic-viewport height. */
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.62);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 16px 40px;
+  gap: 0;
+  animation: pr-fade-in 0.35s ease forwards;
+}
+
+.pr-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  align-items: center;
+}
+
+@keyframes pr-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.pr-overlay.pr-hiding {
+  animation: pr-fade-out 0.4s ease forwards;
+}
+
+@keyframes pr-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* .pr-slide-in is the sizing boundary for the whole modal: it claims
+   the available viewport height (minus the overlay's own padding)
+   and hands the Header/Bill/Footer flex column inside
+   .printer-receipt-container the job of dividing that space up, so
+   only the bill ever needs to scroll. */
+.pr-slide-in {
+  animation: pr-slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  flex: 1 1 auto;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+@keyframes pr-slide-up {
+  from {
+    transform: translateY(60px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ===== FOOTER — Done button, always visible at the bottom of the
+   flex column (not viewport-fixed) ===== */
+.printer-receipt-footer {
+  flex: 0 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pr-done-btn-wrap {
+  opacity: 0;
+  animation: pr-btn-appear 0.4s ease forwards;
+  animation-delay: 2.0s;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px var(--mobile-page-padding, 16px);
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  background: transparent;
+  border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+  max-width: 150px;
+}
+
+@keyframes pr-btn-appear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 576px) {
+  .printer-receipt-container {
+    font-size: 14px;
+  }
+
+  .printer {
+    width: 300px;
+    height: 76px;
+  }
+
+  .printer::after {
+    width: 240px;
+    left: 30px;
+  }
+
+  .printer-display {
+    width: 160px;
+    left: 30px;
+  }
+
+  .receipt {
+    width: 200px;
+  }
+
+  /* Fill the bar edge-to-edge instead of the fixed 220px width used
+     above 576px. */
+  .pr-done-btn-wrap .btn-3d {
+    width: 100%;
+  }
+
+  .pr-done-btn-wrap .btn-3d .front {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

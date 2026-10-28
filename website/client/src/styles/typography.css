@@ -1,0 +1,99 @@
+/* ==========================================================================
+   DISHKY — TYPOGRAPHY
+   Three-family system, upright only (no italic or cursive faces):
+     display  Sora            headings, numerals, buttons
+     body     Manrope         paragraphs, UI
+     mono     JetBrains Mono  codes, counters, technical labels
+   Sizes come from the fluid tokens in variables.css.
+   ========================================================================== */
+
+/* Headings ---------------------------------------------------------------
+   overflow-wrap:break-word is the safety net: a very long word wraps instead
+   of pushing the layout wider than the viewport.
+   text-wrap:balance evens out line lengths and avoids orphan words on the
+   wrapped lines; `pretty` on paragraphs avoids single-word last lines. */
+.heading-xl,
+.heading-lg,
+.heading-md {
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+.heading-xl {
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+}
+
+.heading-lg {
+  font-size: var(--fs-section);
+  line-height: 1.04;
+}
+
+.heading-md {
+  font-size: var(--fs-sub);
+  font-weight: 700;
+  line-height: var(--lh-snug);
+  letter-spacing: -0.015em;
+}
+
+.heading-hero {
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: var(--fs-hero);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+.text-lead {
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body);
+}
+
+.text-body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+
+.text-small {
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+/* Paragraphs: comfortable measure + no orphaned last word */
+p {
+  text-wrap: pretty;
+}
+
+/* Accent used inline inside headings: upright Sora, no italic */
+.accent-serif {
+  font-family: "Sora", system-ui, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+}
+
+/* Desktop-only line breaks.
+   Headings carry authored "\n" / <br/> for the wide, cinematic composition.
+   On small screens those forced breaks fight the fluid font size and create
+   ragged, orphaned lines, so we let the text reflow naturally there. */
+.br-desktop {
+  display: none;
+}
+@media (min-width: 768px) {
+  .br-desktop {
+    display: inline;
+  }
+}
+
+/* Short desktop screens: keep the hero headline from pushing the CTA buttons
+   below the fold. Only bites when the viewport is short; tall screens keep
+   the full --fs-hero size. */
+@media (min-width: 1024px) {
+  .heading-hero {
+    font-size: min(var(--fs-hero), 11.5vh);
+  }
+}

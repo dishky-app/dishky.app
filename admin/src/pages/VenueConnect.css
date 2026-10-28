@@ -1,0 +1,13 @@
+.vn-box{display:flex;flex-direction:column;gap:10px;margin:6px 0 14px}
+.vn-url-row{display:flex;align-items:center;gap:8px}
+.vn-url{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12.5px;background:rgba(127,127,127,.12);padding:6px 8px;border-radius:8px}
+.vn-hint{font-size:12px;opacity:.7;margin:0}
+.vn-btn{border:1px solid rgba(127,127,127,.4);background:transparent;color:inherit;border-radius:8px;padding:5px 10px;font-size:12.5px;cursor:pointer}
+.vn-btn:disabled{opacity:.5;cursor:default}
+.vn-danger{align-self:flex-start;color:#c0392b;border-color:#c0392b}
+.vn-bridge{border-top:1px dashed rgba(127,127,127,.4);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.vn-bridge-head{display:flex;justify-content:space-between;align-items:center}
+.vn-dl{display:grid;grid-template-columns:90px 1fr;gap:4px 8px;margin:0;font-size:12.5px}
+.vn-dl dt{opacity:.7;font-weight:500}
+.vn-dl dd{margin:0;display:flex;gap:8px;align-items:center;overflow-wrap:anywhere}
+.vn-token{font-size:11.5px}

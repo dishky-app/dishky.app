@@ -1,0 +1,243 @@
+/**
+ * AuthContext — Phase-4 role-based auth state for the admin panel.
+ *
+ * On mount, calls GET /staff-auth/me. The server checks the httpOnly
+ * session cookie against the `sessions` collection in Mongo — if it's
+ * still valid, the admin comes back logged in with no re-entry of
+ * credentials required. That's what makes login survive a page reload
+ * (or the tab being closed and reopened) instead of resetting on every
+ * refresh like the old `useState(true)` stub did.
+ */
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import api, { onSessionExpired, markAuthConfirmed, onSubscriptionProblem } from "../api";
+import { setRestaurant } from "../tenant";
+
+const AuthContext = createContext(null);
+
+// Role hierarchy — mirrors auth.js ROLE_TREE on the backend.
+export const ROLE_TREE = {
+  Supervisor: ["Sous Chef", "Captain"],
+  Manager: ["Service Manager", "Chef"],
+  "Super Admin": ["General Manager", "Proprietor"],
+};
+const ROLE_RANK = { Supervisor: 1, Manager: 2, "Super Admin": 3 };
+
+// Mirrors auth.js CREATABLE_TITLES on the backend — who can create/delete
+// a login account for whom, from the Staffs page. Super Admin bypasses
+// this (can create/delete any role) and isn't listed as a key.
+export const CREATABLE_TITLES = {
+  Chef: ["Sous Chef"],
+  "Service Manager": ["Captain", "Sous Chef"],
+  Captain: ["Sous Chef", "Captain"],
+};
+
+export function AuthProvider({ children }) {
+  const [admin, setAdmin] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // true until /me resolves once
+  // Permission matrix rows for the logged-in admin's own roleTitle only —
+  // fetched once per session so the sidebar/pages can gate UI without a
+  // round-trip per module. Super Admin never needs this (always allowed).
+  const [permissions, setPermissions] = useState(null); // { [module]: { canRead, canWrite } }
+  // Set when api.js's response interceptor sees a 401 on some data
+  // endpoint after the session was already confirmed once (see api.js —
+  // AuthContext previously only checked auth on mount, so a session that
+  // expired mid-use left `admin` set while every request silently 401'd
+  // in the background with no explanation shown to the person). Login.js
+  // reads this to show a "please log in again" message instead of the
+  // person just landing back on a blank login form with no context.
+  const [sessionExpired, setSessionExpired] = useState(false);
+  // Plan + billing state for the restaurant: { access, planKey, status, trialEndsAt,
+  // limits, usage, modules, manageUrl, restaurant } from GET /staff-auth/subscription.
+  const [subscription, setSubscription] = useState(null);
+  // Latest plan/billing problem the server reported (402 / blocked), for the banner.
+  const [subscriptionProblem, setSubscriptionProblem] = useState(null);
+
+  const loadSubscription = useCallback(async () => {
+    try {
+      const res = await api.get("/staff-auth/subscription");
+      setSubscription(res.data);
+      return res.data;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  useEffect(() => onSubscriptionProblem((p) => {
+    setSubscriptionProblem(p);
+    // Usage/access may have changed (e.g. a limit was just reached).
+    loadSubscription();
+  }), [loadSubscription]);
+
+  useEffect(() => {
+    const unsubscribe = onSessionExpired(() => {
+      setAdmin((current) => {
+        // Only treat this as a real session-expiry event if we actually
+        // thought we were logged in — avoids flashing the "session
+        // expired" message if a 401 arrives while already logged out.
+        if (current) setSessionExpired(true);
+        return null;
+      });
+      setPermissions(null);
+    });
+    return unsubscribe;
+  }, []);
+
+  const refreshSession = useCallback(async () => {
+    try {
+      const res = await api.get("/staff-auth/me");
+      setAdmin(res.data.admin);
+      markAuthConfirmed();
+      loadSubscription();
+      if (res.data.admin?.roleGroup !== "Super Admin") {
+        try {
+          const permRes = await api.get("/staff-auth/my-permissions");
+          setPermissions(permRes.data || {});
+        } catch {
+          setPermissions({});
+        }
+      } else {
+        setPermissions(null);
+      }
+      return res.data.admin;
+    } catch {
+      setAdmin(null);
+      setPermissions(null);
+      return null;
+    }
+  }, [loadSubscription]);
+
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      await refreshSession();
+      setIsLoading(false);
+    })();
+  }, [refreshSession]);
+
+  // Super Admin sees the full matrix editor elsewhere; everyone else just
+  // needs their own row set for UI gating (sidebar, buttons). The
+  // /permissions endpoint itself is Super-Admin-only, so non-Super-Admin
+  // roles derive their allowed modules from a 403-tolerant per-module
+  // check instead — see hasModulePermission below, which asks the server
+  // lazily rather than requiring a client-side copy of the whole matrix.
+  const isSuperAdmin = admin?.roleGroup === "Super Admin";
+
+  const hasModulePermission = useCallback(
+    (moduleName, action = "read") => {
+      if (!admin) return false;
+      if (isSuperAdmin) return true;
+      if (!permissions) return false; // not loaded yet — fail closed until it is
+      const row = permissions[moduleName];
+      if (!row) return false;
+      return action === "write" ? !!row.canWrite : !!row.canRead;
+    },
+    [admin, isSuperAdmin, permissions]
+  );
+
+  const loadPermissionsFor = async (adminDoc) => {
+    if (!adminDoc || adminDoc.roleGroup === "Super Admin") {
+      setPermissions(null);
+      return;
+    }
+    try {
+      const permRes = await api.get("/staff-auth/my-permissions");
+      setPermissions(permRes.data || {});
+    } catch {
+      setPermissions({});
+    }
+  };
+
+  const login = async (restaurant, email, password) => {
+    setRestaurant(restaurant);
+    const res = await api.post("/staff-auth/login", { email, password, restaurant });
+    setAdmin(res.data.admin);
+    setSessionExpired(false);
+    setSubscriptionProblem(null);
+    markAuthConfirmed();
+    loadSubscription();
+    await loadPermissionsFor(res.data.admin);
+    return res.data.admin;
+  };
+
+  // One-time sign-in from the dishky.com account page ("Open dashboard").
+  const ssoLogin = async (restaurant, token) => {
+    setRestaurant(restaurant);
+    const res = await api.post("/staff-auth/sso", { token, restaurant });
+    setAdmin(res.data.admin);
+    setSessionExpired(false);
+    setSubscriptionProblem(null);
+    markAuthConfirmed();
+    loadSubscription();
+    await loadPermissionsFor(res.data.admin);
+    return res.data.admin;
+  };
+
+  const logout = async () => {
+    try {
+      await api.post("/staff-auth/logout");
+    } finally {
+      setAdmin(null);
+      setPermissions(null);
+      setSubscription(null);
+    }
+  };
+
+  const updateProfile = async (payload) => {
+    const res = await api.patch("/staff-auth/me", payload);
+    setAdmin(res.data.admin);
+    return res.data.admin;
+  };
+
+  const hasMinRank = (minGroup) =>
+    !!admin && (ROLE_RANK[admin.roleGroup] || 0) >= (ROLE_RANK[minGroup] || 0);
+
+  const hasRole = (...groups) => !!admin && groups.includes(admin.roleGroup);
+
+  // Which roleTitles the logged-in admin is allowed to create/delete
+  // login accounts for, on the Staffs page. Super Admin can create any
+  // valid roleTitle (resolved by the caller from ROLE_TREE); everyone
+  // else gets their fixed slice of CREATABLE_TITLES, or none at all.
+  const creatableRoleTitles = isSuperAdmin
+    ? Object.values(ROLE_TREE).flat()
+    : CREATABLE_TITLES[admin?.roleTitle] || [];
+  const canManageStaffAccounts = isSuperAdmin || creatableRoleTitles.length > 0;
+
+  // Is this module part of the restaurant's plan? Unknown (not loaded yet,
+  // or server predates plans) counts as available so nothing flickers away.
+  const isModuleInPlan = useCallback(
+    (moduleName) => !subscription || !Array.isArray(subscription.modules) || subscription.modules.includes(moduleName),
+    [subscription]
+  );
+
+  const value = {
+    subscription,
+    subscriptionProblem,
+    dismissSubscriptionProblem: () => setSubscriptionProblem(null),
+    reloadSubscription: loadSubscription,
+    isModuleInPlan,
+    ssoLogin,
+    admin,
+    isAuthenticated: !!admin,
+    sessionExpired,
+    isLoading,
+    login,
+    logout,
+    updateProfile,
+    refreshSession,
+    hasMinRank,
+    hasRole,
+    isSuperAdmin,
+    hasModulePermission,
+    setPermissions,
+    creatableRoleTitles,
+    canManageStaffAccounts,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+  return ctx;
+}

@@ -1,0 +1,178 @@
+/* ===== QUICK LINKS FLOATING BUTTON (Food Category page) ===== */
+/* position: relative — .quick-links-menu below anchors itself to
+   this box's own corner (top: 0; right: 0) rather than the viewport,
+   so the arc always fans out from wherever the trigger itself is
+   placed (this wrap is what carries the fixed viewport position). */
+.quick-links-fab-wrap {
+  position: fixed;
+  right: 16px;
+  bottom: 128px;
+  z-index: 118;
+}
+
+.quick-links-fab-btn {
+  width: clamp(38px, 11vw, 46px);
+  height: clamp(38px, 11vw, 46px);
+  border-radius: 50%;
+  border: none;
+  background: var(--color-red);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  font-family: inherit;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+}
+
+.quick-links-fab-btn:active {
+  transform: scale(0.9);
+}
+
+.quick-links-fab-wrap.open .quick-links-fab-btn {
+  transform: rotate(90deg);
+}
+
+.quick-links-fab-icon {
+  display: inline-flex;
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -1px;
+  transform: translateY(-2px);
+}
+
+/* ===== RADIAL POP-OUT MENU (separate layer over the trigger) =====
+   A zero-size anchor pinned to the trigger button's own center —
+   NOT a flex stack — so every .quick-links-item-label can be
+   absolutely positioned and independently translated out along its
+   own arc position (--qli-tx/--qli-ty, set inline per item in
+   QuickLinksFab.js). This is what lets the items land evenly spaced
+   from straight up round to straight left of the button instead of
+   stacking in a straight line above it. */
+.quick-links-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Positioned, right-anchored pill — carries the per-item translate
+   (--qli-tx/--qli-ty, set inline in QuickLinksFab.js) directly, with
+   no separate icon/wrapper element. Right-anchored (position: right:
+   0) so translating it by the arc point puts its own right edge —
+   the side facing the trigger — on the shared arc. A fixed height
+   (rather than one derived from padding + line-height, which is what
+   this had before) guarantees every pill is exactly the same height
+   even though their widths differ — height was previously only
+   "usually" equal by accident of every label fitting on one line;
+   this makes it exact. */
+.quick-links-item-label {
+  position: absolute;
+  top: 0;
+  right: 0;
+  max-width: 220px;
+  margin-top: -14px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-primary);
+  background: var(--bg-main);
+  padding: 10px 16px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-primary);
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+
+  /* Rests collapsed at the trigger's own center (scale(0), no
+     offset) and pops out to its resting arc position + full size on
+     open — same "grows out from the trigger" idea as the Uiverse
+     tooltip reference, just swept around an arc instead of appearing
+     at one fixed spot.
+
+     !important on every transition-* property here, INCLUDING
+     transition-delay: App.css has a global `button {
+     transition: ease-in 0.15s !important; }` rule that — because
+     it's the shorthand, set with !important — silently overrides
+     transition-duration, transition-timing-function, AND
+     transition-delay on every <button> in the app, including these
+     pills. That's what was breaking the stagger: every pill's
+     transition-delay was being forced back to 0s regardless of the
+     per-item value, so all 4 animated in perfect lockstep instead of
+     one at a time.
+
+     !important always wins over a non-!important declaration
+     regardless of specificity or whether it came from a shorthand or
+     a longhand — so a plain (non-!important) transition-delay here,
+     even set inline via React with maximum specificity, still loses
+     to the global rule's implicit transition-delay: 0s. The only fix
+     is to make transition-delay !important too — but React's style
+     prop can't express !important on an inline style. So the actual
+     per-item delay is passed in as the --qli-delay CUSTOM PROPERTY
+     instead (set inline in QuickLinksFab.js, e.g.
+     style={{ "--qli-delay": "90ms" }}) — custom properties are just
+     variables, immune to this collision — and read here via var()
+     inside a normal CSS rule that CAN carry !important. */
+  opacity: 0;
+  transform: translate(0, 0) scale(0.4);
+  transform-origin: right center;
+  transition-property: opacity, transform !important;
+  transition-duration: 0.2s, 0.38s !important;
+  transition-timing-function: ease, cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  transition-delay: var(--qli-delay, 0ms) !important;
+}
+
+.quick-links-fab-wrap.open .quick-links-menu {
+  pointer-events: auto;
+}
+
+.quick-links-fab-wrap.open .quick-links-item-label {
+  opacity: 1;
+  transform: translate(var(--qli-tx, 0), var(--qli-ty, 0)) scale(1);
+}
+
+.quick-links-item-label:active {
+  transform: translate(var(--qli-tx, 0), var(--qli-ty, 0)) scale(0.9);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .quick-links-fab-wrap {
+    /* Mobile swaps the floating bag/profile buttons for the footer
+       tab bar (.mobile-footer-nav, 64px tall) instead of hiding it,
+       so the FAB needs to clear that bar specifically rather than
+       reuse the desktop offset that was tuned for the floating bag
+       pill. env(safe-area-inset-bottom) keeps it clear of the home
+       indicator on notched phones too. */
+    bottom: calc(64px + 16px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-links-fab-wrap {
+    right: 14px;
+  }
+
+  /* Matches ITEM_POSITIONS_MOBILE in QuickLinksFab.js — a smaller,
+     tighter pill so the fixed 90/120/150/180° positions there still
+     fit close to the trigger on a narrow screen without the pills
+     touching. */
+  .quick-links-item-label {
+    max-width: 150px;
+    margin-top: -11px;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 10px;
+  }
+}

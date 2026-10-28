@@ -1,0 +1,345 @@
+.thankyou-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: "Geom", sans-serif;
+  will-change: background-color, transform;
+  transform-origin: center;
+  /* background-image: var(--bg-image); */
+  transition:
+    background-color 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.thankyou-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 107, 107, 0);
+  pointer-events: none;
+  transition: background 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* subtle pulse animation */
+@keyframes pagePulse {
+  0% {
+    transform: scale(1);
+  }
+
+  15% {
+    transform: scale(1.015);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.thankyou-card {
+  width: 800px;
+  height: fit-content;
+  padding: 48px 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  box-shadow: var(--thankyou-shadow);
+  z-index: 10;
+  transform: translateZ(0);
+  background: var(--bg-main);
+}
+
+.thankyou-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 36px;
+}
+
+.thankyou-message {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+  line-height: 1.6;
+  margin-top: 0;
+  width: 80%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.table-number {
+  font-weight: 800;
+  font-size: 22px;
+  white-space: nowrap;
+  display: inline-block;
+  background: linear-gradient(90deg,
+      var(--color-green) 20%,
+      #ffffff 50%,
+      var(--color-green) 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+.time {
+  font-weight: 800;
+  font-size: 22px;
+  display: inline-block;
+  background: linear-gradient(90deg,
+      var(--color-green) 20%,
+      #ffffff 50%,
+      var(--color-green) 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+  animation-delay: 1s;
+}
+
+/* ── Order Another button (red) ── */
+.ty-order-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  width: fit-content;
+  margin-top: 36px;
+}
+
+.ty-order-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.ty-order-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.ty-order-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+.ty-order-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+.ty-order-btn .front {
+  display: block;
+  position: relative;
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--bg-main);
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.ty-order-btn:hover {
+  filter: brightness(108%);
+}
+
+.ty-order-btn:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.ty-order-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.ty-order-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.order-table {
+  width: 90%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.order-table thead {
+  background-color: var(--bg-primary);
+}
+
+.order-table tbody {
+  overflow: hidden;
+}
+
+.order-table tbody tr {
+  position: relative;
+}
+
+.order-table th {
+  padding: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: left;
+  border-bottom: 1px solid var(--text-tertiary);
+}
+
+.order-table td {
+  padding: 14px 12px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--text-tertiary);
+  text-align: left;
+}
+
+.thanks-dish-name {
+  font-weight: 600;
+}
+
+.dish-notes {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  color: var(--text-muted);
+  opacity: 0.85;
+  font-style: italic;
+}
+
+.order-table th:first-child,
+.order-table td:first-child {
+  border: none;
+  width: 50px;
+}
+
+.order-table th:nth-child(3),
+.order-table td:nth-child(3) {
+  width: 70px;
+}
+
+.order-table th:nth-child(4),
+.order-table td:nth-child(4),
+.order-table th:nth-child(5),
+.order-table td:nth-child(5),
+.order-table th:nth-child(6),
+.order-table td:nth-child(6) {
+  width: 50px;
+}
+
+/*  Image  */
+
+.order-img {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+/*  Buttons  */
+
+.order-table button {
+  padding: 10px 16px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.order-table button:hover {
+  transform: scale(1.1);
+}
+
+/* Delete */
+.order-table button:last-child {
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-primary);
+  color: var(--color-red);
+}
+
+/* Open/close animation is handled by ModalTransition.js — this class
+   only supplies the backdrop's own layout (dimmed, blurred, centered
+   flex), not position/inset (ModalTransition's own
+   .modal-transition-overlay class supplies those). */
+.confirm-overlay {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm-box {
+  background: var(--bg-main);
+  padding: 20px 22px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  z-index: 1001;
+}
+
+.confirm-box h3 {
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.confirm-box p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+
+@media screen and (max-width: 992px) {
+  .order-table {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .thankyou-card {
+    padding: var(--mobile-page-padding);
+  }.ty-order-btn {
+    margin-top: 18px;
+  }
+}

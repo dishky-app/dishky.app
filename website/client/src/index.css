@@ -1,0 +1,17 @@
+/* All @import statements MUST come first (CSS spec) — anything after another
+   rule is silently dropped by the bundler. Order here is the cascade order:
+   tokens -> type -> base/layout/forms -> responsive utilities -> animation. */
+@import "./styles/variables.css";
+@import "./styles/typography.css";
+@import "./styles/global.css";
+@import "./styles/responsive.css";
+@import "./styles/animations.css";
+@import "./styles/footer.css";
+@import "./styles/polish.css";
+@import "./styles/radius.css";
+@import "./styles/herofill.css";
+@import "./styles/palette.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

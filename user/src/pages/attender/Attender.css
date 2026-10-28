@@ -1,0 +1,797 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Attender layer — every class is namespaced `at-` (feature prefix).
+   Reuses the Welcome page's wave background (.welcome-page / .welcome-waves)
+   and the shared .mat inputs / .btn-3d buttons, and the theme tokens from
+   variables.css, so it follows light/dark automatically.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Welcome page: "Attender login" link ─── */
+.at-welcome-link {
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  margin-top: 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ─── Auth + tables pages ─── */
+.at-auth-page {
+  align-items: flex-start;
+  padding: 24px 0 40px;
+}
+
+.at-auth-container {
+  min-height: 0;
+  padding: 0 16px;
+  gap: 4px;
+}
+
+.at-auth-card {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  box-sizing: border-box;
+  padding: 18px 20px 20px;
+  margin-top: 12px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: rgba(100, 135, 137, 0.3) 0px 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+.at-auth-card .mat {
+  width: 100%;
+}
+
+.at-auth-card .mat-input {
+  color: #333 !important;
+  margin-bottom: 14px;
+}
+
+.at-auth-card .btn-3d {
+  width: 100%;
+}
+
+.at-auth-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-red);
+  text-align: center;
+}
+
+.at-auth-hint {
+  margin: 4px 0 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #555;
+  text-align: center;
+}
+
+.at-auth-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+
+.at-auth-tab {
+  padding: 8px 10px;
+  margin: 0 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 5px solid transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  text-transform: uppercase;
+  color: #222;
+  cursor: pointer;
+}
+
+.at-auth-tab.active {
+  border-color: #7a0101;
+}
+
+.at-show-pass {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -4px 0 12px;
+  font-size: 13px;
+  color: #444;
+  cursor: pointer;
+}
+
+.at-link {
+  align-self: center;
+  margin-top: 10px;
+  padding: 4px 8px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-red);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.at-back-link {
+  margin-top: 18px;
+  padding: 6px 12px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+/* ─── Tables page ─── */
+.at-hello {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  box-sizing: border-box;
+  padding: 10px 6px;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.at-hello-small {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.at-hello-name {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.at-hello-venue {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.at-hello-logout {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+}
+
+.at-table-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -4px 0 14px;
+  max-height: 108px;
+  overflow-y: auto;
+}
+
+.at-chip {
+  min-width: 38px;
+  padding: 5px 10px;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.at-chip.selected {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  color: #fff;
+}
+
+.at-open-card {
+  margin-top: 14px;
+}
+
+.at-open-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.at-open-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.at-open-row {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.at-open-row.active {
+  border-color: var(--color-red);
+  background: var(--color-pale-red);
+}
+
+.at-open-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.at-open-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.at-tab-guest {
+  font-weight: 500;
+  color: #555;
+}
+
+.at-open-meta {
+  font-size: 12px;
+  color: #666;
+}
+
+.at-open-close {
+  width: 40px;
+  background: none;
+  border: none;
+  border-left: 1px solid #e5e5e5;
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+}
+
+/* ─── Floating table switcher ─── */
+.at-switch-chip {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 118;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 150px);
+  padding: 10px 16px;
+  background: var(--color-red);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  box-shadow: var(--shadow-card-red);
+  font-family: "Geom", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.at-switch-chip-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.at-switch-chip small,
+.at-switch-row-name small {
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.at-switch-chip-caret {
+  font-size: 11px;
+}
+
+.at-switch-chip-dot {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: #16a34a;
+  border: 2px solid var(--bg-main);
+  font-size: 11px;
+  line-height: 16px;
+  text-align: center;
+  color: #fff;
+}
+
+.at-switch-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 309;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.at-switch-sheet {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 310;
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 14px;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card-normal);
+  font-family: "Geom", system-ui, sans-serif;
+  animation: atSheetUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes atSheetUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.at-switch-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.at-switch-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.at-switch-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.at-switch-x {
+  width: 30px;
+  height: 30px;
+  background: var(--bg-surface);
+  border: none;
+  border-radius: 50%;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.at-switch-list {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.at-switch-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.at-switch-row.active {
+  border-color: var(--color-red);
+  background: var(--color-pale-red);
+  color: #222;
+}
+
+.at-switch-row-count {
+  flex: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.at-switch-row.active .at-switch-row-count {
+  color: #555;
+}
+
+.at-switch-row-count.has-items {
+  color: #16a34a;
+}
+
+.at-switch-add {
+  padding: 10px;
+  background: transparent;
+  color: var(--color-red);
+  border: 1.5px dashed var(--color-red);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ─── Bag sheet heading: which table this bag is for ─── */
+.at-bag-table {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 10px;
+  background: var(--color-pale-red);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-red);
+  vertical-align: middle;
+}
+
+/* The FloatingBag / footer nav own the bottom of the screen on phones. */
+@media (max-width: 600px) {
+  .at-switch-chip {
+    left: 12px;
+    bottom: 80px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .at-switch-sheet {
+    left: 12px;
+    bottom: 80px;
+  }
+
+  .at-auth-page {
+    padding-top: 12px;
+  }
+}
+
+
+/* ═══════════════ Layout (desktop / tablet / phone) ═══════════════ */
+
+/* No tinted (pale-blue) input background — neither browser autofill nor focus. */
+.at-auth-card .mat-input,
+.at-auth-card .mat-input:focus,
+.at-auth-card .mat-input:hover {
+  background-color: transparent !important;
+}
+.at-auth-card .mat-input:-webkit-autofill,
+.at-auth-card .mat-input:-webkit-autofill:hover,
+.at-auth-card .mat-input:-webkit-autofill:focus,
+.at-auth-card .mat-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #333 !important;
+  caret-color: #333;
+  background-color: #fff !important;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+.at-auth-card .mat-input:autofill {
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #333 !important;
+}
+
+.at-brand-tag {
+  display: none;
+  margin: 14px 0 0;
+  max-width: 340px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: left;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.at-form-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.at-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.at-tables-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0;
+}
+
+.at-col {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── "Ordered so far" ── */
+.at-bills-card {
+  max-width: 360px;
+}
+
+.at-bills-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.at-bills-refresh {
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #444;
+  cursor: pointer;
+}
+
+.at-bills-empty {
+  margin: 8px 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #666;
+}
+
+.at-bill-table {
+  margin-top: 12px;
+}
+
+.at-bill-table-title {
+  padding: 4px 10px;
+  display: inline-block;
+  background: var(--color-red);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.at-bill {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.at-bill-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.at-bill-id {
+  font-weight: 700;
+  color: #333;
+}
+
+.at-bill-items {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.at-bill-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: #222;
+}
+
+.at-bill-qty {
+  flex: none;
+  min-width: 26px;
+  font-weight: 800;
+  color: var(--color-red);
+}
+
+.at-bill-name {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+.at-bill-name small {
+  font-weight: 400;
+  color: #666;
+}
+
+.at-bill-status {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eee;
+  font-size: 11px;
+  font-weight: 700;
+  color: #555;
+}
+
+.at-bill-status--preparing { background: #fff3cd; color: #8a6100; }
+.at-bill-status--service-pickup { background: #d8f5e1; color: #15803d; }
+.at-bill-status--completed { background: #e0e7ff; color: #3730a3; }
+
+.at-bill-foot {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px dashed #ccc;
+  font-size: 13px;
+  color: #333;
+}
+
+.at-bill-add {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: transparent;
+  border: 1.5px dashed var(--color-red);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-red);
+  cursor: pointer;
+}
+
+/* ── Tablet / desktop: two columns ── */
+@media (min-width: 900px) {
+  .at-auth-page {
+    align-items: center;
+    padding: 40px 0;
+    min-height: 100vh;
+  }
+
+  .at-auth-container.at-wide {
+    max-width: 1040px;
+  }
+
+  /* Sign-in: brand on the left, form on the right */
+  .at-split {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 56px;
+  }
+
+  .at-split .at-brand {
+    flex: 1;
+    align-items: flex-start;
+  }
+
+  .at-split .welcome-title {
+    padding-left: 0;
+  }
+
+  .at-brand-tag {
+    display: block;
+  }
+
+  .at-split .at-form-col {
+    flex: 0 0 400px;
+    width: 400px;
+  }
+
+  .at-split .at-auth-card {
+    max-width: 400px;
+  }
+
+  /* Tables: left = take an order + open tables, right = ordered so far */
+  .at-tables-grid {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .at-tables-grid .at-col {
+    flex: 0 0 380px;
+    width: 380px;
+  }
+
+  .at-tables-grid .at-bills-card {
+    max-width: 380px;
+    max-height: calc(100vh - 220px);
+    overflow-y: auto;
+  }
+
+  .at-tables-page .at-hello {
+    max-width: 784px;
+  }
+}
+
+.at-switch-orders {
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── Password field: eye icon at the right-most end ── */
+.at-pw-field { position: relative; width: 100%; }
+.at-pw-field .mat-input { padding-right: 34px; }
+.at-pw-eye {
+  position: absolute;
+  right: 0;
+  top: 27px;
+  width: 24px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #94a3b8;
+  cursor: pointer;
+  z-index: 2;
+}
+.at-pw-eye:hover { color: #334155; }

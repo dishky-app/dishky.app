@@ -1,0 +1,44 @@
+/* ═══════════════════════════════════════════════════════
+   CateringDetails.css  —  Dishky Admin  —  CateringDetails page
+   Depends on Common.css + EvtCommon.css
+═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+.evt-catd-container {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── HERO CARD ── */
+.evt-catd-hero {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border: 1px solid #ebebeb;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+}
+
+@media (max-width: 400px) {
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1080 / 992 / 768 / 578
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+}
+
+@media (max-width: 768px) {
+}
+
+@media (max-width: 578px) {
+}

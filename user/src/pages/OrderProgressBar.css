@@ -1,0 +1,68 @@
+.order-progress-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  backdrop-filter: blur(4px);
+}
+
+.order-progress-wrap {
+  width: min(320px, 80vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.order-progress-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--color-pale-green, rgba(0, 0, 0, 0.08));
+  overflow: hidden;
+  position: relative;
+}
+
+.order-progress-label {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+}
+
+.order-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-red);
+  transition: width 160ms linear;
+  position: relative;
+}
+
+/* subtle shimmer while in-flight, settles once complete */
+.order-progress-fill:not(.is-complete)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.35),
+      transparent);
+  animation: order-progress-shimmer 1.1s ease-in-out infinite;
+}
+
+.order-progress-fill.is-complete {
+  transition: width 220ms ease-out;
+}
+
+@keyframes order-progress-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}

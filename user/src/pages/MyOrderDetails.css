@@ -1,0 +1,375 @@
+/* ─── ORDER DETAILS PAGE ─── */
+@import "./FoodCategory.css";
+
+.mod-scroll {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  padding: 14px 16px 32px;
+}
+
+/* ─── HERO ─── */
+.mod-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+  background:
+    radial-gradient(140% 140% at 0% 0%, color-mix(in srgb, var(--status-a) 14%, transparent), transparent 65%),
+    var(--bg-main);
+  border: 1px solid color-mix(in srgb, var(--status-a) 20%, var(--border-lighter));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.mod-hero-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mod-order-id {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.mod-order-date {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.mod-status-pill {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 14px 7px 10px;
+  border-radius: 999px;
+  color: var(--status-text);
+  background: color-mix(in srgb, var(--status-a) 18%, var(--bg-main));
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.mod-status-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.mod-status-pill--pending    { --status-a: #f5a623; --status-b: #f7931e; --status-text: #b3690a; }
+.mod-status-pill--preparing  { --status-a: #b8860b; --status-b: #d4a017; --status-text: #8a6508; }
+.mod-status-pill--ready      { --status-a: #7c3aed; --status-b: #a855f7; --status-text: #6d28d9; }
+.mod-status-pill--completed  { --status-a: #16a34a; --status-b: #22c55e; --status-text: #15803d; }
+.mod-status-pill--cancelled  { --status-a: #9ca3af; --status-b: #d1d5db; --status-text: #6b7280; }
+
+/* ─── STATUS TIMELINE ─── */
+.mod-timeline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 0 4px 22px;
+  position: relative;
+}
+
+.mod-timeline::before {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background: var(--border-lighter);
+  z-index: 0;
+}
+
+.mod-timeline-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.mod-timeline-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-lighter);
+  filter: grayscale(1) opacity(0.6);
+  transition: all 0.3s ease;
+}
+
+.mod-timeline-step--done .mod-timeline-dot {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-color: #16a34a;
+  filter: none;
+}
+
+.mod-timeline-step--current .mod-timeline-dot {
+  box-shadow: 0 0 0 5px color-mix(in srgb, #16a34a 20%, transparent);
+}
+
+.mod-timeline-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.mod-timeline-step--done .mod-timeline-label {
+  color: var(--text-primary);
+}
+
+.mod-cancelled-banner {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, #9ca3af 14%, var(--bg-main));
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 13.5px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ─── INFO GRID (order type / table / payment / address) ─── */
+.mod-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.mod-info-card {
+  background: var(--bg-surface);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mod-info-card--wide {
+  grid-column: 1 / -1;
+}
+
+.mod-info-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+.mod-info-value {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ─── SECTIONS ─── */
+.mod-section {
+  margin-bottom: 20px;
+}
+
+.mod-section-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.mod-section-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.mod-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-main);
+  border: 1px solid var(--border-lighter);
+}
+
+.mod-item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.mod-item-row:not(:last-child) {
+  border-bottom: 1px dashed color-mix(in srgb, var(--text-tertiary) 25%, transparent);
+}
+
+.mod-item-qty-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-red);
+  background: color-mix(in srgb, var(--color-red) 12%, var(--bg-main));
+  border-radius: 8px;
+  padding: 3px 7px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.mod-item-name {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.mod-item-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.mod-notes {
+  background: var(--bg-surface);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ─── BILL SUMMARY ─── */
+.mod-bill {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.mod-bill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  padding: 5px 0;
+}
+
+.mod-bill-row--total {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed color-mix(in srgb, var(--text-tertiary) 35%, transparent);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-red);
+}
+
+/* ─── BACK BUTTON (3D push-button style preserved, per requirement) ─── */
+.mod-back-to-orders-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.mod-back-to-orders-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.mod-back-to-orders-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.mod-back-to-orders-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+.mod-back-to-orders-btn .front {
+  display: block;
+  position: relative;
+  padding: 13px 27px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 700;
+  text-align: center;
+  color: var(--bg-main);
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.mod-back-to-orders-btn:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.mod-back-to-orders-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.mod-back-to-orders-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+@media screen and (max-width: 992px) {
+  .my-order-details-page {
+    padding: var(--medium-page-padding);
+  }
+}
+
+@media screen and (max-width: 578px) {
+  .my-order-details-page {
+    padding: var(--mobile-page-padding);
+  }
+
+  .mod-timeline-label {
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,447 @@
+
+
+/* ── TABLE WRAPPER ───────────────────────────────────── */
+.kgroom-table-wrapper {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  background: #e9e9e9;
+  border-radius: 16px;
+  padding: 0 10px 10px;
+  box-sizing: border-box;
+}
+
+/* ── TABLE ───────────────────────────────────────────── */
+.kgroom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+  min-width: 500px;
+}
+
+.kgroom-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.kgroom-staff-th {
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #e9e9e9;
+  text-align: left;
+  min-width: 160px;
+}
+
+.kgroom-date-th {
+  padding: 10px 8px;
+  background: #e9e9e9;
+  text-align: center;
+  min-width: 110px;
+}
+
+.kgroom-today-th {
+  background: #eff6ff !important;
+}
+
+.kgroom-date-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.kgroom-date-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+}
+
+.kgroom-date-wd {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kgroom-today-badge {
+  font-size: 9px;
+  background: #4361ee;
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* ROW */
+.kgroom-row {
+  background: #fff;
+}
+
+.kgroom-row:hover .kgroom-td {
+  background: #fafafe !important;
+}
+
+.kgroom-name-td {
+  padding: 10px 14px;
+  background: #fff;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.kgroom-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kgroom-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kgroom-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+}
+
+.kgroom-role {
+  display: block;
+  font-size: 11px;
+  color: #999;
+}
+
+.kgroom-td {
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+  background: #fff;
+}
+
+.kgroom-td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.kgroom-today-td {
+  background: #f8faff !important;
+}
+
+/* CHECKBOXES */
+.kgroom-check-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.kgroom-check-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.kgroom-check-item:hover {
+  background: #f5f5f5;
+}
+
+.kgroom-check-item.checked {
+  color: #4361ee;
+  font-weight: 600;
+  background: #eef0fd;
+}
+
+.kgroom-check-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  accent-color: #4361ee;
+}
+
+.kgroom-check-icon {
+  font-size: 13px;
+}
+
+/* HISTORY */
+.kgroom-hist-td {
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.kgroom-hist-td:hover {
+  transform: scale(1.05);
+}
+
+.kgroom-good {
+  background: #f0fdf4 !important;
+}
+
+.kgroom-partial {
+  background: #fffbeb !important;
+}
+
+.kgroom-bad {
+  background: #fff5f5 !important;
+}
+
+.kgroom-hist-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+}
+
+.kgroom-tick {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.kgroom-tick.good {
+  color: #06d6a0;
+}
+
+.kgroom-tick.partial {
+  font-size: 12px;
+  color: #d97706;
+  font-weight: 800;
+}
+
+.kgroom-tick.bad {
+  color: #ef476f;
+}
+
+.kgroom-detail-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+}
+
+.kgroom-detail-date {
+  font-size: 13px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.kgroom-detail-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kgroom-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+}
+
+.kgroom-detail-row.pass {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.kgroom-detail-row.fail {
+  background: #fff5f5;
+  border-color: #fecaca;
+}
+
+.kgroom-detail-icon {
+  font-size: 18px;
+}
+
+.kgroom-detail-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.kgroom-detail-status {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.kgroom-detail-row.pass .kgroom-detail-status {
+  color: #16a34a;
+}
+
+.kgroom-detail-row.fail .kgroom-detail-status {
+  color: #dc2626;
+}
+
+@media (max-width: 768px) {
+}
+
+.kgroom-filter-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+}
+
+/* ── Shared clear + count ── */
+.ae-clear-filter {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1.5px solid #fca5a5;
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.ae-clear-filter:hover {
+  background: #fecaca;
+}
+
+/* ── SEARCH DROPDOWN ─────────────────────────────────── */
+.kgroom-search-wrap {
+  position: relative;
+}
+
+.kgroom-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  min-width: 300px;
+  max-width: 380px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.kgroom-search-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.kgroom-search-suggestion:hover {
+  background: #f5f7ff;
+}
+
+.kgroom-sug-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kgroom-sug-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.kgroom-sug-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kgroom-sug-role {
+  font-size: 11px;
+  color: #999;
+}
+
+.kgroom-sug-bar-wrap {
+  width: 60px;
+  height: 5px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.kgroom-sug-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s;
+}
+
+.kgroom-sug-pct {
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 34px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.kgroom-search-no-result {
+  padding: 12px 10px;
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+}
+
+.ae-result-count {
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+  white-space: nowrap;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1080 / 992 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+}
+
+@media (max-width: 578px) {
+
+  .kgroom-table th,
+  .kgroom-table td {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+}

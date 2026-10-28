@@ -1,0 +1,378 @@
+/* ═══════════════════════════════════════════════════════
+   UserDatePicker.css  — shared user-panel date picker
+   Accent: var(--color-red, var(--color-red))
+═══════════════════════════════════════════════════════ */
+
+/* ── Wrapper — material underline, matches rf-mat ── */
+.udp-wrap {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding-top: 10px;
+  /* room for floated label */
+}
+
+/* Floating label */
+.udp-label {
+  position: absolute;
+  top: 24px;
+  /* sits on the baseline when idle */
+  left: 0;
+  pointer-events: none;
+  transition:
+    top 0.25s var(--m-ease),
+    font-size 0.25s var(--m-ease),
+    font-weight 0.25s var(--m-ease),
+    color 0.25s var(--m-ease),
+    letter-spacing 0.25s var(--m-ease);
+  line-height: 1;
+  white-space: nowrap;
+
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.udp-label.udp-label-float {
+  top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-red, var(--color-red));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.udp-label.udp-label-error {
+  color: var(--color-red, var(--color-red));
+}
+
+/* ── Trigger — flat underline only, no box ── */
+.udp-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-bottom: 2px solid rgba(150, 155, 170, 0.4);
+  border-radius: 0;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  font-family: inherit;
+  text-align: left;
+  white-space: nowrap;
+  outline: none;
+  box-shadow: none;
+}
+
+.udp-trigger:hover {
+  border: none;
+  border-bottom: 1px solid var(--text-tertiary);
+  box-shadow: none;
+  background: transparent;
+}
+
+.udp-trigger:focus {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  box-shadow: none;
+  background: transparent;
+}
+
+.udp-trigger.udp-error {
+  border-bottom-color: var(--color-red, var(--color-red)) !important;
+}
+
+/* Highlight bar — draws left→right on open/focus, matches rf-mat-bar */
+.udp-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--color-red, var(--color-red));
+  border-radius: 1px;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.udp-wrap.udp-open .udp-bar,
+.udp-wrap.udp-has-value .udp-bar {
+  width: 100%;
+}
+
+.udp-wrap.udp-error-state .udp-bar {
+  width: 100%;
+  background: var(--color-red, var(--color-red));
+}
+
+/* Value / placeholder */
+.udp-val {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.udp-val.udp-ph {
+  color: transparent;
+  /* hidden like rf-input::placeholder */
+}
+
+/* Chevron */
+.udp-arrow {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.35;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.udp-wrap.udp-open .udp-arrow {
+  transform: rotate(180deg);
+  opacity: 0.6;
+}
+
+/* ── Overlay backdrop (matches modal overlay pattern) ── */
+/* Open/close animation is handled by ModalTransition.js — this class
+   only supplies the backdrop's own layout (dimmed, centered flex),
+   not any animation or position/inset (ModalTransition's own
+   .modal-transition-overlay class supplies those). */
+.udp-overlay {
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Popup ── */
+/* Centering now comes from .udp-overlay's flex centering + Modal-
+   Transition's panel (which is a normal in-flow flex child, not
+   position:fixed) — so this no longer self-positions with
+   top/left/transform the way it did as a standalone fixed element. */
+.udp-popup {
+  position: relative;
+  height: 315px;
+  background: var(--bg-main);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  width: 284px;
+  box-sizing: border-box;
+}
+
+.udp-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-lighter);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(231, 76, 60, 0.1);
+    color: var(--color-red, var(--color-red));
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.udp-close-btn:hover {
+  background: var(--color-red, var(--color-red));
+  color: #fff;
+}
+
+/* ── Nav bar ── */
+.udp-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  /* Room for the absolutely-positioned close button in the corner */
+  padding-right: 30px;
+}
+
+.udp-nav-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-lighter);
+  background: var(--bg-main);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  color: var(--text-lighter);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.udp-nav-btn:hover {
+  background: var(--bg-surface);
+  border-color: var(--border-dark);
+}
+
+.udp-nav-center {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.udp-nav-lbl {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.udp-nav-lbl:hover {
+  background: var(--bg-surface);
+}
+
+/* ── Weekday headers ── */
+.udp-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.udp-weekdays span {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  padding: 4px 0;
+  letter-spacing: 0.04em;
+}
+
+/* ── Day grid ── */
+.udp-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.udp-day {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+
+.udp-day:hover:not(.udp-dis) {
+  background: rgba(231, 76, 60, 0.08);
+  color: var(--color-red, var(--color-red));
+}
+
+.udp-day.udp-today {
+  font-weight: 700;
+  color: var(--color-red, var(--color-red));
+}
+
+.udp-day.udp-sel {
+  background: var(--color-red, var(--color-red)) !important;
+  color: var(--bg-main) !important;
+  font-weight: 700;
+  border-radius: 10px;
+}
+
+.udp-day.udp-dis {
+  color: var(--text-tertiary);
+  cursor: not-allowed !important;
+}
+
+/* ── Month grid ── */
+.udp-month-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.udp-month-btn {
+  padding: 10px 4px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-lighter);
+  background: var(--bg-main);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.udp-month-btn:hover {
+  background: rgba(231, 76, 60, 0.06);
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.udp-month-btn.udp-sel {
+  background: var(--color-red, var(--color-red));
+  color: var(--bg-main);
+  border-color: var(--color-red, var(--color-red));
+}
+
+/* ── Year grid ── */
+.udp-year-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.udp-year-btn {
+  padding: 10px 4px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-lighter);
+  background: var(--bg-main);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.udp-year-btn:hover {
+  background: rgba(231, 76, 60, 0.06);
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.udp-year-btn.udp-sel {
+  background: var(--color-red, var(--color-red));
+  color: var(--bg-main);
+  border-color: var(--color-red, var(--color-red));
+}

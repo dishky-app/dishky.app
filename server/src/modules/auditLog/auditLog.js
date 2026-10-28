@@ -1,0 +1,240 @@
+/**
+ * auditLog.js — Dishky Phase-4 Audit Logging
+ *
+ * Records every create/update/delete write across every collection,
+ * plus login/logout events, so a Super Admin can answer "who did
+ * what, and when." Writes are best-effort and never block or fail
+ * the original request — logAudit() swallows its own errors.
+ *
+ * A capped-ish retention isn't enforced here (Mongo capped collections
+ * can't be indexed the way we need for filtering), but a TTL index is
+ * applied so entries age out automatically after a year, keeping the
+ * collection from growing unbounded.
+ */
+
+const express = require("express");
+const crypto = require("crypto");
+const mongoose = require("mongoose");
+const { asPlainString, safeErrorMessage } = require("../../core/validation");
+
+const router = express.Router();
+
+const auditLogSchema = new mongoose.Schema(
+  {
+    id: { type: String, unique: true },
+    adminId: { type: String, default: null },
+    adminName: { type: String, default: "" },
+    adminRoleTitle: { type: String, default: "" },
+    venueId: { type: String, default: null },
+    action: {
+      type: String,
+      enum: ["login", "logout", "login_failed", "create", "update", "delete", "authz_denied", "rate_limited"],
+      required: true,
+    },
+    resource: { type: String, required: true }, // collection/module name, or "session"
+    targetId: { type: String, default: "" },
+    before: { type: mongoose.Schema.Types.Mixed, default: undefined },
+    after: { type: mongoose.Schema.Types.Mixed, default: undefined },
+    ip: { type: String, default: "" },
+    userAgent: { type: String, default: "" },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { versionKey: false }
+);
+auditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 365 }); // 1 year retention
+auditLogSchema.index({ adminId: 1, createdAt: -1 });
+auditLogSchema.index({ resource: 1, createdAt: -1 });
+auditLogSchema.index({ venueId: 1, createdAt: -1 });
+
+const AuditLog = mongoose.model("AuditLog", auditLogSchema, "auditLogs");
+
+function newAuditId() {
+  return `audit_${Date.now()}_${crypto.randomBytes(3).toString("hex")}`;
+}
+
+/**
+ * escapeRegex(str) — escapes regex metacharacters so a value can be
+ * safely used inside a MongoDB $regex filter as a literal substring
+ * match. Without this, a value like "(a+)+$" passed straight into
+ * $regex is both a query-injection vector (matches far more than the
+ * user intended) and a ReDoS vector (catastrophic backtracking on
+ * certain crafted patterns) — this endpoint takes several free-text
+ * filters (resource/who/target) directly from query params.
+ */
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Redact obviously sensitive fields before persisting a before/after
+ * snapshot. Recurses into nested objects/arrays — audit snapshots on
+ * the generic/schemaless collections (server.js's ARRAY_COLLECTIONS)
+ * have no fixed shape, so a sensitive field could in principle show up
+ * nested (e.g. inside a training/certificate sub-object) rather than
+ * only at the top level; a shallow-only redaction would miss that.
+ */
+const REDACTED_KEYS = new Set(["password", "passwordHash", "token", "tempPassword", "newPassword", "currentPassword", "resetToken"]);
+function redact(obj, depth = 0) {
+  if (!obj || typeof obj !== "object" || depth > 6) return obj;
+  if (Array.isArray(obj)) return obj.map((item) => redact(item, depth + 1));
+  const clone = {};
+  for (const key of Object.keys(obj)) {
+    clone[key] = REDACTED_KEYS.has(key) ? "[redacted]" : redact(obj[key], depth + 1);
+  }
+  return clone;
+}
+
+/**
+ * logAudit(req, { action, resource, targetId, before, after })
+ * `req` is expected to carry req.admin (from requireAuth) when available;
+ * falls back gracefully for pre-auth events like failed logins.
+ */
+async function logAudit(req, { action, resource, targetId = "", before, after, adminOverride } = {}) {
+  try {
+    const admin = adminOverride || req.admin || null;
+    await AuditLog.create({
+      id: newAuditId(),
+      adminId: admin ? admin.id : null,
+      adminName: admin ? admin.name : "",
+      adminRoleTitle: admin ? admin.roleTitle : "",
+      venueId: admin ? admin.venueId || null : null,
+      action,
+      resource,
+      targetId: String(targetId || ""),
+      before: before !== undefined ? redact(before) : undefined,
+      after: after !== undefined ? redact(after) : undefined,
+      ip: req.ip || "",
+      userAgent: (req.headers && req.headers["user-agent"]) || "",
+    });
+  } catch (err) {
+    console.error("[auditLog] failed to record entry:", err.message);
+  }
+}
+
+/* ─────────────────────────────────────────
+   ROUTES — Super Admin only. Mounted at /audit-logs.
+───────────────────────────────────────── */
+function buildRouter({ requireAuth, requireRole }) {
+  // GET /audit-logs?adminId=&resource=&venueId=&action=&from=&to=&limit=&page=
+  router.get("/", requireAuth, requireRole("Super Admin"), async (req, res) => {
+    try {
+      const { adminId, resource, venueId, action, status, from, to, fromTime, toTime, who, target } = req.query;
+      const limit = Math.min(parseInt(req.query.limit, 10) || 100, 500);
+      const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+
+      const adminIdParam = asPlainString(adminId);
+      const resourceParam = asPlainString(resource);
+      const venueIdParam = asPlainString(venueId);
+      const actionParam = asPlainString(action);
+      const statusParam = asPlainString(status);
+      const whoParam = asPlainString(who);
+      const targetParam = asPlainString(target);
+      const fromParam = asPlainString(from);
+      const toParam = asPlainString(to);
+      const fromTimeParam = asPlainString(fromTime);
+      const toTimeParam = asPlainString(toTime);
+      const ALLOWED_ACTIONS = ["login", "logout", "login_failed", "create", "update", "delete"];
+
+      const filter = {};
+      if (adminIdParam) filter.adminId = adminIdParam;
+      if (resourceParam) filter.resource = { $regex: escapeRegex(resourceParam), $options: "i" };
+      if (venueIdParam) filter.venueId = venueIdParam;
+      if (actionParam && ALLOWED_ACTIONS.includes(actionParam)) filter.action = actionParam;
+      // "status" is a coarser success/failure split over action, distinct
+      // from the exact action filter above (matches the positive/negative
+      // badge shown in the UI).
+      if (statusParam === "negative") filter.action = { $in: ["delete", "login_failed"] };
+      else if (statusParam === "positive") filter.action = { $nin: ["delete", "login_failed"] };
+      if (whoParam) filter.adminName = { $regex: escapeRegex(whoParam), $options: "i" };
+      if (targetParam) filter.targetId = { $regex: escapeRegex(targetParam), $options: "i" };
+      if (fromParam || toParam) {
+        filter.createdAt = {};
+        if (fromParam) filter.createdAt.$gte = new Date(fromParam);
+        if (toParam) filter.createdAt.$lte = new Date(`${toParam}T23:59:59.999`);
+      }
+      // Time-of-day filtering ("HH:MM") cuts across dates, so it can't be
+      // expressed as a simple Mongo range on createdAt. When either bound
+      // is present, pull the date-filtered set into memory, filter by
+      // local time-of-day, then paginate the result ourselves.
+      let logs, total;
+      const listProjection = {
+        id: 1, adminId: 1, adminName: 1, adminRoleTitle: 1, venueId: 1,
+        action: 1, resource: 1, targetId: 1, ip: 1, userAgent: 1, createdAt: 1,
+        // Existence-only booleans so the list can decide whether to show
+        // the "Details" button without pulling the full (potentially
+        // large) before/after snapshot documents over the wire.
+        hasBefore: { $cond: [{ $ifNull: ["$before", false] }, true, false] },
+        hasAfter: { $cond: [{ $ifNull: ["$after", false] }, true, false] },
+      };
+      if (fromTimeParam || toTimeParam) {
+        // Time-of-day filtering still needs the lightweight projection
+        // applied up front — same reasoning as the else-branch below,
+        // just via aggregate() since it can't be expressed as a Mongo
+        // range and has to be filtered in memory.
+        const all = await AuditLog.aggregate([
+          { $match: filter },
+          { $sort: { createdAt: -1 } },
+          { $project: listProjection },
+        ]);
+        const inTimeRange = (d) => {
+          const hh = String(d.getHours()).padStart(2, "0");
+          const mm = String(d.getMinutes()).padStart(2, "0");
+          const t = `${hh}:${mm}`;
+          if (fromTimeParam && t < fromTimeParam) return false;
+          if (toTimeParam && t > toTimeParam) return false;
+          return true;
+        };
+        const matched = all.filter((l) => inTimeRange(new Date(l.createdAt)));
+        total = matched.length;
+        logs = matched.slice((page - 1) * limit, (page - 1) * limit + limit);
+      } else {
+        [logs, total] = await Promise.all([
+          // The list view only renders when/who/venue/action/module/target —
+          // before/after (the full document snapshots) are only needed on
+          // the single-entry details page, which fetches by id separately.
+          // Projecting them down to existence booleans here cuts the
+          // per-page payload substantially, especially for update actions
+          // with large before/after objects.
+          AuditLog.aggregate([
+            { $match: filter },
+            { $sort: { createdAt: -1 } },
+            { $skip: (page - 1) * limit },
+            { $limit: limit },
+            { $project: listProjection },
+          ]),
+          AuditLog.countDocuments(filter),
+        ]);
+      }
+
+      res.json({
+        logs: logs.map((l) => ({
+          ...l,
+          _id: undefined,
+          hasDetails: Boolean(l.hasBefore || l.hasAfter),
+          hasBefore: undefined,
+          hasAfter: undefined,
+        })),
+        total,
+        page,
+        limit,
+      });
+    } catch (err) {
+      res.status(500).json({ error: safeErrorMessage(err) });
+    }
+  });
+
+  // GET /audit-logs/:id — single entry, used by the audit log details page.
+  router.get("/:id", requireAuth, requireRole("Super Admin"), async (req, res) => {
+    try {
+      const log = await AuditLog.findOne({ id: req.params.id }).lean();
+      if (!log) return res.status(404).json({ error: "Audit log entry not found" });
+      res.json({ ...log, _id: undefined });
+    } catch (err) {
+      res.status(500).json({ error: safeErrorMessage(err) });
+    }
+  });
+
+  return router;
+}
+
+module.exports = { buildRouter, AuditLog, logAudit };

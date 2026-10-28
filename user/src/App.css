@@ -1,0 +1,2139 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPREHENSIVE CSS VARIABLES SYSTEM
+   Light & Dark Themes with Full Color Coverage
+═══════════════════════════════════════════════════════════════════════════ */
+*,
+:root,
+html,
+body {
+  -webkit-user-drag: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+
+  font-family: "Geom", system-ui, sans-serif !important;
+}
+
+.App,
+body,
+html,
+#root {
+  height: stretch;
+}
+
+/* Restore the tap-delay/double-tap-zoom fix for interactive controls only —
+   applying `manipulation` globally (as `*`) overrides swipe surfaces like
+   .combo-reel / .appetizer-reel that need `touch-action: pan-x` (or their
+   own custom pointer handling) to receive vertical drag gestures on mobile. */
+button,
+a,
+input,
+select,
+textarea,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+:root {
+  /* LIGHT THEME (DEFAULT) */
+
+  /* ─── BACKGROUNDS ─── */
+  --bg-theme: linear-gradient(180deg, rgba(255, 236, 224, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 1) 100%);
+  --bg-main: #ffffff;
+  --bg-surface: #f2f2f2;
+
+  --bg-very-light: #f9f9f9;
+  --bg-light: #f0f0f0;
+  --bg-lighter: #e8e8e8;
+  --bg-hover: #ffc800;
+
+  /* ─── TEXT COLORS ─── */
+  --text-primary: #000000;
+  --text-secondary: #3a3a3a;
+  --text-tertiary: #999999;
+  --text-muted: #888888;
+  --text-placeholder: #aaaaaa;
+  --text-light: #666666;
+  --text-lighter: #555555;
+
+  --text-disabled: #cccccc;
+
+  /* ─── BORDERS ─── */
+  --border-light: rgba(0, 0, 0, 0.18);
+  --border-lighter: #e8e8e8;
+  --border-lightest: #f0f0f0;
+  --border-dark: #dddddd;
+  --border-error: #ff4444;
+
+  /* ─── SHADOWS ─── */
+  --shadow-primary: rgba(17, 17, 26, 0.16) 0px 3px 12px, rgba(17, 17, 26, 0.10) 0px 6px 24px;
+
+  --shadow-list: 0 3px 12px rgba(0, 0, 0, 0.16);
+  --shadow-left: 0 6px 20px rgba(0, 0, 0, 0.14);
+  --shadow-bottom: 0 3px 8px rgba(0, 0, 0, 0.16);
+  --shadow-card-normal: 0 10px 28px rgba(0, 0, 0, 0.13);
+  --shadow-card-hover: 0 18px 44px rgba(0, 0, 0, 0.20);
+
+  --shadow-dropdown: 0 20px 60px rgba(0, 0, 0, 0.18);
+  --shadow-card-red: 0 12px 30px rgba(243, 55, 22, 0.36), 0 6px 16px rgba(243, 55, 22, 0.24);
+
+  --shadow: 0 3px 10px rgba(64, 255, 0, 0);
+  --thankyou-shadow: 0 10px 30px rgba(130, 130, 130, 0.22), 0 2px 10px rgba(100, 100, 100, 0.14);
+
+  --floating-btn-shadow-color: rgba(243, 55, 22, 0.40);
+  --card-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px,
+    rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px,
+    rgba(0, 0, 0, 0.09) 0px 32px 16px;
+
+  /* ─── ACCENT COLORS ─── */
+  --color-green: #10a845;
+  --color-red: var(--color-red);
+  --color-pale-red: #ffe8e3;
+  --color-pale-green: #b8ffc0;
+  --color-pale-yellow: var(--bg-main)9b0;
+  --color-red-secondary: rgb(230, 55, 25);
+  --color-error-bg: var(--color-error-bg);
+  --color-error-dark: var(--color-error-dark);
+  --color-blue: var(--color-blue);
+  --color-blue-light: var(--color-blue-light);
+  --color-blue-hover: #f0f4ff;
+  --color-blue-active: #4361ee;
+
+  /* ─── UI ELEMENTS ─── */
+  --btn-color: #d2d2d2;
+  --btn-default: var(--btn-default);
+  --btn-hover: var(--border-lightest);
+
+  --foodlist-arrow: rgba(0, 0, 0, 0.30);
+  --hot-selector-shadow: rgba(80, 80, 80, 0.4) 0px 0px 10px 0px;
+  --light-border: 1px solid rgba(17, 17, 17, 0.18);
+  --fav-ingredient-color: #FFF5EC;
+  --fav-nutrition-color: #E6F2FF;
+  --nutrition-icon-filter: brightness(0) saturate(100%);
+  --filter: none;
+  --invert-filter: brightness(0) invert(1);
+
+
+  /* ─── EDGE GRADIENTS (3D BUTTON EFFECTS) ─── */
+  --edge-color-dark: hsl(6deg 100% 16%);
+  --edge-color-light: hsl(6deg 100% 32%);
+  --edge-color-green-dark: hsl(134deg 100% 16%);
+  --edge-color-green-light: hsl(134deg 100% 32%);
+
+  /* ─── SPACING ─── */
+  --mobile-page-padding: 10px;
+  --medium-page-padding: 24px;
+
+  /* ─── ACCENT (EventHome accent bar) ─── */
+  --accent: #7c3aed;
+
+  /* ─── GREEN SEMANTIC ─── */
+  --color-green-dark: #16a34a;
+  --color-green-text: #065f46;
+  --color-green-pale: #d1fae5;
+  --color-green-pale-alt: #f0fdf4;
+  --color-green-pale-2: #dcfce7;
+  --color-green-pale-border: #bbf7d0;
+
+  /* ─── AMBER / WARNING ─── */
+
+  --color-amber-text: #ca8a04;
+  --color-amber-dark: #78350f;
+  --color-amber-pale: #fde68a;
+  --color-amber-bg: #fffbea;
+  --color-rose-dark: #9d174d;
+
+  /* ─── WARM GRADIENT (success medal / avatar) ─── */
+  --color-warm-gradient-start: #f6d365;
+  --color-warm-gradient-end: #fda085;
+  --color-warm-shadow: rgba(253, 160, 133, 0.4);
+
+  /* ─── OVERLAY ─── */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.13);
+
+  /* ─── ON-RED SURFACE (text/buttons rendered on a red background) ─── */
+  --color-on-red-muted: rgba(255, 255, 255, 0.7);
+  --color-on-red-faint: rgba(255, 255, 255, 0.2);
+  --color-on-red-mid: rgba(255, 255, 255, 0.4);
+  --color-on-red-hint: rgba(255, 255, 255, 0.15);
+  --color-on-red-hint-2: rgba(255, 255, 255, 0.8);
+
+  /* ─── INPUT SURFACE (trigger/picker backgrounds) ─── */
+  --bg-input: #f9f9f9;
+  --border-input-warm: #c4b5a0;
+  --border-input-warm-focus: #b89a7a;
+  --shadow-input-warm-focus: rgba(184, 154, 122, 0.18);
+
+  /* ─── NEUMORPHIC ─── */
+  --bg-neu: #e8e8e8;
+  --border-neu: #e8e8e8;
+  --shadow-neu-dark: #c0c0c0;
+  --shadow-neu-mid: #c5c5c5;
+  --shadow-neu-light: #cfcfcf;
+  --shadow-neu-warm-dark: #c7c7c7;
+  --shadow-neu-warm-light: #e2dcdc;
+
+  /* ─── CONFETTI COLORS (success screen particles) ─── */
+  --color-confetti-1: #f59e0b;
+  --color-confetti-2: #ee5253;
+  --color-confetti-3: #6c5ce7;
+  --color-confetti-4: #00b894;
+  --color-confetti-5: #fd79a8;
+  --color-confetti-6: #fdcb6e;
+  --color-confetti-7: #74b9ff;
+  --color-confetti-8: #a29bfe;
+
+  /* ─── HERO ORBS (EventHome) ─── */
+  --color-orb-purple: rgba(124, 58, 237, 0.5);
+  --color-orb-pink: rgba(236, 72, 153, 0.4);
+  --color-orb-purple-border: rgba(124, 58, 237, 0.2);
+
+  /* ─── MISC ─── */
+  --shadow-form-focus: rgba(0, 0, 0, 0.05);
+  --shadow-card-subtle: rgba(0, 0, 0, 0.06);
+  --shadow-card-xs: rgba(0, 0, 0, 0.07);
+  --border-muted: #d1d5db;
+  --bg-dish-placeholder-start: #f8f9fa;
+  --bg-dish-placeholder-end: #ebebeb;
+
+  /* ─── RED GLOW SHADOWS (tied to --color-red accent) ─── */
+  --shadow-red-xs: rgba(231, 76, 60, 0.08);
+  --shadow-red-sm: rgba(231, 76, 60, 0.10);
+  --shadow-red-md: rgba(231, 76, 60, 0.20);
+  --shadow-red-lg: rgba(231, 76, 60, 0.30);
+  --shadow-red-xl: rgba(231, 76, 60, 0.35);
+  --shadow-red-2xl: rgba(231, 76, 60, 0.40);
+  --img-theme-filter: brightness(0) saturate(100%);
+  --opp-img-theme-filter: brightness(0) invert(1);
+}
+
+/* DARK THEME */
+
+/* ─── BACKGROUNDS ─── */
+[data-theme="dark"] {
+  --bg-theme: linear-gradient(0deg, rgb(24, 24, 24) 0%, rgb(37, 37, 37) 50%, rgb(61, 61, 61) 100%);
+  --bg-main: #080808;
+  --bg-surface: var(--text-primary)111;
+
+  --bg-very-light: #1a1a1a;
+  --bg-light: #2a2a2a;
+  --bg-lighter: #0f0f0f;
+  --bg-hover: #1a5c1f;
+
+  /* ─── TEXT COLORS ─── */
+  --text-primary: var(--bg-main)fff;
+  --text-secondary: #c0c0c0;
+  --text-tertiary: #666;
+  --text-muted: var(--text-muted)888;
+  --text-placeholder: var(--text-light)999;
+  --text-light: var(--text-placeholder)aaa;
+  --text-lighter: var(--text-light)999;
+
+  --text-disabled: #444444;
+
+  /* ─── BORDERS ─── */
+  --border-light: rgba(255, 255, 255, 0.18);
+  --border-lighter: #333333;
+  --border-lightest: #444444;
+  --border-dark: var(--text-lighter)555;
+  --border-error: #cc4444;
+
+  /* ─── SHADOWS ─── */
+  --shadow-primary: rgba(230, 230, 230, 0.12) 0px 3px 12px,
+    rgba(255, 255, 255, 0.06) 0px 6px 24px;
+
+  --shadow-list: 0 3px 12px rgba(255, 255, 255, 0.10);
+  --shadow-left: 0 6px 20px rgba(255, 255, 255, 0.10);
+  --shadow-bottom: 0 3px 10px rgba(255, 255, 255, 0.12);
+  --shadow-card-normal: 0 12px 32px rgba(14, 14, 14, 0.7);
+  --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.85);
+
+  --shadow-dropdown: 0 20px 60px rgba(0, 0, 0, 0.6);
+  --shadow-card-red: 0 14px 36px rgba(255, 58, 24, 0.45),
+    0 8px 20px rgba(255, 58, 24, 0.32);
+
+  --shadow: rgba(255, 255, 195, 0.25) 2px 2px 6px;
+  --thankyou-shadow: 0 12px 24px rgba(200, 200, 200, 0.40),
+    0 2px 6px rgba(180, 180, 180, 0.22);
+
+  --floating-btn-shadow-color: rgba(255, 58, 24, 0.40);
+  --card-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
+    rgba(126, 126, 126, 0.09) 0px 4px 2px,
+    rgba(126, 126, 126, 0.09) 0px 8px 4px,
+    rgba(126, 126, 126, 0.09) 0px 16px 8px,
+    rgba(126, 126, 126, 0.09) 0px 32px 16px;
+
+  /* ─── ACCENT COLORS ─── */
+  --color-green: #00f050;
+  --color-red: #ff3a18;
+  --color-pale-red: #2e0e08;
+  --color-pale-green: #082014;
+  --color-pale-yellow: #1a1600;
+  --color-red-secondary: #ff5c42;
+  --color-error-bg: #3d1515;
+  --color-error-dark: #ff4444;
+  --color-blue: #4db8ff;
+  --color-blue-light: #1a3a52;
+  --color-blue-hover: #2a4a62;
+  --color-blue-active: #6ab8ff;
+
+  /* ─── UI ELEMENTS ─── */
+  --btn-color: rgb(45, 45, 45);
+  --btn-default: #2a2a2a;
+  --btn-hover: #3a3a3a;
+
+  --foodlist-arrow: rgba(255, 255, 255, 0.35);
+  --hot-selector-shadow: rgba(255, 255, 255, 0.35) 0px 0px 14px 0px;
+  --light-border: 1px solid rgba(255, 255, 255, 0.24);
+  --fav-ingredient-color: #1C1510;
+  --fav-nutrition-color: #101820;
+  --nutrition-icon-filter: brightness(0) invert(1);
+  --filter: brightness(0) invert(1);
+  --invert-filter: brightness(0) saturate(100%);
+
+
+  /* ─── EDGE GRADIENTS (3D BUTTON EFFECTS) ─── */
+  --edge-color-dark: hsl(6deg 100% 16%);
+  --edge-color-light: hsl(6deg 100% 32%);
+  --edge-color-green-dark: hsl(134deg 100% 16%);
+  --edge-color-green-light: hsl(134deg 100% 32%);
+
+  /* ─── SPACING ─── */
+  --mobile-page-padding: 10px;
+  --medium-page-padding: 24px;
+
+  /* ─── ACCENT ─── */
+  --accent: #9f6ef5;
+
+  /* ─── GREEN SEMANTIC ─── */
+  --color-green-dark: #22c55e;
+  --color-green-text: #4ade80;
+  --color-green-pale: #052e16;
+  --color-green-pale-alt: #071c0e;
+  --color-green-pale-2: #052e16;
+  --color-green-pale-border: #166534;
+
+  /* ─── AMBER / WARNING ─── */
+
+  --color-amber-text: #fcd34d;
+  --color-amber-dark: #fde68a;
+  --color-amber-pale: #3d2a00;
+  --color-amber-bg: #1c1500;
+  --color-rose-dark: #f472b6;
+
+  /* ─── WARM GRADIENT (unchanged — decorative, theme-invariant) ─── */
+  --color-warm-gradient-start: #f6d365;
+  --color-warm-gradient-end: #fda085;
+  --color-warm-shadow: rgba(253, 160, 133, 0.25);
+
+  /* ─── OVERLAY ─── */
+  --color-overlay: rgba(0, 0, 0, 0.75);
+  --color-overlay-light: rgba(0, 0, 0, 0.25);
+
+  /* ─── ON-RED SURFACE (unchanged — always on red bg) ─── */
+  --color-on-red-muted: rgba(255, 255, 255, 0.7);
+  --color-on-red-faint: rgba(255, 255, 255, 0.2);
+  --color-on-red-mid: rgba(255, 255, 255, 0.4);
+  --color-on-red-hint: rgba(255, 255, 255, 0.15);
+  --color-on-red-hint-2: rgba(255, 255, 255, 0.8);
+
+  /* ─── INPUT SURFACE ─── */
+  --bg-input: #1a1a1a;
+  --border-input-warm: #5a4a3a;
+  --border-input-warm-focus: #8a6a4a;
+  --shadow-input-warm-focus: rgba(138, 106, 74, 0.18);
+
+  /* ─── NEUMORPHIC ─── */
+  --bg-neu: #1e1e1e;
+  --border-neu: #1e1e1e;
+  --shadow-neu-dark: #111111;
+  --shadow-neu-mid: #141414;
+  --shadow-neu-light: #282828;
+  --shadow-neu-warm-dark: #161616;
+  --shadow-neu-warm-light: #2a2a2a;
+
+  /* ─── CONFETTI (unchanged — decorative) ─── */
+  --color-confetti-1: #f59e0b;
+  --color-confetti-2: #ee5253;
+  --color-confetti-3: #6c5ce7;
+  --color-confetti-4: #00b894;
+  --color-confetti-5: #fd79a8;
+  --color-confetti-6: #fdcb6e;
+  --color-confetti-7: #74b9ff;
+  --color-confetti-8: #a29bfe;
+
+  /* ─── HERO ORBS (unchanged — vivid decorative gradient) ─── */
+  --color-orb-purple: rgba(124, 58, 237, 0.5);
+  --color-orb-pink: rgba(236, 72, 153, 0.4);
+  --color-orb-purple-border: rgba(124, 58, 237, 0.3);
+
+  /* ─── MISC ─── */
+  --shadow-form-focus: rgba(255, 255, 255, 0.04);
+  --shadow-card-subtle: rgba(0, 0, 0, 0.3);
+  --shadow-card-xs: rgba(0, 0, 0, 0.25);
+  --border-muted: #3a3a3a;
+  --bg-dish-placeholder-start: #1e1e1e;
+  --bg-dish-placeholder-end: #272727;
+
+  /* ─── RED GLOW SHADOWS ─── */
+  --shadow-red-xs: rgba(255, 58, 24, 0.10);
+  --shadow-red-sm: rgba(255, 58, 24, 0.14);
+  --shadow-red-md: rgba(255, 58, 24, 0.24);
+  --shadow-red-lg: rgba(255, 58, 24, 0.36);
+  --shadow-red-xl: rgba(255, 58, 24, 0.44);
+  --shadow-red-2xl: rgba(255, 58, 24, 0.52);
+
+  --img-theme-filter: brightness(0) invert(1);
+  --opp-img-theme-filter: brightness(0) saturate(100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ── THEME TOGGLE BUTTON ──
+═══════════════════════════════════════════════════════════════════════════ */
+
+.theme-toggle {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 999 !important;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  outline: none;
+  border: none;
+  border-radius: 999px;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+.App {
+  background: var(--bg-theme);
+  object-fit: fill;
+  color: var(--text-primary);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.no-padding {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: stretch !important;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.home-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.home-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.home-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.home-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* edge — inactive (neutral grey) */
+.home-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(to left,
+      hsl(0, 0%, 42%) 0%,
+      hsl(0, 0%, 52%) 8%,
+      hsl(0, 0%, 52%) 92%,
+      hsl(0, 0%, 42%) 100%);
+}
+
+/* front — inactive */
+.home-btn .front {
+  display: block;
+  position: relative;
+  padding: clamp(4px, 1.6vw, 6px);
+  font-size: clamp(10px, 2.6vw, 12px);
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.home-btn:hover {
+  filter: brightness(108%);
+}
+
+.home-btn:hover .front {
+  color: var(--color-red);
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.home-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.home-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* edge — active (themed) */
+.home-btn.active .edge {
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+/* front — active */
+.home-btn.active .front {
+  color: var(--bg-main);
+  background: var(--color-red);
+}
+
+button {
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+/* AFTER */
+.home-btn .front img {
+  width: clamp(18px, 5.6vw, 24px);
+  height: clamp(18px, 5.6vw, 24px);
+  object-fit: cover;
+  z-index: 999;
+  filter: var(--img-theme-filter);
+}
+
+.home-btn-icon {
+  cursor: pointer;
+}
+
+/* FLOATING PROFILE BUBBLE — bottom-right, stacked just above the
+   floating bag pill (#floating-bag-btn sits at bottom:18px, ~54px
+   tall including its shadow layer) so the two never overlap.
+   This was previously unstyled entirely — the button rendered at
+   its default static in-flow position, landing on top of whatever
+   content happened to be there (visible as it overlapping page
+   headers). Positioned by id for the same reason #floating-bag-btn
+   is: an id selector's specificity can't be quietly out-specificity'd
+   by another same-named class defined elsewhere. */
+#floating-profile-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 78px;
+  z-index: 119;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  background: var(--color-red);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  transition: transform 0.2s ease;
+}
+
+#floating-profile-btn:active {
+  transform: scale(0.94);
+}
+
+/* Events/Reservation/Catering/Celebration/Pre-Booking pages each have
+   their own sticky page header (.pl-header) AND their own sticky
+   bottom action row (Cancel/Submit) that the default bottom-right
+   spot would otherwise sit on top of once the page is scrolled near
+   the bottom — the button is `position: fixed`, so it stays pinned to
+   the viewport regardless of scroll position and ends up overlapping
+   whichever page element happens to be at that same corner. Moved
+   below the sticky header instead of tweaking the bottom offset,
+   which never actually escaped the bottom-right corner these pages'
+   submit buttons also occupy. Kept on the LEFT (per the explicit
+   "top-left" placement request below) but pushed down clear of the
+   header's own row so it doesn't sit on top of the header's back
+   button, which lives in that same row on the left. */
+#floating-profile-btn.floating-profile-btn--event-page {
+  bottom: 36px;
+  right: 36px;
+}
+
+@media (max-width: 576px) {
+  #floating-profile-btn.floating-profile-btn--event-page {
+    bottom: 24px;
+    right: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  #floating-profile-btn {
+    right: 14px;
+    bottom: 74px;
+  }
+
+  #floating-profile-btn.floating-profile-btn--event-page {
+    display: none;
+  }
+}
+
+/* FLOATING BELL – EXPANDING PILL */
+
+.floating-bell-wrapper {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  background: var(--bg-main);
+  border-radius: 999px;
+  box-shadow: var(--shadow-primary);
+  border: 2px solid var(--color-red);
+  padding: 8px;
+  overflow: hidden;
+  width: 48px;
+  height: 48px;
+  transition:
+    width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+  z-index: 9999;
+}
+
+.close-padding {
+  padding: clamp(5px, 1.8vw, 8px) clamp(6px, 2.4vw, 10px) !important;
+}
+
+.floating-bell-wrapper:hover {
+  width: 240px;
+  box-shadow: var(--shadow-card-red);
+}
+
+.floating-bell-wrapper.is-ringing {
+  width: 240px;
+  border-color: #16a34a;
+  box-shadow: 0 12px 30px rgba(22, 163, 74, 0.32), 0 6px 16px rgba(22, 163, 74, 0.22);
+}
+
+/* Pulsing ring — only visible while actively ringing, gives a clear
+   "something is happening" signal beyond the swapped icon. */
+.floating-bell-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.floating-bell-wrapper.is-ringing .floating-bell-pulse {
+  opacity: 1;
+  animation: bellPulseRing 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  border: 2px solid #16a34a;
+}
+
+@keyframes bellPulseRing {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.floating-bell {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+  border: none;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-bell img {
+  width: 80%;
+  height: 80%;
+}
+
+.floating-bell:hover {
+  scale: 1 !important;
+}
+
+.bell-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition:
+    opacity 0.25s ease,
+    transform 0.3s ease;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.bell-label-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.bell-label-sub {
+  font-size: 11px;
+  color: var(--text-primary);
+  opacity: 0.65;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.floating-bell-wrapper:hover .bell-label,
+.floating-bell-wrapper.is-ringing .bell-label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.bell-image {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: var(--filter);
+}
+
+* {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea {
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+input:focus textarea:hover,
+input:hover {
+  border: 1px solid var(--color-red) !important;
+  box-shadow: 0 0 0 3px rgba(243, 55, 22, 0.20) !important;
+}
+
+button {
+  transition: ease-in 0.15s !important;
+}
+
+button:hover {
+  cursor: pointer !important;
+}
+
+image {
+  object-fit: contain;
+}
+
+/* ------------------SubText-------------------- */
+.subtext {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* ═══════════════════════════════════════════════════════
+   fav-empty — shared "no data" state
+   Used across: FavouriteCombo, FavouriteCategories,
+   FavouriteDishList, FavouriteDishDetail
+═══════════════════════════════════════════════════════ */
+
+.fav-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 260px;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  grid-column: 1 / -1;
+  /* if parent is a CSS grid (e.g. food-category-container), span all columns
+     so the empty state isn't squeezed into a single cell */
+}
+
+.fav-empty-icon {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+.fav-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #111);
+  margin: 0;
+}
+
+.fav-empty-sub {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary, #888);
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ── Full-page centering variant ──────────────────────────
+   Add alongside .fav-empty (className="fav-empty fav-empty-page")
+   when the empty state is the only content on the page, so it
+   centers in the full viewport height rather than a min-height box. */
+.fav-empty-page {
+  min-height: calc(100vh - 120px);
+  /* adjust 120px to your header height if needed */
+}
+
+@media screen and (max-width: 576px) {
+  .floating-bell-wrapper {
+    bottom: 16px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .floating-bell-wrapper:hover,
+  .floating-bell-wrapper.is-ringing {
+    width: 200px;
+  }
+
+  .floating-bell {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+  }
+
+  .bell-image {
+    width: 22px;
+    height: 22px;
+  }
+
+  .bell-label-title {
+    font-size: 12px;
+  }
+
+  .bell-label-sub {
+    font-size: 10px;
+  }
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.22) !important;
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.front {
+  display: block;
+  position: relative;
+  /* Responsive to viewport width instead of a fixed 12px/27px — scales
+     down smoothly on narrow screens (phones) instead of every 3D
+     button staying desktop-sized and cramping small layouts, while
+     never shrinking past a usable tap-target floor. */
+  padding: clamp(8px, 2.6vw, 12px) clamp(14px, 6vw, 27px);
+  border-radius: 12px;
+  font-size: clamp(0.85rem, 3vw, 1.1rem);
+  color: white;
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.sm-padding {
+  padding: clamp(4px, 1.6vw, 6px) clamp(9px, 3.6vw, 14px) !important;
+  font-size: clamp(12px, 3.2vw, 16px) !important;
+  font-weight: 500 !important;
+}
+
+/* ── Shared 3-D push button base (submit = red, cancel = white) ── */
+.form-action-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  width: fit-content;
+  flex-shrink: 0;
+}
+
+.form-action-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.form-action-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.form-action-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* ── Submit variant — themed ── */
+.form-action-btn.submit .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+.form-action-btn.submit .front {
+  display: block;
+  position: relative;
+  padding: clamp(8px, 2.6vw, 12px) clamp(14px, 6vw, 27px);
+  border-radius: 12px;
+  font-size: clamp(0.85rem, 3vw, 1.1rem);
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--bg-main);
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+/* ── Done variant — green ── */
+.form-action-btn.done .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(to left,
+      var(--edge-color-green-dark) 0%,
+      var(--edge-color-green-light) 8%,
+      var(--edge-color-green-light) 92%,
+      var(--edge-color-green-dark) 100%);
+}
+
+.form-action-btn.done .front {
+  display: block;
+  position: relative;
+  padding: clamp(8px, 2.6vw, 12px) clamp(14px, 6vw, 27px);
+  border-radius: 12px;
+  font-size: clamp(0.85rem, 3vw, 1.1rem);
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--bg-main);
+  background: var(--color-green);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+/* ── Cancel variant — white ── */
+.form-action-btn.cancel .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(to left,
+      hsl(0, 0%, 48%) 0%,
+      hsl(0deg 0% 56%) 8%,
+      hsl(0deg 0% 56%) 92%,
+      hsl(0, 0%, 48%) 100%);
+}
+
+.form-action-btn.cancel .front {
+  display: block;
+  position: relative;
+  padding: clamp(8px, 2.6vw, 12px) clamp(14px, 6vw, 27px);
+  border-radius: 12px;
+  font-size: clamp(0.85rem, 3vw, 1.1rem);
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+/* ── Shared hover / active push animation ── */
+.form-action-btn:hover {
+  filter: brightness(108%);
+}
+
+.form-action-btn:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.form-action-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.form-action-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.form-action-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Chip — 3-D push pill (mirrors form-action-btn structure) ── */
+.chip {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: fit-content;
+}
+
+/* shadow layer */
+.chip .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.chip:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.chip:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* edge layer — inactive (neutral) */
+.chip .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to left,
+      hsl(0, 0%, 42%) 0%,
+      hsl(0, 0%, 52%) 8%,
+      hsl(0, 0%, 52%) 92%,
+      hsl(0, 0%, 42%) 100%);
+}
+
+/* front layer — inactive */
+.chip .front {
+  display: block;
+  position: relative;
+  padding: clamp(5px, 1.8vw, 7px) clamp(10px, 4vw, 15px);
+  border-radius: 999px;
+  font-size: clamp(11px, 3vw, 13px);
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+/* hover brightens, text turns red */
+.chip:hover {
+  filter: brightness(108%);
+}
+
+.chip:hover .front {
+  color: var(--color-red);
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.chip:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+/* ── Active (selected) chip — themed ── */
+.chip.active .edge {
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+.chip.active .front {
+  color: var(--bg-main);
+  background: var(--color-red);
+}
+
+.chip:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.floating-btn {
+  position: relative;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  outline-offset: 4px !important;
+  transition: filter 250ms !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.floating-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.floating-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.floating-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* edge — inactive (neutral grey) */
+.floating-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+/* front — inactive */
+.floating-btn .front {
+  display: block;
+  position: relative;
+  padding: clamp(7px, 2.6vw, 10px) clamp(11px, 4.2vw, 16px);
+  font-size: clamp(10px, 2.8vw, 12px);
+  font-family: inherit;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #f0f0f0;
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.floating-btn:hover {
+  filter: brightness(108%);
+}
+
+.floating-btn:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.theme-toggle {
+  position: relative;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  outline-offset: 4px !important;
+  transition: filter 250ms !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.theme-toggle .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.theme-toggle:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.theme-toggle:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* edge — inactive (neutral grey) */
+.theme-toggle .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to left,
+      hsl(0, 0%, 42%) 0%,
+      hsl(0, 0%, 52%) 8%,
+      hsl(0, 0%, 52%) 92%,
+      hsl(0, 0%, 42%) 100%);
+}
+
+/* front — inactive */
+.theme-toggle .front {
+  display: block;
+  position: relative;
+  padding: clamp(7px, 2.6vw, 10px) clamp(11px, 4.2vw, 16px);
+  font-size: clamp(10px, 2.8vw, 12px);
+  font-family: inherit;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-main);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.theme-toggle:hover {
+  filter: brightness(108%);
+}
+
+.theme-toggle:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+/* ------------------------BACK BUTTON----------------------------- */
+.back-button {
+  width: clamp(24px, 6.4vw, 30px);
+  height: clamp(40px, 10.6vw, 50px);
+  border-radius: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+
+.back-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: clamp(3px, 1vw, 4px);
+  width: clamp(9px, 2.6vw, 12px);
+  height: clamp(9px, 2.6vw, 12px);
+  border-left: 3px solid var(--text-primary);
+  border-bottom: 3px solid var(--text-primary);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* --------------------------- 3D Button ---------------------------- */
+
+.btn-3d {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+.btn-3d .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.btn-3d:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.btn-3d:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* ── Show-more variant — green ── */
+.btn-3d .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.btn-3d .front {
+  display: block;
+  position: relative;
+  border-radius: 12px;
+  font-size: clamp(12px, 3vw, 14px);
+  font-family: inherit;
+  font-weight: 500;
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+  padding: 0;
+  align-content: center;
+  height: 100%;
+  min-height: clamp(32px, 9vw, 36px);
+  padding: 0 clamp(10px, 4vw, 16px);
+}
+
+.btn-3d:hover {
+  filter: brightness(108%);
+}
+
+/*  */
+
+.btn-3d:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.btn-3d:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.btn-3d:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.red .edge {
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+.red .front {
+  background: var(--color-red);
+  color: var(--bg-main);
+}
+
+.green .edge {
+  background: linear-gradient(to left,
+      var(--edge-color-green-dark) 0%,
+      var(--edge-color-green-light) 8%,
+      var(--edge-color-green-light) 92%,
+      var(--edge-color-green-dark) 100%);
+}
+
+.green .front {
+  background: var(--color-green);
+  color: var(--bg-main);
+}
+
+.white .edge {
+  background: linear-gradient(to left,
+      hsl(0, 0%, 42%) 0%,
+      hsl(0, 0%, 52%) 8%,
+      hsl(0, 0%, 52%) 92%,
+      hsl(0, 0%, 42%) 100%);
+}
+
+.white .front {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.btn-3d img {
+  width: clamp(15px, 4.6vw, 20px);
+  aspect-ratio: 1/1;
+  filter: var(--img-theme-filter);
+}
+
+.icon-width {
+  width: 36px !important;
+}
+
+.icon-width .front {
+  padding: 0 !important;
+}
+
+/* --------------------3D SORT BUTTON -------------------------- */
+
+/* Sort pills — 3D push */
+.sort-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sort-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.sort-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.sort-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* edge — inactive (neutral grey) */
+.sort-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(to left,
+      hsl(0, 0%, 42%) 0%,
+      hsl(0, 0%, 52%) 8%,
+      hsl(0, 0%, 52%) 92%,
+      hsl(0, 0%, 42%) 100%);
+}
+
+/* front — inactive */
+.sort-btn .front {
+  display: block;
+  position: relative;
+  padding: clamp(5px, 1.8vw, 7px) clamp(10px, 4vw, 15px);
+  border-radius: 999px;
+  font-size: clamp(10px, 2.6vw, 12px);
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.sort-btn:hover {
+  filter: brightness(108%);
+}
+
+.sort-btn:hover .front {
+  color: var(--color-red);
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.sort-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.sort-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* edge — active (red) */
+.sort-btn.active .edge {
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+/* front — active */
+.sort-btn.active .front {
+  color: var(--bg-main);
+  background: var(--color-red);
+}
+
+/* ------------------- MAT INPUT --------------------------- */
+/* ══════════════════════════════
+   INPUT — no box, only underline
+══════════════════════════════ */
+
+/* ── Input ── */
+.mat-input {
+  height: 46px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--bg-very-light);
+  outline: none;
+  transition: border-color 0.9s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.mat-input:focus {
+  border-color: var(--color-red);
+  background: var(--bg-main);
+  box-shadow: 0 0 0 3px var(--shadow-red-sm);
+}
+
+.mat-input.error {
+  border-color: var(--color-red) !important;
+}
+
+.mat-input-prefix-wrap {
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-very-light);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mat-input-prefix-wrap div {
+  width: 100%;
+}
+
+.mat-input-prefix-wrap:focus-within {
+  border-color: var(--color-red);
+  background: var(--bg-main);
+  box-shadow: 0 0 0 3px var(--shadow-red-sm);
+}
+
+.mat-prefix {
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-right: 1px solid var(--border-lightest);
+  height: 46px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  background: var(--border-lighter);
+}
+
+.mat-input-with-prefix {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  flex: 1;
+}
+
+/* ── Row ── */
+.mat-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.mat-row .field-group {
+  min-width: 0;
+}
+
+.mat-input {
+  display: block !important;
+  width: 100% !important;
+  height: 36px !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  color: var(--m-text) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid var(--m-underline) !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  caret-color: var(--m-accent) !important;
+  transition: border-color 0.7s var(--m-ease) !important;
+  border-bottom-color: var(--text-tertiary) !important;
+}
+
+.mat-input::placeholder {
+  color: transparent !important;
+}
+
+.mat-input:hover {
+  border: none !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--text-tertiary) !important;
+}
+
+.mat-input.error,
+.mat-input-prefix-wrap.error {
+  border-bottom: 2px solid var(--m-accent) !important;
+}
+
+/* ══════════════════════════════
+   FLOATING LABEL
+══════════════════════════════ */
+.mat-label {
+  position: absolute;
+  top: 24px;
+  /* sits on the baseline when idle */
+  left: 0;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--m-label-idle);
+  pointer-events: none;
+  transition:
+    top 0.25s var(--m-ease),
+    font-size 0.25s var(--m-ease),
+    font-weight 0.25s var(--m-ease),
+    color 0.25s var(--m-ease),
+    letter-spacing 0.25s var(--m-ease);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Floated state — focus OR has value */
+.mat-input:focus~.mat-label,
+.mat-input:not(:placeholder-shown)~.mat-label {
+  top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--m-accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mat-input.error~.mat-label {
+  color: var(--m-accent);
+}
+
+/* ══════════════════════════════
+   HIGHLIGHT BAR — draws left→right
+══════════════════════════════ */
+.mat-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--m-accent);
+  border-radius: 1px;
+  transition: width 0.3s var(--m-spring);
+  pointer-events: none;
+}
+
+.mat-input:focus~.mat-label~.mat-bar,
+.mat-input:focus~.mat-bar {
+  width: 100%;
+}
+
+.mat-input.error~.mat-bar {
+  width: 100%;
+}
+
+/* ══════════════════════════════
+   PREFIX WRAP — phone field
+══════════════════════════════ */
+.mat-input-prefix-wrap {
+  display: flex !important;
+  align-items: flex-end !important;
+  border: none !important;
+  border-bottom: 2px solid var(--m-underline) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  height: auto !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  transition: border-color 0.25s var(--m-ease) !important;
+}
+
+/* The bar for prefix fields lives on mat via :focus-within */
+.mat:focus-within .mat-input-prefix-wrap {
+  border-bottom-color: transparent !important;
+  /* bar covers it */
+}
+
+.mat:focus-within .mat-bar {
+  width: 100%;
+}
+
+.mat:focus-within .mat-label {
+  top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--m-accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.mat-prefix {
+  height: 36px !important;
+  vertical-align: middle !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary);
+  background: transparent !important;
+  border: none !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1 !important;
+}
+
+.mat-prefix.error {
+  color: var(--m-accent) !important;
+}
+
+.mat-input-with-prefix {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  flex: 1 !important;
+  padding-left: 4px !important;
+  transition: border-color 0.7s var(--m-ease) !important;
+  border-bottom: 1px solid var(--text-tertiary) !important;
+}
+
+/* ══════════════════════════════
+   TEXTAREA
+══════════════════════════════ */
+.mat-area {
+  position: relative;
+  width: 100%;
+  padding-top: 20px;
+}
+
+.mat-area-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--m-accent);
+  border-radius: 1px;
+  transition: width 0.3s var(--m-spring);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════
+   ERROR
+══════════════════════════════ */
+.rf-error {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--m-accent) !important;
+  margin-top: 5px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  animation: m-err 0.22s var(--m-ease) both !important;
+  padding-left: 0 !important;
+}
+
+@keyframes m-err {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ══════════════════════════════
+   FIELD ENTRY STAGGER
+══════════════════════════════ */
+@keyframes m-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mat,
+.mat-area {
+  animation: m-in 0.3s var(--m-ease) both;
+}
+
+.field-group:nth-child(1) .mat {
+  animation-delay: 0.04s;
+}
+
+.field-group:nth-child(2) .mat {
+  animation-delay: 0.08s;
+}
+
+.field-group:nth-child(3) .mat {
+  animation-delay: 0.12s;
+}
+
+.mat-row .field-group:nth-child(1) .mat {
+  animation-delay: 0.1s;
+}
+
+.mat-row .field-group:nth-child(2) .mat {
+  animation-delay: 0.15s;
+}
+
+.sq-padding .front {
+  height: clamp(32px, 9vw, 40px) !important;
+  width: clamp(32px, 9vw, 40px) !important;
+  padding: 0 !important;
+}
+
+
+
+@media (max-width: 578px) {
+  .sort-btn .front {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .width100 {
+    width: 100%;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE BOTTOM NAV — MobileFooterNav.js
+   Hidden by default; shown only under 600px width, on every
+   page except Welcome (gating for the latter lives in App.js).
+═══════════════════════════════════════════════════════ */
+.mobile-footer-nav {
+  display: none;
+}
+
+@media (max-width: 600px) {
+
+  /* .App is pinned to the viewport height and laid out as a flex column
+     so the footer nav is a normal (non-fixed) flex item that always
+     ends up at the bottom of the *screen* — not just the bottom of
+     whatever content happens to render above it. The routed page
+     content is the flexible item and scrolls internally; the nav
+     itself never shrinks and never gets scrolled past or covered. */
+  .App {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  /* Direct child of .App rendered by react-router for the current
+     route (AnimatePresence itself renders no DOM node, so this is
+     the actual flex item sitting above the footer nav). */
+  .App>.page-transition-wrapper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* Floating bag/profile buttons are replaced by the Bag/Profile tabs
+     in the footer nav at this width, so they're hidden entirely here
+     rather than repositioned above the nav — EXCEPT the profile
+     button on the events/booking pages specifically, which is kept
+     visible there (repositioned top-left, see
+     .floating-profile-btn--event-page below) per an explicit request
+     to have it there even though the footer nav's own Profile tab
+     also reaches /profile from those pages. */
+  #floating-bag-btn,
+  .floating-profile-btn:not(.floating-profile-btn--event-page) {
+    display: none !important;
+  }
+
+  .floating-bell-wrapper {
+    bottom: 88px !important;
+  }
+
+  .mobile-footer-nav {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    height: 64px;
+    background: var(--bg-main);
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    z-index: 500;
+    flex: 0 0 auto;
+    padding: 5px;
+  }
+
+  /* Liquid sliding highlight behind the active tab — same mechanism
+     and timing as the admin panel's .app-tab-pill-liquid (Common.css),
+     powered here by useTabLiquid measuring the active
+     .mobile-footer-tab in the DOM. Sits behind the tab buttons
+     (z-index 1 vs their default stacking) and glides to whichever tab
+     is active instead of the background just snapping on. */
+  .mobile-footer-tab-liquid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 10px;
+    background-color: var(--color-pale-red);
+    pointer-events: none;
+    z-index: 1;
+    transition:
+      transform 0.55s cubic-bezier(0.22, 0.9, 0.25, 1),
+      width 0.55s cubic-bezier(0.22, 0.9, 0.25, 1),
+      height 0.55s cubic-bezier(0.22, 0.9, 0.25, 1),
+      opacity 0.2s ease;
+  }
+
+  .mobile-footer-tab {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-secondary, #888);
+    padding: 5px 0;
+    border-radius: 10px;
+    width: 70px;
+    /* Color settles on the same slower timing as the liquid thumb's
+       slide, matching the admin panel's .app-tab-pill (color 0.35s)
+       so the label doesn't snap ahead of the highlight sliding under
+       it. */
+    transition: color 0.35s ease, transform 0.2s ease;
+  }
+
+  .mobile-footer-tab:active {
+    transform: scale(0.97);
+  }
+
+  .mobile-footer-tab.active {
+    color: var(--color-red);
+    /* No background-color here — the sliding .mobile-footer-tab-liquid
+       thumb above is the only highlight now. This used to also set
+       its own pale-red background, which (combined with the
+       className bug fixed in MobileFooterNav.js, where every tab
+       independently re-checked its own route match) could leave two
+       tabs "active" at once — e.g. Home still matching /categories
+       while Bag was active from isBagOpen — showing as two separate
+       highlight boxes instead of one sliding between them. */
+  }
+
+  .mobile-footer-tab-icon {
+    font-size: 18px;
+    line-height: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+  }
+
+  .mobile-footer-tab-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: var(--img-theme-filter);
+  }
+
+  .mobile-footer-tab-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: var(--color-red);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-footer-tab-label {
+    font-size: 10px;
+    font-weight: 600;
+  }
+}
+
+/* =============================================
+   GLOBAL STICKY HEADER TRANSPARENCY — !important,
+   deliberately overriding everything else.
+   Applied per-page-CSS-file too (see FoodList.css,
+   FoodCategory.css, ReservationForm.css, etc.), but
+   scattering the same rule across a dozen files that
+   each only reach some pages has twice now left gaps
+   where a page's own CSS (loaded after App.css) could
+   silently win the cascade on a plain, non-!important
+   rule. This is the single source of truth that
+   cannot be quietly overridden by anything else that
+   doesn't also use !important — every sticky page
+   header in the app is covered by one of these two
+   class names.
+============================================= */
+.food-header,
+.food-grid-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 50 !important;
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+}

@@ -1,0 +1,122 @@
+/**
+ * Support.css  —  Dishky Admin Panel   (prefix: sp-)
+ * Styles shared by the Support list (Support.js) and the ticket page
+ * (SupportDetails.js): status / priority badges, banner, hints and the
+ * attachment preview list. Badge look follows Memos.css so both pages
+ * read the same. Everything else comes from the shared Common.css /
+ * ModalCSS.css classes (.header, .filter-bar, .table-wrapper,
+ * .admin-modal, .mat, .section, .details-*).
+ */
+
+.sp-muted { color: #6b7280; font-size: 13px; }
+.sp-text { white-space: pre-wrap; word-break: break-word; margin: 0; }
+.sp-hint { font-size: 12px; color: #6b7280; margin: 6px 0 0; }
+
+.sp-banner {
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* ── Table cell helpers ───────────────────────────────────────── */
+.sp-title-cell {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Priority badges ──────────────────────────────────────────── */
+.sp-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+  white-space: nowrap;
+  background: #e5e7eb;
+  color: #374151;
+}
+.sp-priority-low { background: #e5e7eb; color: #374151; }
+.sp-priority-medium { background: #dbeafe; color: #1d4ed8; }
+.sp-priority-high { background: #ffedd5; color: #c2410c; }
+.sp-priority-critical { background: #fee2e2; color: #dc2626; border: 1.5px solid #dc2626; font-weight: 800; }
+
+/* ── Ticket status badges ─────────────────────────────────────── */
+.sp-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+.sp-status-received { background: #dbeafe; color: #1d4ed8; }
+.sp-status-in-review { background: #ede9fe; color: #6d28d9; }
+.sp-status-awaiting-you,
+.sp-status-awaiting-your-confirmation { background: #ffedd5; color: #c2410c; }
+.sp-status-in-progress { background: #fef3c7; color: #92400e; }
+.sp-status-testing { background: #e0e7ff; color: #4338ca; }
+.sp-status-fix-ready { background: #d1fae5; color: #065f46; }
+.sp-status-resolved { background: #d1fae5; color: #065f46; }
+.sp-status-closed { background: #dcfce7; color: #16a34a; }
+.sp-status-reopened { background: #fee2e2; color: #dc2626; }
+
+/* ── Attachment preview list (create / attach forms) ──────────── */
+.sp-file-preview-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sp-file-preview-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: #374151;
+  word-break: break-all;
+}
+.sp-file-preview-list button {
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* ── Details page: header meta row (same as .memo-header-meta) ── */
+.sp-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.sp-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  min-height: 0;
+  color: var(--color-blue, #2563eb);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+.sp-link:hover { color: #111; }

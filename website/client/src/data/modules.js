@@ -1,0 +1,303 @@
+import {
+  Megaphone, CalendarHeart, ChefHat, Zap, Users, Package, Gift, UtensilsCrossed, Armchair, Wallet,
+  BarChart3, Store, ShieldCheck, Smartphone, FolderKanban, QrCode, Bell, Timer, Printer, Handshake,
+  Ticket, Camera, ClipboardCheck, Flame, Clock, TrendingUp, Layers, MessageSquare, Crown, Percent,
+  Lock, ScrollText, MapPin, CreditCard, Receipt, FileText, ListTodo, StickyNote, Salad, Sparkles,
+  CalendarClock, GraduationCap, AlertTriangle, Link2, Eye, Heart, ShoppingBag, Banknote, UserCheck, Check,
+} from "lucide-react";
+import { images } from "../assets/images/imageUrls.js";
+
+/**
+ * Single source of truth for every Dishky module: the home page spotlights,
+ * the module index and each module's dedicated page all read from here.
+ * Features are grounded in what the product actually has (admin sidebar,
+ * guest app, kitchen/service/staff/event modules).
+ *
+ * group: "spotlight" modules get a full section on the home page.
+ */
+const baseModules = [
+  {
+    slug: "promotions", path: "/promotions", group: "spotlight", icon: Megaphone, name: "Promotions & Collaborations",
+    short: "Dishky promotes you to its own audience.", photo: images.friends, demo: "promo", color: "#f33716",
+    tagline: "We put your restaurant in front of new guests.",
+    lacks: "Other apps stop at your four walls.",
+    features: [
+      { icon: Sparkles, title: "Restaurant spotlights", tip: "Your story, dishes and room, featured on Dishky's social media." },
+      { icon: Handshake, title: "Co-created content", tip: "We make posts and reels with you, not a template for you." },
+      { icon: Percent, title: "Offers amplified", tip: "Specials and launches go out through Dishky's platform." },
+      { icon: Link2, title: "Straight to your menu", tip: "A viewer taps through to your Dishky menu and orders." },
+    ],
+    journey: [
+      { icon: Camera, title: "Share your story", photo: images.chefPlating },
+      { icon: Handshake, title: "Plan together", photo: images.restaurantInterior2 },
+      { icon: Megaphone, title: "We publish", photo: images.friends },
+      { icon: ShoppingBag, title: "Guests order", photo: images.dishCurry },
+    ],
+    stats: [{ to: 4, suffix: "", label: "Content formats" }, { to: 1, suffix: " tap", label: "From post to menu" }, { to: 100, suffix: "%", label: "Co-created with you" }],
+    gaps: [["Posting alone on your own page", "Featured to Dishky's audience"], ["Generic templates", "Content made together"], ["Followers can't order", "One tap to your menu"]],
+    related: ["events", "loyalty", "guest-app"],
+  },
+  {
+    slug: "events", path: "/events", group: "spotlight", icon: CalendarHeart, name: "Event Collaboration",
+    short: "Plan, promote and run event nights with us.", photo: images.dining, demo: "events", color: "#f66a55",
+    tagline: "Tasting nights, chef's tables and pop-ups, promoted and run together.",
+    lacks: "No other ordering app co-hosts your events.",
+    features: [
+      { icon: Sparkles, title: "Event concepts", tip: "Bring an idea or let us suggest one for the season." },
+      { icon: Megaphone, title: "Promoted by Dishky", tip: "Announcement to recap, on Dishky's own platform." },
+      { icon: Ticket, title: "Bookings & pre-bookings", tip: "Reservations, celebrations, pre-bookings and catering built in." },
+      { icon: QrCode, title: "Run it on the night", tip: "Guests scan and order, your team runs service from the panel." },
+      { icon: Camera, title: "Recap content", tip: "Photos and highlights keep working after the night." },
+    ],
+    journey: [
+      { icon: Sparkles, title: "Idea", photo: images.bar },
+      { icon: Users, title: "Plan", photo: images.dining },
+      { icon: Megaphone, title: "Promote", photo: images.friends },
+      { icon: QrCode, title: "Run", photo: images.restaurantTable },
+      { icon: Camera, title: "Recap", photo: images.foodSpread },
+    ],
+    stats: [{ to: 5, suffix: "", label: "Event types" }, { to: 4, suffix: "", label: "Booking flows" }, { to: 1, suffix: "", label: "Platform for it all" }],
+    gaps: [["Events live on posters and DMs", "One planner, bookings included"], ["You promote it alone", "Dishky promotes it with you"], ["Orders on the night are chaos", "QR ordering at every table"]],
+    related: ["promotions", "orders", "service"],
+  },
+  {
+    slug: "kitchen", path: "/platform/kitchen", group: "spotlight", icon: ChefHat, name: "Kitchen Display (KDS)",
+    short: "Live tickets, timers and kitchen discipline.", photo: images.kitchenAction, demo: "kds", extra: "kitchenChecklist", color: "#f33716",
+    tagline: "A live board of every ticket, with timers.",
+    lacks: "Most apps print a ticket and stop there.",
+    features: [
+      { icon: Flame, title: "Live ticket board", tip: "Orders appear the second guests place them." },
+      { icon: Timer, title: "Timers that warn", tip: "Slow tickets turn red before guests notice." },
+    ],
+    journey: [
+      { icon: Bell, title: "Ticket arrives", photo: images.kitchenAction },
+      { icon: Flame, title: "Cooking", photo: images.chefPlating },
+      { icon: Check, title: "Ready", photo: images.dishCurry },
+      { icon: Bell, title: "Server pinged", photo: images.serviceServe },
+    ],
+    stats: [{ to: 3, suffix: "", label: "Ticket stages" }, { to: 0, suffix: "", label: "Paper tickets lost" }, { to: 3, suffix: "", label: "Tap states per ticket" }],
+    gaps: [["Paper tickets and shouting", "A live board with timers"], ["Hygiene on paper, if at all", "Mise & cleaning checklists"], ["No trail of who did what", "A full activity log"]],
+    related: ["orders", "inventory", "staff"],
+  },
+  {
+    slug: "orders", path: "/platform/orders", group: "spotlight", icon: Zap, name: "Live Orders",
+    short: "Scan, order, cook, serve and pay in real time.", photo: images.serviceOrder, demo: "orders", color: "#f33716",
+    tagline: "Every order, in sync across guest, kitchen and counter.",
+    lacks: "Real-time, not refresh-and-hope.",
+    features: [
+      { icon: QrCode, title: "Table QR ordering", tip: "Each table has its own link." },
+      { icon: Zap, title: "Real-time sync", tip: "Guest, kitchen and counter see the same order instantly." },
+      { icon: Bell, title: "Status updates", tip: "Guests track progress; staff update in a tap." },
+      { icon: Printer, title: "Receipt printing", tip: "Bills and kitchen slips print on your own printers." },
+      { icon: Receipt, title: "Order history", tip: "Search, filter and reopen any order." },
+    ],
+    journey: [
+      { icon: QrCode, title: "Scan", photo: images.serviceOrder },
+      { icon: UtensilsCrossed, title: "Order", photo: images.dishPasta },
+      { icon: ChefHat, title: "Cook", photo: images.serviceCook },
+      { icon: Bell, title: "Serve", photo: images.serviceServe },
+      { icon: Wallet, title: "Pay", photo: images.servicePay },
+    ],
+    stats: [{ to: 5, suffix: "", label: "Stages, one flow" }, { to: 1, suffix: "s", label: "Typical sync time" }, { to: 3, suffix: "", label: "Screens in sync" }],
+    gaps: [["Waiters carry orders by hand", "Orders land in the kitchen instantly"], ["Guests ask 'where's my food?'", "Guests track it live"], ["End-of-day tally by hand", "Every order recorded"]],
+    related: ["kitchen", "payments", "guest-app"],
+  },
+  {
+    slug: "staff", path: "/platform/staff", group: "spotlight", icon: Users, name: "Staff & Work Plan",
+    short: "Attendance, salary, training and team chat.", photo: images.chefPlating, demo: "staff", color: "#e4290c",
+    tagline: "Run your team from the same place you run your restaurant.",
+    lacks: "HR tools usually live in another app.",
+    features: [
+      { icon: Clock, title: "Attendance", tip: "Clock in, shifts and presence at a glance." },
+      { icon: Banknote, title: "Salary", tip: "Pay records tied to attendance." },
+      { icon: GraduationCap, title: "Training", tip: "Track who is trained on what." },
+      { icon: TrendingUp, title: "Career paths", tip: "Roles, growth and history per person." },
+      { icon: MessageSquare, title: "Staff chat", tip: "Team messages without a personal group chat." },
+      { icon: CalendarClock, title: "Owner work plan", tip: "Your own meetings and tasks on the dashboard." },
+    ],
+    journey: [
+      { icon: Clock, title: "Clock in", photo: images.kitchenAction },
+      { icon: UserCheck, title: "Assigned", photo: images.chefPlating },
+      { icon: MessageSquare, title: "Team chat", photo: images.restaurantInterior1 },
+      { icon: Banknote, title: "Paid", photo: images.servicePay },
+    ],
+    stats: [{ to: 5, suffix: "", label: "Staff tools" }, { to: 1, suffix: "", label: "App for the whole team" }, { to: 0, suffix: "", label: "Paper registers" }],
+    gaps: [["Paper registers and WhatsApp groups", "Attendance and chat in-app"], ["Salary in a spreadsheet", "Salary beside attendance"], ["Training is tribal knowledge", "Training tracked per person"]],
+    related: ["roles", "kitchen", "service"],
+  },
+  {
+    slug: "inventory", path: "/platform/inventory", group: "spotlight", icon: Package, name: "Inventory & Recipes",
+    short: "Ingredients, stock and low-stock alerts.", photo: images.foodSpread, demo: "inventory", color: "#f44125",
+    tagline: "Know what's on the shelf before the rush hits.",
+    lacks: "Most ordering apps ignore the storeroom.",
+    features: [
+      { icon: Layers, title: "Ingredients", tip: "Every ingredient, with details." },
+      { icon: Package, title: "Stocks", tip: "Levels that move as you sell." },
+      { icon: AlertTriangle, title: "Low-stock alerts", tip: "Warnings before you run out." },
+      { icon: UtensilsCrossed, title: "Recipe-linked dishes", tip: "Dishes tied to the ingredients they use." },
+    ],
+    journey: [
+      { icon: Package, title: "Stock in", photo: images.salad },
+      { icon: UtensilsCrossed, title: "Dish sold", photo: images.pizza },
+      { icon: AlertTriangle, title: "Alert", photo: images.foodSpread },
+      { icon: Package, title: "Reorder", photo: images.grill },
+    ],
+    stats: [{ to: 4, suffix: "", label: "Inventory tools" }, { to: 25, suffix: "%", label: "Low-stock demo threshold" }, { to: 0, suffix: "", label: "Surprise 86'd dishes" }],
+    gaps: [["Count the shelves by hand", "Stock moves as dishes sell"], ["Find out you're out mid-service", "Alert before it happens"], ["Recipes in someone's head", "Recipes on every dish"]],
+    related: ["menu", "kitchen", "analytics"],
+  },
+  {
+    slug: "loyalty", path: "/platform/loyalty", group: "spotlight", icon: Gift, name: "Guests, Loyalty & Campaigns",
+    short: "Know your guests. Bring them back.", photo: images.dishDessert, demo: "loyalty", color: "#f5533a",
+    tagline: "Points, tiers, favourites and WhatsApp campaigns.",
+    lacks: "Guest data usually belongs to the app, not you.",
+    features: [
+      { icon: Crown, title: "Loyalty tiers", tip: "Points and tiers you control." },
+      { icon: Heart, title: "Favourites", tip: "Guests save dishes and combos." },
+      { icon: MessageSquare, title: "WhatsApp campaigns", tip: "Message your guest list in a few taps." },
+      { icon: Percent, title: "Offers", tip: "Create offers and combos that guests see at the table." },
+    ],
+    journey: [
+      { icon: QrCode, title: "Guest orders", photo: images.dishBiryani },
+      { icon: Gift, title: "Earns points", photo: images.dishDessert },
+      { icon: MessageSquare, title: "Gets an offer", photo: images.friends },
+      { icon: Heart, title: "Comes back", photo: images.restaurantTable },
+    ],
+    stats: [{ to: 3, suffix: "", label: "Loyalty tiers" }, { to: 1, suffix: "", label: "Guest list you own" }, { to: 2, suffix: "", label: "Ways to bring them back" }],
+    gaps: [["Guests are anonymous", "Guest profiles and history"], ["Promos by hand", "WhatsApp campaigns from the panel"], ["No reason to return", "Points, tiers and offers"]],
+    related: ["promotions", "menu", "guest-app"],
+  },
+  {
+    slug: "menu", path: "/platform/menu", group: "core", icon: UtensilsCrossed, name: "Menu & Combos",
+    short: "Categories, dishes, combos and favourites.", photo: images.dishCurry, demo: "menu", color: "#f33716",
+    tagline: "Change the menu once. Every table sees it.",
+    features: [
+      { icon: Layers, title: "Categories", tip: "Organise your menu your way." },
+      { icon: UtensilsCrossed, title: "Dishes", tip: "Photos, prices and details." },
+      { icon: Salad, title: "Combos", tip: "Build combos with offer rules." },
+      { icon: Eye, title: "Availability", tip: "Switch a dish off in one tap." },
+    ],
+    journey: [{ icon: Layers, title: "Organise", photo: images.dishPasta }, { icon: UtensilsCrossed, title: "Add dishes", photo: images.dishCurry }, { icon: Salad, title: "Make combos", photo: images.salad }, { icon: Smartphone, title: "Live at tables", photo: images.dishBiryani }],
+    stats: [{ to: 1, suffix: "", label: "Place to edit" }, { to: 0, suffix: "", label: "Reprinted menus" }, { to: 100, suffix: "%", label: "Always current" }],
+    gaps: [["Reprint menus for every change", "Update once, live everywhere"], ["Sold-out dishes still orderable", "One tap to switch off"]],
+    related: ["inventory", "loyalty", "guest-app"],
+  },
+  {
+    slug: "service", path: "/platform/service", group: "core", icon: Armchair, name: "Service & Tables",
+    short: "Floor map, assignments and service routines.", photo: images.serviceServe, demo: "tables", extra: "serviceChecklist", color: "#f66a55",
+    tagline: "See the whole floor at once.",
+    features: [
+      { icon: Armchair, title: "Table management", tip: "Free, dining, reserved, bill due." },
+      { icon: UserCheck, title: "Staff assigning", tip: "Who covers which tables." },
+      { icon: ClipboardCheck, title: "Mise & cleaning", tip: "Service-side checklists." },
+      { icon: ScrollText, title: "Activity & reports", tip: "A trail for every shift." },
+    ],
+    journey: [{ icon: Armchair, title: "Seat", photo: images.restaurantTable }, { icon: UserCheck, title: "Assign", photo: images.serviceServe }, { icon: Bell, title: "Serve", photo: images.dining }, { icon: Receipt, title: "Close", photo: images.servicePay }],
+    stats: [{ to: 4, suffix: "", label: "Table states" }, { to: 7, suffix: "", label: "Service tools" }, { to: 1, suffix: "", label: "Floor view" }],
+    gaps: [["Floor state in your head", "A live floor map"], ["No service checklists", "Mise & cleaning built in"]],
+    related: ["orders", "staff", "events"],
+  },
+  {
+    slug: "payments", path: "/platform/payments", group: "core", icon: Wallet, name: "Payments & Billing",
+    short: "Gateways, bank accounts, splits and receipts.", photo: images.servicePay, demo: "payments", color: "#e4290c",
+    tagline: "Get paid at the table, reconcile in minutes.",
+    features: [
+      { icon: CreditCard, title: "Payment gateway", tip: "Connect your own gateway." },
+      { icon: Banknote, title: "Cash, card, UPI", tip: "Every method tracked." },
+      { icon: Receipt, title: "Receipts", tip: "Printed and recorded." },
+      { icon: Wallet, title: "Bank accounts", tip: "Keep your accounts on file." },
+    ],
+    journey: [{ icon: Receipt, title: "Bill", photo: images.servicePay }, { icon: Users, title: "Split", photo: images.friends }, { icon: CreditCard, title: "Pay", photo: images.restaurantTable }, { icon: Printer, title: "Receipt", photo: images.dining }],
+    stats: [{ to: 3, suffix: "", label: "Payment methods" }, { to: 4, suffix: "", label: "Split ways, demo" }, { to: 0, suffix: "", label: "Cash-up surprises" }],
+    gaps: [["Chasing the bill", "Pay from the phone"], ["Cash mismatches", "Every payment recorded"]],
+    related: ["orders", "analytics", "branches"],
+  },
+  {
+    slug: "analytics", path: "/platform/analytics", group: "core", icon: BarChart3, name: "Analytics & Dashboard",
+    short: "Sales, best sellers and peak hours.", photo: images.restaurantInterior1, demo: "analytics", color: "#f33716",
+    tagline: "The numbers behind your day, without the spreadsheet.",
+    features: [
+      { icon: BarChart3, title: "Sales dashboard", tip: "Today, week and month." },
+      { icon: TrendingUp, title: "Best sellers", tip: "What guests love." },
+      { icon: Clock, title: "Peak hours", tip: "Staff for the rush." },
+      { icon: ScrollText, title: "Reports", tip: "Kitchen and service reports." },
+    ],
+    journey: [{ icon: Zap, title: "Orders flow", photo: images.serviceOrder }, { icon: BarChart3, title: "Totals build", photo: images.restaurantInterior1 }, { icon: TrendingUp, title: "Patterns show", photo: images.dining }, { icon: Sparkles, title: "You decide", photo: images.chefPlating }],
+    stats: [{ to: 3, suffix: "", label: "Time ranges" }, { to: 1, suffix: "", label: "Dashboard" }, { to: 0, suffix: "", label: "Spreadsheets" }],
+    gaps: [["Guessing what sells", "Best sellers on screen"], ["Month-end number crunching", "Totals build as you serve"]],
+    related: ["payments", "branches", "inventory"],
+  },
+  {
+    slug: "branches", path: "/platform/branches", group: "core", icon: Store, name: "Multi-Branch",
+    short: "Every venue, one account, its own link.", photo: images.dining, demo: "branches", color: "#f66a55",
+    tagline: "One owner view. Each branch its own address.",
+    features: [
+      { icon: Store, title: "Venues", tip: "Add and manage branches." },
+      { icon: Link2, title: "Own links", tip: "dishky.com/restaurant/venue/table." },
+      { icon: Eye, title: "Compare branches", tip: "Orders and staff per venue." },
+      { icon: MapPin, title: "Per-table QR", tip: "Each table gets its own code." },
+    ],
+    journey: [{ icon: Store, title: "Add venue", photo: images.dining }, { icon: Link2, title: "Get links", photo: images.restaurantInterior2 }, { icon: QrCode, title: "Print QR", photo: images.restaurantTable }, { icon: Eye, title: "Watch all", photo: images.restaurantInterior1 }],
+    stats: [{ to: 1, suffix: "", label: "Account" }, { to: 3, suffix: "", label: "Levels: restaurant, venue, table" }, { to: 0, suffix: "", label: "Extra logins" }],
+    gaps: [["A login per branch", "One account, every venue"], ["Shared QR codes", "A unique link per table"]],
+    related: ["analytics", "roles", "payments"],
+  },
+  {
+    slug: "roles", path: "/platform/roles", group: "core", icon: ShieldCheck, name: "Roles, Permissions & Audit",
+    short: "Right access for everyone, a trail for everything.", photo: images.kitchenAction, demo: "roles", color: "#e4290c",
+    tagline: "Everyone sees what they need. Nothing happens unlogged.",
+    features: [
+      { icon: Lock, title: "Role permissions", tip: "Choose modules per role." },
+      { icon: UserCheck, title: "Staff accounts", tip: "A login per person." },
+      { icon: ScrollText, title: "Audit logs", tip: "Every change, recorded." },
+      { icon: ShieldCheck, title: "Plan-aware access", tip: "Modules follow your subscription." },
+    ],
+    journey: [{ icon: UserCheck, title: "Create role", photo: images.chefPlating }, { icon: Lock, title: "Set access", photo: images.kitchenAction }, { icon: Users, title: "Assign staff", photo: images.restaurantInterior1 }, { icon: ScrollText, title: "Review log", photo: images.dining }],
+    stats: [{ to: 5, suffix: "", label: "Example roles" }, { to: 6, suffix: "", label: "Modules to gate" }, { to: 100, suffix: "%", label: "Changes logged" }],
+    gaps: [["Everyone shares one password", "A login and a role each"], ["Nobody knows who changed a price", "Audit log shows who"]],
+    related: ["staff", "branches", "back-office"],
+  },
+  {
+    slug: "guest-app", path: "/user-panel", group: "core", icon: Smartphone, name: "Guest App (QR Ordering)",
+    short: "Scan, browse, order, pay and track.", photo: images.serviceOrder, demo: "guest", color: "#f33716",
+    tagline: "No download. Scan and order.",
+    features: [
+      { icon: QrCode, title: "Scan to start", tip: "Straight from the table." },
+      { icon: UtensilsCrossed, title: "Rich menu", tip: "Photos, ingredients and details." },
+      { icon: ShoppingBag, title: "Bag & combos", tip: "Build a combo, add to bag." },
+      { icon: Bell, title: "Live tracking", tip: "Guests watch their order." },
+      { icon: CalendarHeart, title: "Events & bookings", tip: "Reserve, celebrate, pre-book." },
+    ],
+    journey: [{ icon: QrCode, title: "Scan", photo: images.serviceOrder }, { icon: UtensilsCrossed, title: "Browse", photo: images.dishBiryani }, { icon: ShoppingBag, title: "Order", photo: images.dishPasta }, { icon: Bell, title: "Track", photo: images.serviceServe }],
+    stats: [{ to: 0, suffix: "", label: "Apps to download" }, { to: 4, suffix: "", label: "Taps to order" }, { to: 1, suffix: "", label: "Guest screen per table" }],
+    gaps: [["Wait for a menu", "Scan and browse"], ["Wait for the bill", "Pay from the phone"]],
+    related: ["orders", "menu", "loyalty"],
+  },
+  {
+    slug: "back-office", path: "/platform/back-office", group: "core", icon: FolderKanban, name: "Back Office",
+    short: "Memos, documents, to-dos and bank details.", photo: images.restaurantInterior2, demo: "backoffice", color: "#f44125",
+    tagline: "The paperwork, tidy and findable.",
+    features: [
+      { icon: StickyNote, title: "Memos", tip: "Share notices with the team." },
+      { icon: FileText, title: "Documents", tip: "Store and preview files." },
+      { icon: ListTodo, title: "To-do", tip: "Your own task list." },
+      { icon: Banknote, title: "Bank accounts", tip: "Keep details together." },
+    ],
+    journey: [{ icon: StickyNote, title: "Write memo", photo: images.restaurantInterior2 }, { icon: FileText, title: "File it", photo: images.restaurantInterior1 }, { icon: Users, title: "Share", photo: images.dining }, { icon: ListTodo, title: "Tick off", photo: images.chefPlating }],
+    stats: [{ to: 4, suffix: "", label: "Back-office tools" }, { to: 1, suffix: "", label: "Searchable home" }, { to: 0, suffix: "", label: "Lost papers" }],
+    gaps: [["Papers in a drawer", "Documents in one place"], ["Notices on a wall", "Memos on every screen"]],
+    related: ["roles", "staff", "analytics"],
+  },
+];
+
+import { moreModules, categories, routeNames } from "./modulesMore.js";
+
+export { categories };
+export const modules = [...baseModules, ...moreModules].map((m) => ({
+  ...m,
+  path: `/features/${routeNames[m.slug] || m.slug}`,
+}));
+export const routeToSlug = Object.fromEntries(modules.map((m) => [m.path.replace("/features/", ""), m.slug]));
+export const bySlug = Object.fromEntries(modules.map((m) => [m.slug, m]));
+export const spotlight = modules.filter((m) => m.group === "spotlight");
+export const others = modules.filter((m) => m.group !== "spotlight");

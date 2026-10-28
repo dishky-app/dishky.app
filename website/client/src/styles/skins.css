@@ -1,0 +1,110 @@
+/* ==========================================================================
+   PAGE SKINS — scoped entirely to [data-skin], so the landing page and
+   every shared component outside a skinned page are untouched.
+   Palette: brand red, white and black only.
+   ========================================================================== */
+[data-skin] {
+  --r: 28px; --rs: 16px; --rb: 999px; --bw: 1px; --bs: solid;
+  --bcl: rgba(0,0,0,.1); --bcd: rgba(255,255,255,.14);
+  --shl: 0 18px 50px -26px rgba(0,0,0,.35); --shd: none;
+  --hf: 'Sora', system-ui, sans-serif; --ht: none; --hls: -0.02em;
+  --bf: 'Manrope', system-ui, sans-serif;
+  --patt: none; --pattsz: auto;
+  font-family: var(--bf);
+}
+[data-skin] section { background-image: var(--patt); background-size: var(--pattsz); }
+
+[data-skin] .sk-card:not(.dk-demo *) {
+  border-radius: var(--r) !important; border-width: var(--bw) !important; border-style: var(--bs) !important;
+  border-color: var(--bcl) !important; box-shadow: var(--shl) !important;
+}
+[data-skin] [data-nav-theme="dark"] .sk-card:not(.dk-demo *), [data-skin] .sk-card[data-nav-theme="dark"] {
+  border-color: var(--bcd) !important; box-shadow: var(--shd) !important;
+}
+[data-skin] :is(h1, h2, h3, .heading-lg, .heading-hero):not(.dk-demo *) {
+  font-family: var(--hf) !important; text-transform: var(--ht); letter-spacing: var(--hls);
+}
+[data-skin] :is(.btn-primary, .btn-secondary):not(.dk-demo *) { border-radius: var(--rb) !important; }
+
+/* 1 · brutal — hard edges, thick black borders, offset shadows */
+[data-skin="brutal"] { --r: 20px; --rs: 12px; --rb: 999px; --bw: 3px; --bcl: #000000; --bcd: #ffffff;
+  --shl: 8px 8px 0 #000000; --shd: 8px 8px 0 #f33716; --hf: 'Sora', sans-serif; --ht: uppercase; --hls: -0.03em; }
+[data-skin="brutal"] :is(.btn-primary, .btn-secondary) { border: 3px solid #000000 !important; box-shadow: 5px 5px 0 #000000 !important; text-transform: uppercase; }
+
+/* 2 · editorial — serif, hairlines, no shadow */
+[data-skin="editorial"] { --r: 16px; --rs: 12px; --rb: 999px; --bw: 1px; --bcl: rgba(0,0,0,.55); --bcd: rgba(255,255,255,.5);
+  --shl: none; --shd: none; --hf: 'Sora', system-ui, sans-serif; --hls: -0.01em; }
+[data-skin="editorial"] section { border-top: 1px solid rgba(128,128,128,.45); }
+
+/* 3 · swiss — grid, red spine on every card, tight type */
+[data-skin="swiss"] { --r: 20px; --rs: 12px; --rb: 999px; --bw: 1px; --bcl: rgba(0,0,0,.18); --bcd: rgba(255,255,255,.2);
+  --shl: none; --shd: none; --hls: -0.05em;
+  --patt: radial-gradient(circle, color-mix(in srgb, currentColor 16%, transparent) 1.2px, transparent 1.4px); --pattsz: 28px 28px; }
+[data-skin="swiss"] .sk-card:not(.dk-demo *) { border-left: 10px solid #f33716 !important; }
+
+/* 4 · blueprint — dashed lines, mono type, engineering grid */
+[data-skin="blueprint"] { --r: 16px; --rs: 12px; --rb: 999px; --bw: 1.5px; --bs: dashed; --bcl: rgba(0,0,0,.45); --bcd: rgba(255,255,255,.45);
+  --shl: none; --shd: none; --hf: 'JetBrains Mono', ui-monospace, monospace; --hls: -0.04em;
+  --patt: linear-gradient(color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px); --pattsz: 40px 40px; }
+
+/* 5 · receipt — dashed strips on paper, mono */
+[data-skin="receipt"] { --r: 20px; --rs: 12px; --rb: 999px; --bw: 2px; --bs: dashed; --bcl: #000000; --bcd: #ffffff;
+  --shl: 0 0 0 6px #ffffff, 0 0 0 7px rgba(0,0,0,.25); --shd: none; --hf: 'JetBrains Mono', ui-monospace, monospace; --hls: -0.05em;
+  --patt: repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, currentColor 8%, transparent) 31px 32px); }
+
+/* 6 · poster — huge radii, bold stripes */
+[data-skin="poster"] { --r: 48px; --rs: 28px; --rb: 999px; --bw: 0px; --shl: none; --shd: none; --hls: -0.045em; --ht: uppercase;
+  --patt: repeating-linear-gradient(135deg, color-mix(in srgb, currentColor 5%, transparent) 0 18px, transparent 18px 36px); }
+
+/* 7 · soft — gentle, airy, big soft shadows */
+[data-skin="soft"] { --r: 36px; --rs: 20px; --bw: 1px; --bcl: rgba(0,0,0,.06);
+  --shl: 0 30px 80px -34px rgba(0,0,0,.45); --shd: 0 30px 80px -30px rgba(243.0,55.0,22.0,.45); }
+
+/* 8 · noir — black glass and red glow */
+[data-skin="noir"] { --r: 22px; --rs: 14px; --bw: 1px; --bcl: rgba(0,0,0,.25); --bcd: rgba(255,255,255,.18);
+  --shl: 0 0 0 1px rgba(0,0,0,.05); --shd: 0 0 60px -10px rgba(243.0,55.0,22.0,.55); --hls: -0.03em; }
+[data-skin="noir"] [data-nav-theme="dark"] .sk-card:not(.dk-demo *) { backdrop-filter: blur(14px); background-color: rgba(255,255,255,.05) !important; }
+
+/* 9 · hazard — warning tape between sections, chunky tickets */
+[data-skin="hazard"] { --r: 14px; --rs: 10px; --rb: 10px; --bw: 2px; --bcl: #000000; --bcd: #ffffff;
+  --shl: 0 6px 0 #000000; --shd: 0 6px 0 #f33716; --ht: uppercase; --hls: -0.02em; }
+[data-skin="hazard"] section + section { border-top: 14px solid transparent;
+  border-image: repeating-linear-gradient(45deg, #f33716 0 14px, #000000 14px 28px) 14; }
+[data-skin="hazard"] :is(.btn-primary, .btn-secondary) { border: 2px solid #000000 !important; text-transform: uppercase; }
+
+/* photos and canvases keep their own colours */
+[data-skin] img, [data-skin] canvas { filter: none; }
+
+/* ---- skins for the non-module pages ---- */
+/* stencil: black outline, red offset shadow */
+[data-skin="stencil"] { --r: 16px; --rs: 12px; --rb: 999px; --bw: 3px; --bcl: #000000; --bcd: #ffffff; --shl: 7px 7px 0 #f33716; --shd: 7px 7px 0 #f33716; --ht: uppercase; --hls: -0.04em; }
+/* bauhaus: leaf-shaped cards, flat colour */
+[data-skin="bauhaus"] { --r: 28px; --rs: 16px; --rb: 999px; --bw: 0px; --shl: none; --shd: none; --hls: -0.05em; --ht: uppercase;
+  --patt: radial-gradient(circle at 100% 0, color-mix(in srgb, currentColor 8%, transparent) 0 120px, transparent 121px); }
+/* mono: terminal feel */
+[data-skin="mono"] { --r: 20px; --rs: 12px; --rb: 999px; --bw: 1px; --bcl: rgba(0,0,0,.7); --bcd: rgba(255,255,255,.6); --shl: none; --shd: none;
+  --hf: 'JetBrains Mono', ui-monospace, monospace; --hls: -0.06em;
+  --patt: repeating-linear-gradient(0deg, color-mix(in srgb, currentColor 6%, transparent) 0 1px, transparent 1px 4px); }
+/* bold: chunky black frames with a red underline */
+[data-skin="bold"] { --r: 20px; --rs: 12px; --bw: 4px; --bcl: #000000; --bcd: #ffffff; --shl: 0 8px 0 #f33716; --shd: 0 8px 0 #f33716; --hls: -0.03em; }
+/* minimal: hairlines and air */
+[data-skin="minimal"] { --r: 10px; --rs: 8px; --bw: 1px; --bcl: rgba(0,0,0,.14); --bcd: rgba(255,255,255,.18); --shl: none; --shd: none; --hls: -0.01em; }
+/* ticket: dashed, spaced capitals */
+[data-skin="ticket"] { --r: 14px; --rs: 10px; --bw: 2px; --bs: dashed; --bcl: #000000; --bcd: #ffffff; --shl: none; --shd: none; --ht: uppercase; --hls: 0.04em; }
+/* line: serif rules, no boxes */
+[data-skin="line"] { --r: 20px; --rs: 12px; --rb: 999px; --bw: 0px; --shl: none; --shd: none; --hf: 'Sora', system-ui, sans-serif; --hls: -0.02em;
+  --patt: repeating-linear-gradient(0deg, transparent 0 63px, color-mix(in srgb, currentColor 10%, transparent) 63px 64px); }
+[data-skin="line"] .sk-card:not(.dk-demo *) { border-top: 2px solid currentColor !important; }
+/* outline: pills with a stroke */
+[data-skin="outline"] { --r: 56px; --rs: 28px; --bw: 2px; --bcl: #000000; --bcd: #ffffff; --shl: none; --shd: none; --hls: -0.03em; }
+
+/* ---- generic card treatment so every page, not only module pages, takes its skin ---- */
+[data-skin] :is([class*="rounded-3xl"], [class*="rounded-[2rem]"], [class*="rounded-[1.75rem]"], [class*="rounded-[2.5rem]"]):not(.dk-demo *, .sk-card) {
+  border-radius: var(--r) !important; border: var(--bw) var(--bs) var(--bcl) !important; box-shadow: var(--shl) !important;
+}
+[data-skin] [data-nav-theme="dark"] :is([class*="rounded-3xl"], [class*="rounded-[2rem]"], [class*="rounded-[1.75rem]"]):not(.dk-demo *, .sk-card),
+[data-skin] :is([class*="rounded-3xl"], [class*="rounded-[2rem]"]):is([data-nav-theme="dark"], .bg-ink):not(.dk-demo *, .sk-card) {
+  border-color: var(--bcd) !important; box-shadow: var(--shd) !important;
+}
+[data-skin] :is([class*="rounded-2xl"], [class*="rounded-xl"], [class*="rounded-lg"]):not(.dk-demo *, .sk-card) { border-radius: var(--rs) !important; }
+[data-skin] :is(button, a, input)[class*="rounded-full"]:not(.dk-demo *, .sk-card) { border-radius: var(--rb) !important; }

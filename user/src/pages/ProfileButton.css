@@ -1,0 +1,45 @@
+/* Reuses .floating-btn's base look (see FloatingBag.css) and repositions
+   it directly above the bag pill, same right-edge alignment.
+
+   Positioning is pinned to the id (not the .floating-profile-btn class)
+   for the same reason #floating-bag-btn is: an id selector always wins
+   on specificity over a class selector regardless of CSS import order,
+   so this can never silently lose position/z-index to another
+   same-named class defined elsewhere. */
+#floating-profile-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 78px;
+  z-index: 119;
+}
+
+.floating-profile-btn {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  background: var(--color-red);
+  color: #fff;
+}
+
+.floating-profile-btn:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 576px) {
+  #floating-profile-btn {
+    right: 14px;
+    bottom: 74px;
+  }
+
+  .floating-profile-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 15px;
+  }
+}

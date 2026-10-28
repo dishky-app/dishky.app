@@ -1,0 +1,85 @@
+
+
+.-edit-btn {
+  color: red;
+}
+
+.form-group input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+/* PRICE BOX */
+.offers-price-preview {
+  display: flex;
+  justify-content: space-between;
+  background: var(--color-paleblue);
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.offers-price-preview div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.offers-price-preview span {
+  font-size: 12px;
+  color: #777;
+}
+
+.offers-price-preview strong {
+  font-size: 16px;
+  color: #111;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* ── Status badge in table ── */
+.offer-status-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.offer-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.offer-inactive {
+  background: #fee2e2;
+  color: #dc2626;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+}
+
+@media (max-width: 768px) {
+
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 578px) {
+}
+
+@media (max-width: 480px) {
+  .offer-status-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+}

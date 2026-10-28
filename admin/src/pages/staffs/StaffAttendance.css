@@ -1,0 +1,609 @@
+
+
+@keyframes att-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.att-table {
+  width: max-content;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+}
+
+/* Header */
+.att-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.att-table thead tr {
+  background: transparent;
+}
+
+.att-table th {
+  padding: 8px 8px 4px;
+  background: #e9e9e9;
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  min-width: 52px;
+}
+
+.att-date-th {}
+
+.att-date-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+/* Rows */
+.att-row {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.att-row:hover td {
+  background: #fafafe;
+}
+
+/* Cells */
+.att-td {
+  padding: 6px;
+  text-align: center;
+  vertical-align: middle;
+  background: #fff;
+  transition: background 0.15s;
+}
+
+.att-td:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.att-td:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.att-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.att-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.att-name-wrap span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #222;
+  white-space: nowrap;
+}
+
+/* Status cells */
+.att-present-td {
+  background: #f0fdf4 !important;
+}
+
+.att-leave-td {
+  background: #fefce8 !important;
+  min-width: 90px;
+}
+
+.att-absent-td {
+  background: #f9fafb !important;
+}
+
+.att-today-td {
+  background: #eff6ff !important;
+}
+
+/* Leave cell */
+.att-leave-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+}
+
+.att-leave-icon {
+  font-size: 11px;
+  color: #ca8a04;
+  font-weight: 800;
+  background: #fef9c3;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.att-leave-reason {
+  font-size: 10px;
+  color: #92400e;
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Absent cell */
+.att-absent-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+}
+
+.att-absent-icon {
+  font-size: 13px;
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+/* Edit btn */
+.att-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+
+.att-edit-btn:hover {
+  opacity: 1;
+}
+
+.att-edit-btn img {
+  width: 12px;
+  height: 12px;
+}
+
+/* Editing block */
+.att-editing-td {
+  min-width: 110px;
+}
+
+.att-edit-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+}
+
+.att-reason-input {
+  width: 90px;
+  padding: 4px 6px;
+  font-size: 11px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+}
+
+.att-reason-input:focus {
+  border-color: #3b82f6;
+}
+
+.att-save-mini {
+  padding: 3px 8px;
+  font-size: 10px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Custom checkbox */
+.att-checkbox-label {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.att-checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.att-check-custom {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.att-check-custom.checked {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.att-check-custom.checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.att-checkbox:checked+.att-check-custom {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.att-checkbox:checked+.att-check-custom::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+@media (max-width: 768px) {
+}
+
+/* ── Header sections ── */
+.att-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+/* ── Table scroll wrapper ── */
+.att-scroll-wrap {
+  background: #e9e9e9;
+  border-radius: 16px;
+  padding: 0 10px 10px;
+
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 10px;
+  background: #e9e9e9;
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+.att-table-wrap {
+  max-width: 100%;
+}
+
+/* ── Table header cells ── */
+.att-name-th {
+  text-align: left !important;
+  min-width: 150px;
+  position: sticky;
+  left: 0;
+  z-index: 6;
+  background: #e9e9e9 !important;
+}
+
+.att-date-th {
+  min-width: 56px;
+  text-align: center;
+}
+
+.att-today-th {
+  background: #eff6ff !important;
+}
+
+.att-holiday-th {
+  background: #fffbeb !important;
+}
+
+.att-date-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1;
+}
+
+.att-date-wd {
+  font-size: 9px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.att-today-badge {
+  font-size: 8px;
+  font-weight: 700;
+  color: #3b82f6;
+  background: #dbeafe;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-top: 2px;
+  letter-spacing: 0.03em;
+}
+
+.att-hol-badge {
+  font-size: 12px;
+  display: block;
+  margin-top: 2px;
+  cursor: default;
+}
+
+.att-col-toggle {
+  display: block;
+  margin: 4px auto 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  padding: 0;
+}
+
+.att-col-toggle:hover {
+  opacity: 1;
+}
+
+.att-summary-th {
+  min-width: 80px;
+  text-align: center;
+}
+
+/* ── Name cell ── */
+.att-name-th,
+.att-name-td {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: #fff;
+}
+
+thead .att-name-th {
+  z-index: 6;
+  background: #e9e9e9 !important;
+}
+
+.att-name-td {
+  padding: 6px 10px !important;
+  text-align: left;
+}
+
+.att-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.att-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  display: block;
+}
+
+.att-role {
+  font-size: 10px;
+  color: #aaa;
+  font-weight: 400;
+  display: block;
+  margin-top: 1px;
+}
+
+/* ── Special cells ── */
+.att-holiday-td {
+  background: #fffbeb !important;
+}
+
+.att-hol-text {
+  font-size: 14px;
+  cursor: default;
+}
+
+.att-empty-td {
+  background: #f9fafb !important;
+}
+
+/* ── Summary cell ── */
+.att-summary-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.att-sum-p {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+  margin-right: 4px;
+}
+
+.att-sum-a {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  margin-right: 4px;
+}
+
+.att-sum-l {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ca8a04;
+}
+
+/* ── Search wrap + dropdown (mirrors grooming pattern) ── */
+.att-search-wrap {
+  position: relative;
+}
+
+.att-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  min-width: 340px;
+  max-width: 420px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.att-search-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.att-search-suggestion:hover {
+  background: #f0fdf4;
+}
+
+.att-sug-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.att-sug-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.att-sug-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.att-sug-role {
+  font-size: 11px;
+  color: #999;
+}
+
+.att-sug-bar-wrap {
+  width: 60px;
+  height: 5px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.att-sug-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s;
+}
+
+.att-sug-nums {
+  display: flex;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.att-sug-p {
+  color: #16a34a;
+}
+
+.att-sug-a {
+  color: #9ca3af;
+}
+
+.att-sug-l {
+  color: #ca8a04;
+}
+
+.att-sug-pct {
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 34px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.att-search-no-result {
+  padding: 12px 10px;
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1080 / 992 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 1080px) {
+}
+
+@media (max-width: 992px) {
+}
+
+@media (max-width: 578px) {
+
+  .att-table th {
+    font-size: 11px;
+    min-width: 42px;
+    padding: 6px 6px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+}

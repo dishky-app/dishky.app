@@ -1,0 +1,402 @@
+/* ==========================================================================
+   DISHKY — FOOTER
+   Everything decorative here is CSS-only (transform / opacity / background
+   position), so it costs the main thread nothing. All motion is switched
+   off for prefers-reduced-motion at the bottom of this file.
+   ========================================================================== */
+
+@property --dk-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* ---- Atmosphere ---------------------------------------------------------- */
+.dk-footer__grid {
+  position: absolute;
+  inset: 0;
+  z-index: -10;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, #000000 20%, transparent 78%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, #000000 20%, transparent 78%);
+  animation: dk-grid-drift 40s linear infinite;
+}
+@keyframes dk-grid-drift {
+  to {
+    background-position: 26px 52px;
+  }
+}
+
+.dk-footer__orb {
+  position: absolute;
+  z-index: -10;
+  border-radius: 999px;
+  filter: blur(90px);
+  pointer-events: none;
+}
+.dk-footer__orb--a {
+  top: 6%;
+  left: -12%;
+  width: min(60vw, 620px);
+  height: min(60vw, 620px);
+  background: rgba(243.0, 55.0, 22.0, 0.2);
+  animation: dk-orb-a 18s ease-in-out infinite alternate;
+}
+.dk-footer__orb--b {
+  bottom: 8%;
+  right: -14%;
+  width: min(55vw, 560px);
+  height: min(55vw, 560px);
+  background: rgba(246, 101, 79, 0.12);
+  animation: dk-orb-b 22s ease-in-out infinite alternate;
+}
+@keyframes dk-orb-a {
+  to {
+    transform: translate3d(14vw, 10vh, 0) scale(1.15);
+  }
+}
+@keyframes dk-orb-b {
+  to {
+    transform: translate3d(-12vw, -8vh, 0) scale(0.9);
+  }
+}
+
+.dk-ember {
+  position: absolute;
+  bottom: -12px;
+  border-radius: 999px;
+  background: #ff6a4d;
+  box-shadow: 0 0 10px 2px rgba(243.0, 55.0, 22.0, 0.6);
+  opacity: 0;
+  animation-name: dk-ember-rise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes dk-ember-rise {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(24px, -78vh, 0);
+    opacity: 0;
+  }
+}
+
+/* ---- Ribbon (marquee) ---------------------------------------------------- */
+.dk-marquee {
+  position: relative;
+  overflow: hidden;
+  border-block: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.025);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000000 8%, #000000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000000 8%, #000000 92%, transparent);
+}
+.dk-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: dk-marquee 42s linear infinite;
+}
+.dk-marquee:hover .dk-marquee__track {
+  animation-play-state: paused;
+}
+.dk-marquee__row {
+  display: flex;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dk-marquee__item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.1rem 0 1.1rem 1.5rem;
+  white-space: nowrap;
+  font-family: "Sora", system-ui, sans-serif;
+  font-size: clamp(0.95rem, 0.85rem + 0.5vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.72);
+}
+.dk-marquee__dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  background: #f33716;
+  transform: rotate(45deg);
+  box-shadow: 0 0 12px rgba(243.0, 55.0, 22.0, 0.7);
+}
+@keyframes dk-marquee {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ---- CTA panel ----------------------------------------------------------- */
+.dk-cta {
+  position: relative;
+  overflow: hidden;
+  border-radius: clamp(24px, 3vw, 40px);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+/* light that travels around the border */
+.dk-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--dk-angle), rgba(255, 255, 255, 0.1) 0deg, rgba(255, 255, 255, 0.1) 250deg, #f33716 320deg, #faaa9e 345deg, rgba(255, 255, 255, 0.1) 360deg);
+  -webkit-mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000000 0 0) content-box exclude, linear-gradient(#000000 0 0);
+  animation: dk-angle 7s linear infinite;
+  pointer-events: none;
+}
+@keyframes dk-angle {
+  to {
+    --dk-angle: 360deg;
+  }
+}
+/* concentric arcs, like ripples on a plate */
+.dk-cta__pattern {
+  position: absolute;
+  right: -18%;
+  bottom: -70%;
+  width: 90%;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: repeating-radial-gradient(circle, transparent 0 34px, rgba(243.0, 55.0, 22.0, 0.16) 34px 35px);
+  -webkit-mask-image: radial-gradient(circle, #000000 25%, transparent 68%);
+  mask-image: radial-gradient(circle, #000000 25%, transparent 68%);
+  animation: dk-ripple 16s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes dk-ripple {
+  to {
+    transform: scale(1.14) rotate(8deg);
+  }
+}
+
+/* ---- Newsletter ---------------------------------------------------------- */
+.dk-news {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+.dk-news:focus-within {
+  border-color: #f33716;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 4px rgba(243.0, 55.0, 22.0, 0.16);
+}
+.dk-news__input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  padding: 0.5rem 0.5rem 0.5rem 1.1rem;
+  font-size: 16px;
+  color: #ffffff;
+}
+.dk-news__input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+.dk-news__input:focus,
+.dk-news__input:focus-visible {
+  outline: none;
+}
+.dk-news__btn {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #f33716;
+  color: #000000;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s;
+}
+.dk-news__btn:hover {
+  background: #ff5a3c;
+  transform: rotate(-45deg);
+}
+.dk-news__btn:disabled {
+  opacity: 0.6;
+}
+
+/* ---- Links --------------------------------------------------------------- */
+.dk-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.68);
+  transition: color 0.25s, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dk-link > span {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  padding-bottom: 2px;
+  transition: background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dk-link__arrow {
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition: opacity 0.25s, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  color: #ff6a4d;
+}
+@media (hover: hover) and (pointer: fine) {
+  .dk-link:hover {
+    color: #ffffff;
+    transform: translateX(3px);
+  }
+  .dk-link:hover > span {
+    background-size: 100% 1px;
+  }
+  .dk-link:hover .dk-link__arrow {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+.dk-link:focus-visible .dk-link__arrow {
+  opacity: 1;
+  transform: none;
+}
+
+.dk-social {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s, color 0.25s, border-color 0.25s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .dk-social:hover {
+    transform: translateY(-4px) rotate(-6deg);
+    border-color: #f33716;
+    background: #f33716;
+    color: #000000;
+  }
+}
+
+.dk-legal {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  transition: color 0.25s;
+}
+.dk-legal:hover {
+  color: #ffffff;
+}
+
+.dk-top {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.6rem;
+  align-self: flex-start;
+  padding: 0 0.4rem 0 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: border-color 0.3s, color 0.3s;
+}
+.dk-top__icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s, color 0.3s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .dk-top:hover {
+    border-color: #f33716;
+    color: #ffffff;
+  }
+  .dk-top:hover .dk-top__icon {
+    transform: translateY(-3px);
+    background: #f33716;
+    color: #000000;
+  }
+}
+
+/* ---- Wordmark: living background of the CTA panel ----------------------- */
+/* Fill-only (no -webkit-text-stroke): Sora's variable-weight glyphs have
+   overlapping contours, and a stroke draws those as stray boxes inside the
+   letters. A soft red light sweeps across the letters on a loop. */
+.dk-wordmark {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -0.17em;
+  z-index: 0;
+  overflow: hidden;
+  text-align: center;
+  user-select: none;
+  pointer-events: none;
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(4rem, 17vw, 21rem);
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  color: transparent;
+  background-image: linear-gradient(105deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 38%, rgba(243.0, 55.0, 22.0, 0.6) 50%, rgba(255, 255, 255, 0.1) 62%, rgba(255, 255, 255, 0.1) 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, #000000 55%, rgba(0, 0, 0, 0.7) 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, #000000 55%, rgba(0, 0, 0, 0.7) 100%);
+  animation: dk-shine 8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+}
+@keyframes dk-shine {
+  0% {
+    background-position: 100% 0;
+  }
+  55%,
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* ---- Reduced motion: keep the look, drop the movement -------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .dk-footer *,
+  .dk-footer *::before,
+  .dk-footer *::after {
+    animation: none !important;
+  }
+  .dk-ember {
+    display: none;
+  }
+  .dk-marquee__track {
+    width: 100%;
+    overflow-x: auto;
+  }
+}

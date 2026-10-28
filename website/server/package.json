@@ -1,0 +1,21 @@
+{
+  "name": "dishky-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Premium marketing website for Dishky — restaurant management SaaS platform",
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -k -n SERVER,CLIENT -c green,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client",
+    "start": "npm run start --prefix server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.6",
+    "mongoose": "^9.11.1"
+  }
+}

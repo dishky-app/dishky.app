@@ -1,0 +1,269 @@
+
+
+.subcategory-row td {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.subcategory-content {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.subcategory-row.open .subcategory-content {
+  max-height: 600px;
+  opacity: 1;
+  transform: translateY(0);
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+.subcategory-table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
+  table-layout: fixed !important;
+  border: 1px solid #e8e8e8 !important;
+  transition: box-shadow 0.3s ease, transform 0.3s ease !important;
+}
+
+.subcategory-table {
+  animation: fadeSlide 0.25s ease !important;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.subcategory-table tbody tr td:first-child {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.subcategory-table tbody tr td:last-child {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.subcategory-row.open .subcategory-table {
+  transform: translateY(0) !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* header */
+.subcategory-table thead {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.subcategory-table thead tr {
+  box-shadow: none !important;
+}
+
+.subcategory-table th {
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #444 !important;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid #d6dbe3 !important;
+  background-color: #f8f9fb !important;
+}
+
+/* body rows */
+.subcategory-table td {
+  padding: 2px 12px !important;
+  font-size: 12px !important;
+  border-bottom: 1px solid #eee !important;
+  background-color: #fff !important;
+}
+
+.subcategory-image {
+  width: 36px;
+  height: 36px;
+}
+
+.subcategory-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.category-size-row,
+.subcategory-size-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-size-row input,
+.subcategory-size-row input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.subcategory-preview-table {
+  width: 100%;
+  margin-top: 18px;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.subcategory-preview-table thead {
+  background: #f4f4f4;
+}
+
+.subcategory-preview-table th {
+  font-size: 13px;
+  text-align: left;
+  padding: 10px;
+  font-weight: 600;
+  color: #444;
+}
+
+.subcategory-preview-table td {
+  padding: 10px;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+}
+
+.subcategory-preview-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.subcategory-preview-table img {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.subcategory-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.subcategory-actions button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sub-delete-btn {
+  background: #ffe5e5;
+  color: #b00000;
+}
+
+.preview-table {
+  width: 100%;
+  margin: 10px 0;
+  border-collapse: collapse;
+}
+
+.preview-table th {
+  background: #f5f5f5;
+  font-size: 12px;
+  padding: 8px;
+  text-align: left;
+}
+
+.preview-table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  font-size: 13px;
+}
+
+.subcategory-preview-table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+.subcategory-preview-table th,
+.subcategory-preview-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+}
+
+.subcategory-preview-table img {
+  border-radius: 6px;
+}
+
+th img {
+  height: 16px;
+  width: 16px;
+}
+
+button img {
+  height: 14px;
+  width: 14px;
+}
+
+.form-group textarea {
+  width: 100%;
+  height: 72px;
+  max-width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+  .subcategory-table th,
+  .subcategory-table td {
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .subcategory-preview-table,
+  .preview-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 578px) {.subcategory-image {
+    width: 30px;
+    height: 30px;
+  }
+
+  .subcategory-table th,
+  .subcategory-table td {
+    padding: 6px 8px !important;
+  }
+
+  .subcategory-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+}

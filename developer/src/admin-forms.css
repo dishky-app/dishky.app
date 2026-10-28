@@ -1,0 +1,493 @@
+/* Shared admin form UI for the Super Admin console and the Developer Panel.
+   Verbatim from the Admin Panel: ModalCSS.css (modal-overlay / admin-modal), Events.css (mat floating-label
+   fields inside admin modals) and EvtCommon.css (mat error states), plus rf-req / field-error-msg. */
+
+
+
+
+/* ── Overlay ── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+/* ── Shared enter/exit animation ──────────────────────────────────────
+   Driven by useAnimatedModal.js + ModalContext.js. Every modal in the
+   app gets `modal-anim-in` while opening/open and `modal-anim-out`
+   while closing (JS unmounts it MODAL_EXIT_DURATION ms later, matching
+   the timings below, so the exit transition always finishes on screen). */
+@keyframes modalOverlayIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes modalOverlayOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+@keyframes modalCardIn {
+    from { opacity: 0; transform: translateY(18px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes modalCardOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(12px) scale(0.97); }
+}
+
+.modal-overlay.modal-anim-in,
+.event-modal-overlay.modal-anim-in,
+.ingredient-modal-overlay.modal-anim-in {
+    animation: modalOverlayIn 0.22s ease-out both;
+}
+
+.modal-overlay.modal-anim-out,
+.event-modal-overlay.modal-anim-out,
+.ingredient-modal-overlay.modal-anim-out {
+    animation: modalOverlayOut 0.2s ease-in both;
+    pointer-events: none;
+}
+
+.admin-modal.modal-anim-in,
+.modal-overlay.modal-anim-in > form,
+.modal-overlay.modal-anim-in > div.admin-modal,
+.qr-modal.modal-anim-in,
+.event-modal.modal-anim-in,
+.ingredient-modal.modal-anim-in {
+    animation: modalCardIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.admin-modal.modal-anim-out,
+.modal-overlay.modal-anim-out > form,
+.modal-overlay.modal-anim-out > div.admin-modal,
+.qr-modal.modal-anim-out,
+.event-modal.modal-anim-out,
+.ingredient-modal.modal-anim-out {
+    animation: modalCardOut 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-overlay.modal-anim-in,
+    .modal-overlay.modal-anim-out,
+    .event-modal-overlay.modal-anim-in,
+    .event-modal-overlay.modal-anim-out,
+    .ingredient-modal-overlay.modal-anim-in,
+    .ingredient-modal-overlay.modal-anim-out,
+    .admin-modal.modal-anim-in,
+    .admin-modal.modal-anim-out,
+    .qr-modal.modal-anim-in,
+    .qr-modal.modal-anim-out,
+    .event-modal.modal-anim-in,
+    .event-modal.modal-anim-out,
+    .ingredient-modal.modal-anim-in,
+    .ingredient-modal.modal-anim-out,
+    .modal-overlay.modal-anim-in > form,
+    .modal-overlay.modal-anim-out > form,
+    .modal-overlay.modal-anim-in > div.admin-modal,
+    .modal-overlay.modal-anim-out > div.admin-modal {
+        animation: none !important;
+    }
+}
+
+
+/* ── Modal card ── */
+.admin-modal {
+    position: relative;
+    background: var(--color-white);
+    width: 560px;
+    min-height: 85vh;
+    max-height: 85vh;
+    padding: 24px;
+    border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: visible;
+}
+
+.admin-modal textarea {
+    resize: none;
+    min-height: 70px;
+}
+
+
+/* ── Header ── */
+.admin-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: var(--color-white);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.admin-modal-header h1,
+.admin-modal-header h2,
+.admin-modal-header h3,
+.admin-modal-header h4,
+.admin-modal-header h5{
+    font-size: 22px !important;
+    margin: 0 !important;
+}
+
+
+/* ── Body ── */
+.admin-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    flex: 1;
+    min-height: 0;
+}
+
+.admin-modal-body input,
+.admin-modal-body textarea,
+.mat-input,
+.mat-input {
+    box-sizing: border-box;
+    border: none !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.admin-modal-body a {
+    color: var(--color-blue) !important;
+    font-weight: 600 !important;
+}
+
+
+/* ── Footer ── */
+.admin-modal-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background-color: var(--color-white);
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    box-sizing: border-box;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 1080px) {
+  .admin-modal {
+    width: 520px;
+  }
+}
+
+@media (max-width: 992px) {
+  .admin-modal {
+    width: 90vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-modal {
+    width: 94vw;
+    min-height: auto;
+    max-height: 90vh;
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .admin-modal-header h1,
+  .admin-modal-header h2,
+  .admin-modal-header h3,
+  .admin-modal-header h4,
+  .admin-modal-header h5 {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 578px) {
+  .admin-modal {
+    width: 96vw;
+    height: 60vh;
+    max-height: 92vh;
+    padding: 14px;
+    border-radius: 10px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-modal {
+    width: 98vw;
+    padding: 12px;
+  }
+}
+
+
+
+/* ── mat fields inside admin modals (Events.css) ── */
+/* Do NOT apply the old underline override to mat-wrapped inputs */
+.admin-modal-body .form-group input.mat-input,
+.admin-modal-body .form-group textarea.mat-input,
+.tk-form .form-group input.mat-input,
+.tk-form .form-group textarea.mat-input {
+  display: block !important;
+  width: 100% !important;
+  height: 36px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  color: #111 !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid #f0f0f0 !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  padding: 0 2px !important;
+  caret-color: #111 !important;
+  transition: border-color 0.25s ease !important;
+}
+
+.tk-form .form-group textarea.mat-input,
+.admin-modal-body .form-group textarea.mat-input {
+  height: auto !important;
+  resize: none !important;
+  min-height: 60px !important;
+}
+
+.admin-modal-body .form-group input.mat-input::placeholder,
+.tk-form .form-group input.mat-input::placeholder,
+.tk-form .form-group textarea.mat-input::placeholder,
+.admin-modal-body .form-group textarea.mat-input::placeholder {
+  color: transparent !important;
+}
+
+.tk-form .form-group input.mat-input:hover,
+.admin-modal-body .form-group input.mat-input:hover,
+.tk-form .form-group textarea.mat-input:hover,
+.admin-modal-body .form-group textarea.mat-input:hover {
+  border: none !important;
+  border-bottom: 1px solid #9ca3af !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.tk-form .form-group input.mat-input:focus,
+.admin-modal-body .form-group input.mat-input:focus,
+.tk-form .form-group textarea.mat-input:focus,
+.admin-modal-body .form-group textarea.mat-input:focus {
+  border-bottom-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* mat container */
+.tk-form .mat,
+.admin-modal-body .mat {
+  position: relative;
+  width: 100%;
+  padding-top: 10px;
+}
+
+/* mat-area container */
+.tk-form .mat-area,
+.admin-modal-body .mat-area {
+  position: relative;
+  width: 100%;
+  padding-top: 20px;
+}
+
+/* Floating label — idle state */
+.tk-form .mat-label,
+.admin-modal-body .mat-label {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #9ca3af;
+  pointer-events: none;
+  transition:
+    top 0.25s ease,
+    font-size 0.25s ease,
+    font-weight 0.25s ease,
+    color 0.25s ease,
+    letter-spacing 0.25s ease;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* Floating label — floated (focus or filled) */
+.tk-form .mat-input:focus~.mat-label,
+.tk-form .mat-input:not(:placeholder-shown)~.mat-label,
+.admin-modal-body .mat-input:focus~.mat-label,
+.admin-modal-body .mat-input:not(:placeholder-shown)~.mat-label {
+  top: 2px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: var(--color-blue);
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* mat-area label — idle */
+.tk-form .mat-area-label,
+.admin-modal-body .mat-area-label {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #9ca3af;
+  pointer-events: none;
+  transition: top 0.25s ease, font-size 0.25s ease,
+    font-weight 0.25s ease, color 0.25s ease,
+    letter-spacing 0.25s ease;
+  line-height: 1;
+}
+
+/* mat-area label — floated */
+.tk-form .mat-input:focus~.mat-area-label,
+.tk-form .mat-input:not(:placeholder-shown)~.mat-area-label,
+.admin-modal-body .mat-input:focus~.mat-area-label,
+.admin-modal-body .mat-input:not(:placeholder-shown)~.mat-area-label {
+  top: 2px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: var(--color-blue) !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* Highlight bar — draws left→right on focus */
+.tk-form .mat-bar,
+.tk-form .mat-area-bar,
+.admin-modal-body .mat-bar,
+.admin-modal-body .mat-area-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--color-blue);
+  border-radius: 1px;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.tk-form .mat-input:focus~.mat-label~.mat-bar,
+.tk-form .mat-input:focus~.mat-bar,
+.tk-form .mat-input:focus~.mat-area-label~.mat-area-bar,
+.tk-form .mat-input:focus~.mat-area-bar,
+.admin-modal-body .mat-input:focus~.mat-label~.mat-bar,
+.admin-modal-body .mat-input:focus~.mat-bar,
+.admin-modal-body .mat-input:focus~.mat-area-label~.mat-area-bar,
+.admin-modal-body .mat-input:focus~.mat-area-bar {
+  width: 100% !important;
+}
+
+/* rf-req star inside admin mat labels */
+.tk-form .rf-req,
+.admin-modal-body .rf-req {
+  color: var(--color-red) !important;
+}
+
+
+
+/* ── mat validation states (EvtCommon.css) ── */
+/* ── Validation error states ── */
+
+/* Input underline */
+.mat-input.mat-error {
+  border-bottom-color: #ef4444 !important;
+  caret-color: #ef4444;
+  animation: mat-shake 0.35s ease;
+}/* Label */
+.mat-label.mat-label-error,
+.mat-area-label.mat-label-error,
+label.mat-label-error {
+  color: #ef4444 !important;
+}/* Animated underline bar */
+.mat-bar.mat-bar-error,
+.mat-area-bar.mat-bar-error {
+  background: #ef4444 !important;
+}.mat-bar.mat-bar-error::before,
+.mat-bar.mat-bar-error::after,
+.mat-area-bar.mat-bar-error::before,
+.mat-area-bar.mat-bar-error::after {
+  width: 50% !important;
+  background: #ef4444 !important;
+}
+
+/* Textarea variant */
+.mat-area .mat-input.mat-error {
+  border-bottom-color: #ef4444 !important;
+}
+
+/* Dropdown (mat-select) error */
+.mat-select-error .mat-select,
+.mat-select-error .dishes-status-dropdown {
+  border-bottom-color: #ef4444 !important;
+}
+
+.mat-select-error .mat-label {
+  color: #ef4444 !important;
+}
+
+.mat-select-error .mat-bar {
+  background: #ef4444 !important;
+}
+
+.mat-select-error .mat-bar::before,
+.mat-select-error .mat-bar::after {
+  width: 50% !important;
+  background: #ef4444 !important;
+}
+
+/* File upload error */
+.file-wrap.file-error {
+  border: 1.5px solid #ef4444 !important;
+  border-radius: 8px;
+}
+
+.file-label.file-label-error {
+  color: #ef4444 !important;
+}
+
+/* Shake animation */
+@keyframes mat-shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-5px);
+  }
+
+  40% {
+    transform: translateX(5px);
+  }
+
+  60% {
+    transform: translateX(-4px);
+  }
+
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.rf-req { color: #e74c3c !important; margin-left: 2px; }
+.field-error-msg { color: #dc2626; font-size: 12px; margin-top: 4px; }

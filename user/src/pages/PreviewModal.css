@@ -1,0 +1,159 @@
+/* ══════════════════════════════════════════════════════
+   PreviewModal.css  —  Shared Preview / Confirm Modal
+   Used by: ReservationForm, CateringForm,
+            CelebrationForm, PreBooking, SubscriptionForm
+   All pages import this file alongside their own CSS.
+   Class prefix: rf-modal-*  (same as ReservationForm)
+
+   Open/close animation is handled entirely by ModalTransition.js
+   (see shared/ModalTransition.js + .css) — this file only supplies
+   the visual, non-animated layout: backdrop color/position, panel
+   background/shape, and every rf-modal-* content class below.
+══════════════════════════════════════════════════════ */
+
+/* ── Overlay ── */
+.rf-modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(3px);
+}
+
+/* ── Modal Box ── */
+.rf-modal {
+  background: var(--bg-main);
+  border-radius: 20px;
+  padding: 24px 22px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ── Title ── */
+.rf-modal-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.rf-modal-subtitle {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 16px;
+}
+
+/* ── Grid of rows (2-column) ── */
+.rf-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.rf-modal-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--bg-lighter);
+  border-radius: 10px;
+  border: 1px solid var(--border-lighter);
+}
+
+/* Full-width row inside grid */
+.rf-modal-row-full {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--bg-lighter);
+  border-radius: 10px;
+  border: 1px solid var(--border-lighter);
+}
+
+/* ── Key / Value labels ── */
+.rf-modal-key {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rf-modal-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Notes block (warm tint) ── */
+.rf-modal-notes {
+  padding: 10px 12px;
+  background: var(--bg-main)bea;
+  border-radius: 10px;
+  border: 1px solid var(--color-pale-yellow);
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+  color: #78350f;
+}
+
+/* ── Total row (highlighted) ── */
+.rf-modal-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-radius: 10px;
+  border: 1px solid var(--border-lighter);
+  margin-bottom: 14px;
+}
+
+.rf-modal-total-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-green);
+}
+
+.rf-modal-total-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-green);
+  letter-spacing: 0.02em;
+}
+
+/* ── Action buttons row ── */
+.rf-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.rf-modal-actions>button,
+.rf-modal-actions>* {
+  flex: 1 1 0;
+  width: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .rf-modal {
+    padding: 18px 16px;
+  }
+
+  .rf-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rf-modal-row-full {
+    grid-column: 1;
+  }
+}

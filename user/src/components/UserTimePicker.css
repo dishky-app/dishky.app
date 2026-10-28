@@ -1,0 +1,281 @@
+/* ═══════════════════════════════════════════════════════
+   UserTimePicker.css  — shared user-panel clock time picker
+   Accent: var(--color-red, var(--color-red))
+═══════════════════════════════════════════════════════ */
+
+/* ── Wrapper — material underline, matches rf-mat ── */
+.utp-wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding-top: 10px;
+  /* room for floated label */
+}
+
+/* Floating label */
+.utp-label {
+  position: absolute;
+  top: 24px;
+  /* sits on the baseline when idle */
+  left: 0;
+  pointer-events: none;
+  transition:
+    top 0.25s var(--m-ease),
+    font-size 0.25s var(--m-ease),
+    font-weight 0.25s var(--m-ease),
+    color 0.25s var(--m-ease),
+    letter-spacing 0.25s var(--m-ease);
+  line-height: 1;
+  white-space: nowrap;
+
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.utp-label.utp-label-float {
+  top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-red, var(--color-red));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.utp-label.utp-label-error {
+  color: var(--color-red, var(--color-red));
+}
+
+/* ── Trigger — flat underline only, no box ── */
+.utp-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-bottom: 2px solid rgba(150, 155, 170, 0.4);
+  border-radius: 0;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  font-family: inherit;
+  text-align: left;
+  outline: none;
+  box-shadow: none;
+}
+
+.utp-trigger:hover {
+  border: none;
+  border-bottom: 1px solid var(--text-tertiary);
+  box-shadow: none;
+  background: transparent;
+}
+
+.utp-trigger:focus:not(.utp-disabled) {
+  outline: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  box-shadow: none;
+  background: transparent;
+}
+
+.utp-trigger.utp-error {
+  border-bottom-color: var(--color-red, var(--color-red)) !important;
+}
+
+.utp-trigger.utp-disabled {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+  background: transparent;
+}
+
+/* Highlight bar — draws left→right on open, matches rf-mat-bar */
+.utp-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--color-red, var(--color-red));
+  border-radius: 1px;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.utp-wrap.utp-open .utp-bar,
+.utp-wrap.utp-has-value .utp-bar {
+  width: 100%;
+}
+
+.utp-wrap.utp-error-state .utp-bar {
+  width: 100%;
+  background: var(--color-red, var(--color-red));
+}
+
+/* Value / placeholder */
+.utp-val {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.utp-val.utp-ph {
+  color: transparent;
+  /* hidden like rf-input::placeholder */
+}
+
+/* Chevron */
+.utp-arrow {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.35;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.utp-wrap.utp-open .utp-arrow {
+  transform: rotate(180deg);
+  opacity: 0.6;
+}
+
+/* ── Overlay backdrop (matches modal overlay pattern) ── */
+/* Open/close animation is handled by ModalTransition.js — this class
+   only supplies the backdrop's own layout (dimmed, centered flex),
+   not any animation or position/inset (ModalTransition's own
+   .modal-transition-overlay class supplies those). */
+.utp-overlay {
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Popup ── */
+/* Centering now comes from .utp-overlay's flex centering + Modal-
+   Transition's panel (which is a normal in-flow flex child, not
+   position:fixed) — so this no longer self-positions with
+   top/left/transform the way it did as a standalone fixed element. */
+.utp-popup {
+  background: var(--bg-main);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  width: 260px;
+  overflow: hidden;
+}
+
+/* ── Header — red accent ── */
+.utp-header {
+  background: var(--color-red, var(--color-red));
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* AM/PM column */
+.utp-ampm-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.utp-ampm-btn {
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+}
+
+.utp-ampm-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--bg-main);
+}
+
+.utp-ampm-btn.active {
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--bg-main);
+}
+
+/* Digital time display */
+.utp-time-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto 0 8px;
+}
+
+.utp-hm {
+  font-size: 30px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 8px;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.utp-hm.active {
+  color: var(--bg-main);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.utp-hm:hover {
+  color: var(--bg-main);
+}
+
+.utp-colon {
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1;
+}
+
+/* ── Slot hint ── */
+.utp-slot-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-very-light);
+  border-bottom: 1px solid var(--border-lighter);
+  padding: 5px 16px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ── SVG clock face ── */
+.utp-clock {
+  display: block;
+  margin: 8px auto 0;
+  cursor: crosshair;
+}
+
+/* ── Footer ── */
+.utp-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 16px 12px;
+}

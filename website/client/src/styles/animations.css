@@ -1,0 +1,167 @@
+/* ==========================================================================
+   DISHKY — ANIMATION HELPERS
+   ========================================================================== */
+
+/* Animate only compositor-friendly properties on things that move. */
+.will-transform {
+  will-change: transform, opacity;
+}
+
+/* Reduced motion (spec §16): nothing may depend on animation to be usable. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Menu panel entrance (used by the mobile nav) */
+@keyframes dishky-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Admin showcase: the active tab's hairline fills, and its animationend
+   advances to the next problem. */
+@keyframes dk-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.dk-progress {
+  animation-name: dk-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* Small text swaps (window title, feature chips) ease in instead of popping. */
+@keyframes dk-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.dk-fade-in {
+  animation: dk-fade-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Gentle float for the featured promo post (Promotions section / page). */
+@keyframes dk-float {
+  0%,
+  100% {
+    transform: translateY(-8px);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="dk-float"] {
+    animation: none !important;
+  }
+}
+
+/* ---- Marquee, pulses and ticks used by the interactive sections --------- */
+@keyframes dk-marquee { from { transform: translateX(0); } to { transform: translateX(calc(-50% - 0.5rem)); } }
+.dk-marquee__track { animation: dk-marquee 40s linear infinite; }
+.dk-marquee:hover .dk-marquee__track { animation-play-state: paused; }
+@keyframes dk-pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(243.0,55.0,22.0,.55); } 100% { box-shadow: 0 0 0 14px rgba(243.0,55.0,22.0,0); } }
+.dk-ping { animation: dk-pulse-ring 1.8s ease-out infinite; }
+@keyframes dk-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.dk-bob { animation: dk-bob 5s ease-in-out infinite; }
+@keyframes dk-shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+.dk-shimmer { background-size: 200% 100%; animation: dk-shimmer 3s linear infinite; }
+@keyframes dk-dash { to { stroke-dashoffset: -24; } }
+.dk-dash { animation: dk-dash 1.2s linear infinite; }
+@keyframes dk-pop { 0% { transform: scale(.6); opacity: 0; } 70% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+.dk-pop { animation: dk-pop .5s cubic-bezier(.22,1,.36,1) both; }
+@keyframes dk-scan { 0%,100% { top: 0; } 50% { top: 100%; } }
+.dk-scan { animation: dk-scan 2.4s ease-in-out infinite; }
+@keyframes dk-slide-in { from { transform: translateY(14px) scale(.97); opacity: 0; } to { transform: none; opacity: 1; } }
+.dk-slide-in { animation: dk-slide-in .55s cubic-bezier(.22,1,.36,1) both; }
+
+/* Generated illustration motion (components/ui/Art.js) */
+@keyframes dk-art-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes dk-art-drift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(24px,-16px); } }
+@keyframes dk-art-flame { 0%,100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(1.18) scaleX(0.9); } }
+@keyframes dk-art-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes dk-art-grow { 0% { transform: scaleY(0.2); } 60%,100% { transform: scaleY(1); } }
+@keyframes dk-art-spin { to { transform: rotate(360deg); } }
+@keyframes dk-art-scan { 0%,100% { transform: translateY(0); } 50% { transform: translateY(120px); } }
+.dk-art-bob { animation: dk-art-bob 5s ease-in-out infinite; }
+.dk-art-drift { animation: dk-art-drift 9s ease-in-out infinite; }
+.dk-art-flame { animation: dk-art-flame 1.1s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+.dk-art-pulse { animation: dk-art-pulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.dk-art-pop { animation: dk-art-pulse 3s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.dk-art-grow { animation: dk-art-grow 3.2s ease-out infinite alternate; }
+.dk-art-spin { animation: dk-art-spin 14s linear infinite; }
+.dk-art-scan { animation: dk-art-scan 2.8s ease-in-out infinite; }
+.dk-art-dash { animation: dk-dash 1.4s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .dk-art-bob, .dk-art-drift, .dk-art-flame, .dk-art-pulse, .dk-art-pop, .dk-art-grow, .dk-art-spin, .dk-art-scan, .dk-art-dash { animation: none; }
+}
+
+/* Touch: let the page scroll vertically over the module sphere. */
+@media (hover: none) { .dk-sphere .infinite-menu__canvas { touch-action: pan-y; } }
+
+/* Full-bleed: break out of the centred container to the full screen width. */
+.dk-bleed { width: 100vw; margin-left: calc(50% - 50vw); max-width: none; }
+
+/* vertical light beam used by the "digital core" section */
+.dk-beam { background: linear-gradient(to bottom, rgba(243.0,55.0,22.0,0), #f33716); }
+
+/* ---- responsive polish ---- */
+@media (max-width: 640px) {
+  .text-\[10px\] { font-size: 11px; }
+}
+@media (pointer: coarse) {
+  .btn-primary, .btn-secondary { min-height: 44px; }
+}
+@media (max-width: 1023px) {
+  .dk-bleed canvas { touch-action: pan-y; }
+}
+
+/* ---- Scroll-driven reveals for every page except Home ----------------------
+   Pure CSS: blocks and card grids rise in as they enter the screen. Browsers
+   without scroll-driven animations simply show everything. Elements that
+   framer-motion already animates (inline opacity) are left alone. */
+@keyframes dk-rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+@keyframes dk-pop { from { opacity: 0; transform: translateY(22px) scale(0.97); } to { opacity: 1; transform: none; } }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-auto-reveal] section .container-dishky > *:not([style*="opacity"]):not(.dk-marquee),
+    [data-auto-reveal] section .container-dishky > .grid > *:not([style*="opacity"]) {
+      animation: dk-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 38%;
+    }
+    [data-auto-reveal] section .container-dishky > .grid > *:not([style*="opacity"]) { animation-name: dk-pop; }
+    [data-auto-reveal] section .container-dishky > .grid > *:nth-child(2) { animation-range: entry 6% entry 44%; }
+    [data-auto-reveal] section .container-dishky > .grid > *:nth-child(3) { animation-range: entry 12% entry 50%; }
+    [data-auto-reveal] section .container-dishky > .grid > *:nth-child(n+4) { animation-range: entry 18% entry 56%; }
+  }
+}
+
+/* Tickers that sit on their own solid dark band: keep the band solid to the edges. */
+.dk-marquee.bg-ink { -webkit-mask-image: none; mask-image: none; }
+
+/* range slider used by the pricing plan finder */
+.dk-range { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 999px; outline: none;
+  background: linear-gradient(to right, #f33716 var(--p, 0%), rgba(255,255,255,0.15) var(--p, 0%)); }
+.dk-range::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #ffffff; border: 4px solid #f33716; cursor: grab; box-shadow: 0 6px 18px rgba(243.0,55.0,22.0,.5); }
+.dk-range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #ffffff; border: 4px solid #f33716; cursor: grab; }

@@ -1,0 +1,51 @@
+/* ═══════════════════════════════════════════════════════
+   PreBookingDetails.css  —  Dishky Admin  —  PreBookingDetails page
+   Depends on Common.css + EvtCommon.css
+═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+.evt-pbd-container {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.slot-bf {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.slot-br {
+  background: #ecfccb;
+  color: #3f6212;
+}
+
+.slot-lu {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.slot-ht {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.slot-di {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.slot-any {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+}
+
+@media (max-width: 400px) {
+}

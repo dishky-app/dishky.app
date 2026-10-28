@@ -1,0 +1,119 @@
+/* ==========================================================================
+   DISHKY — FULL-SCREEN HEROES  (namespace: hf-)
+   Every page's hero is at least as tall as the display and as wide as the
+   display, and its content is centred inside it, so the first screen is never
+   a short strip of content on an empty background.
+   svh = the always-visible viewport height (correct under mobile URL bars).
+   ========================================================================== */
+
+/* The first block of every routed page is its hero (the page wrapper is
+   <main> > <div> > hero). Blocks that already lay themselves out as a
+   flex/grid row (the Home hero, the 404 page) size themselves instead. */
+main > div > :first-child:not(.flex):not(.grid):not(.hf-self) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-width: 100%;
+  min-height: 100vh; /* fallback */
+  min-height: 100svh;
+}
+main > div > :first-child:not(.flex):not(.grid):not(.hf-self) > * {
+  /* flex children must never be squeezed below their content */
+  flex-shrink: 0;
+}
+
+/* Explicit opt-in for hero blocks that are not the first child of the page. */
+.hf-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.hf-hero > * { flex-shrink: 0; }
+
+/* Content that fills the lower part of a short hero. */
+.hf-foot {
+  margin-top: clamp(28px, 6vh, 72px);
+}
+
+/* Stat tiles */
+.hf-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 1.6vw, 20px);
+}
+@media (min-width: 768px) {
+  .hf-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.hf-stat {
+  border-radius: var(--radius-card);
+  padding: clamp(14px, 2vw, 24px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+}
+.hf-stat--dark {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hf-stat:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.35); }
+}
+.hf-stat__n {
+  font-family: "Sora", system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  color: #f33716;
+  font-size: clamp(1.9rem, 1.2rem + 2.6vw, 3.5rem);
+}
+.hf-stat__l {
+  margin-top: 0.5rem;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+/* Scroll cue */
+.hf-cue {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.hf-cue__line {
+  position: relative;
+  width: 1px;
+  height: 36px;
+  overflow: hidden;
+  background: currentColor;
+  opacity: 0.3;
+}
+.hf-cue__line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #f33716;
+  animation: hf-cue 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@keyframes hf-cue {
+  0% { transform: translateY(-100%); }
+  60%, 100% { transform: translateY(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hf-cue__line::after { animation: none; transform: none; }
+}
+
+/* Short landscape phones: don't force a full screen of padding on top of content. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hf-foot { margin-top: 20px; }
+}

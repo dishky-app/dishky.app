@@ -1,0 +1,38 @@
+
+
+.stock-all-input {
+  width: 13px !important;
+  margin-bottom: 0;
+}
+
+/* CALC TEXT */
+.stocks-calc-text {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 10px 0;
+  color: var(--color-green);
+}
+
+.ae-result-count {
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+  white-space: nowrap;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+}
+
+@media (max-width: 768px) {
+}
+
+@media (max-width: 578px) {
+}
+
+@media (max-width: 480px) {
+  .stocks-calc-text {
+    font-size: 12px;
+  }
+}

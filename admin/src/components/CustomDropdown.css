@@ -1,0 +1,143 @@
+/**
+ * CustomDropdown.css — Dishky Admin Panel
+ * Centered overlay popup for the shared CustomDropdown component,
+ * mirroring CustomDatePicker's overlay/popup interaction pattern.
+ */
+
+.cdd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.cdd-overlay.popup-anim-in {
+    animation: cddOverlayFadeIn 0.16s ease-out both;
+}
+
+.cdd-overlay.popup-anim-out {
+    animation: cddOverlayFadeOut 0.14s ease-in both;
+    pointer-events: none;
+}
+
+@keyframes cddOverlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes cddOverlayFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.cdd-popup {
+    background: #fff;
+    border-radius: 16px;
+    width: 280px;
+    max-width: calc(100vw - 32px);
+    max-height: min(420px, calc(100vh - 64px));
+    padding: 16px;
+    box-sizing: border-box;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.cdd-popup.popup-anim-in {
+    animation: cddPopupIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.cdd-popup.popup-anim-out {
+    animation: cddPopupOut 0.16s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes cddPopupIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes cddPopupOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(8px) scale(0.97); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cdd-overlay.popup-anim-in,
+    .cdd-overlay.popup-anim-out,
+    .cdd-popup.popup-anim-in,
+    .cdd-popup.popup-anim-out {
+        animation: none !important;
+    }
+}
+
+.cdd-popup-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+    padding-bottom: 10px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #eee;
+}
+
+.cdd-options {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cdd-option {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    text-align: center;
+    transition: background 120ms ease-in;
+    overflow-wrap: break-word;
+    word-break: normal;
+}
+
+.cdd-option:hover {
+    background: #f4f4f4;
+}
+
+.cdd-option.cdd-sel {
+    background: #e74c3c;
+    color: #fff;
+    font-weight: 600;
+}
+
+.cdd-option-placeholder {
+    color: #888;
+    font-style: italic;
+}
+
+.cdd-option-placeholder.cdd-sel {
+    background: #e74c3c;
+    color: #fff;
+    font-style: normal;
+    font-weight: 600;
+}
+/* Dropdown popups don't close on backdrop click — explicit Close button */
+.cdd-close-btn {
+    margin-top: 10px;
+    padding: 9px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.cdd-close-btn:hover {
+    background: #f3f4f6;
+}

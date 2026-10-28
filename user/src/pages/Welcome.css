@@ -1,0 +1,337 @@
+.welcome-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: "Geom", system-ui, sans-serif;
+  background: linear-gradient(180deg, #7a0101, red);
+  min-height: 100vh;
+  overflow: visible;
+}
+
+/* ===== WAVE BACKGROUND   ===== */
+.welcome-waves {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Each wave is a giant circle that rotates — same trick as the uiverse e-card */
+.welcome-wave {
+  position: absolute;
+  /* 540px wide, 700px tall — same ratio as uiverse, but scaled up */
+  width: 160vmax;
+  height: 200vmax;
+  /* start off-screen bottom-left, same as uiverse margin trick */
+  left: 0;
+  top: 50%;
+  margin-left: -50%;
+  margin-top: -5%;
+  border-radius: 48%;
+  opacity: 0.6;
+  background: linear-gradient(744deg, var(--color-red), var(--color-red) 60%, var(--bg-hover));
+  animation: wv-spin 18s infinite linear;
+}
+
+.welcome-wave:nth-child(2) {
+  top: 50%;
+  opacity: 0.5;
+  animation-duration: 26s;
+}
+
+.welcome-wave:nth-child(3) {
+  top: 50%;
+  opacity: 0.4;
+  animation-duration: 34s;
+}
+
+@keyframes wv-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* frosted overlay so content stays readable */
+.welcome-waves::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(0px);
+  pointer-events: none;
+}
+
+/* ensure all direct children of welcome-page sit above waves,
+   but don't disturb PageLoader's own fixed full-screen overlay */
+.welcome-page>*:not(.welcome-waves):not(.pl-page) {
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-btn-container {
+  display: flex;
+}
+
+.welcome-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  min-height: 600px;
+  overflow: visible;
+}
+
+.welcome-title {
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.welcome-title img {
+  width: 240px;
+  margin: 12px 0;
+  opacity: 0;
+  animation: scaleIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 0.5s;
+}
+
+/* ===== TWO LOGOS SIDE BY SIDE ===== */
+.welcome-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  /* no container: the logos sit straight on the red background */
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+
+/* sits after the .welcome-title img rule so it overrides the 240px width */
+.welcome-title .welcome-logos img {
+  width: auto;
+  height: 64px;
+  max-width: 45%;
+  object-fit: contain;
+  margin: 0;
+  /* original logo colours; a soft white halo (follows the logo shape) keeps the dark lettering readable on red */
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.55));
+}
+
+.welcome-slogan {
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 12px;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slidesUp 0.8s ease 0.9s forwards;
+  margin-bottom: 12px;
+}
+
+.welcome-branch-name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slidesUp 0.8s ease 1s forwards;
+  margin-bottom: 8px;
+}
+
+@keyframes slidesUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.welcome-title img {
+  animation-name: scaleIn, float;
+  animation-duration: 0.9s, 6s;
+  animation-delay: 0.5s, 1.6s;
+  animation-iteration-count: 1, infinite;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), ease-in-out;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.welcome-card-wrapper {
+  position: relative;
+  padding: 10px 20px;
+  background-color: #fff;
+  opacity: 0.85;
+  box-shadow: rgba(100, 135, 137, 0.3) 0px 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  height: 310px;
+  max-width: 700px;
+  border-radius: 20px;
+}
+
+.welcome-card-wrapper .mat-input {
+  color: #333 !important;
+}
+
+.welcome-btn {
+  padding: 10px;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  font-size: 16px;
+  text-transform: uppercase;
+  border-bottom: 5px solid transparent;
+  margin: 0 20px;
+}
+
+.welcome-btn.active {
+  border-color: #7a0101 !important;
+}
+
+.profile-card {
+  width: 100%;
+  height: 300px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  display: block;
+}
+
+.profile-card .mat {
+  width: 100%;
+}
+
+.profile-card .mat-input {
+  margin-bottom: 15px;
+}
+
+.profile-card .btn-3d {
+  width: 100%;
+}
+
+.profile-card h4 {
+  margin: 0;
+  color: var(--color-red);
+}
+
+.profile-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* parent logo (image) + company name (text) in one flex container */
+.power-brand {
+  /* in normal flow below the card so it can never overlap it */
+  position: relative;
+  margin-top: 28px;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-width: 92%;
+  /* no background: the mark and name sit directly on the page */
+  background: none;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.power-brand:hover { transform: translateY(-2px); }
+.power-brand:hover .power-name { text-decoration: underline; text-underline-offset: 4px; }
+.power-brand:focus-visible { outline: 2px solid #fff; outline-offset: 6px; border-radius: 8px; }
+
+.power-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+  /* the mark is dark grey: turn it white on the red background */
+  filter: brightness(0) invert(1);
+}
+
+.power-prefix {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+}
+
+.power-name {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+/* =========================================
+   MOBILE STACK ( < 576px )
+========================================= */
+
+@media (max-width: 576px) {
+
+  .profile-card {
+    position: relative !important;
+    /* remove absolute */
+    width: 90%;
+    max-width: 320px;
+    height: 420px;
+  }
+
+  .welcome-btn {
+    margin: 0 10px;
+  }
+
+  .welcome-title .welcome-logos img {
+    height: 48px;
+    width: auto;
+  }
+}

@@ -1,0 +1,50 @@
+/* ===== BEST SELLER — "ribbon" variant =====
+   Pure CSS/SVG recreation of the arrow-ribbon artwork it replaces:
+   solid red banner, white crown icon, a thin vertical divider, bold
+   uppercase "BEST SELLER" text, and a triangular arrow point cut into
+   the right edge. Built with clip-path (no image asset) so it scales
+   crisply at any size and inherits the theme's red via
+   var(--color-red) instead of being locked to a fixed PNG color. */
+.best-seller-ribbon {
+  --bsr-notch: 0.80em;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  width: fit-content;
+  padding: 0.34em 0.5rem 0.28rem 0.4rem;
+  padding-right: calc(0.9em + var(--bsr-notch));
+  color: #fff;
+  background-color: var(--color-red);
+  font-size: 12px;
+  line-height: 1;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-red) 35%, transparent);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--bsr-notch)) 0,
+    100% 50%,
+    calc(100% - var(--bsr-notch)) 100%,
+    0 100%
+  );
+}
+
+.best-seller-ribbon-crown {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+.best-seller-ribbon-divider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
+}
+
+.best-seller-ribbon-text {
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}

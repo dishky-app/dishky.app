@@ -1,0 +1,149 @@
+/* ═══════════════════════════════════════════════════════════════
+   PageLayout — THE single source of truth for the header/body/
+   footer page shell. Every page that renders via <PageLayout>
+   gets this structure and nothing else defines its own copy of
+   these rules — see PageLayout.js for the "why" behind that.
+═══════════════════════════════════════════════════════════════ */
+
+.pl-page {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* ─── HEADER ───────────────────────────────────────────────────
+   Responsive padding on TOP and SIDES. Starts fully transparent
+   (so it doesn't box in the title before there's anything behind
+   it to hide) and only becomes a solid, page-matching surface once
+   scrolled — see .header-scrolled below. The background is the
+   exact same fixed-attachment gradient the page itself sits on
+   (var(--bg-theme), same as `body`'s own background), so a
+   scrolled header blends seamlessly with the page instead of
+   showing up as a mismatched flat-colored bar, while still being
+   fully opaque so scrolled content is genuinely clipped behind it,
+   not just tinted. */
+.pl-header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  padding: 36px 36px 0 36px;
+  background: transparent;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.pl-header-extra {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.pl-header.header-scrolled {
+  background: var(--bg-theme);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  box-shadow: 0 1px 0 0 var(--border-lighter, rgba(0, 0, 0, 0.06));
+}
+
+/* ─── BODY ─────────────────────────────────────────────────────
+   Responsive padding on SIDES ONLY — no top padding, since the
+   header above already reserves that space and content should
+   start flush beneath it.
+
+   Scroll behaviour deliberately mirrors the app's existing
+   architecture rather than introducing a second one: on desktop,
+   the page scrolls naturally as part of the normal document (same
+   as it always has — .App/body/html/#root use `height: stretch`
+   but `.page-transition-wrapper` itself is unconstrained there, so
+   nothing forces an inner scroll region and the header's
+   `position: sticky` sticks to the document scroll, exactly as
+   before). Below 600px, `.page-transition-wrapper` becomes the
+   fixed-height flex item that scrolls internally (so the mobile
+   footer nav stays pinned to the screen) — `.pl-body` mirrors that
+   here so the header's sticky behaviour and useScrollHeader's
+   scroll-parent detection both resolve against the correct,
+   already-scrolling ancestor either way. */
+.pl-body {
+  box-sizing: border-box;
+  padding: 0 36px 36px 36px;
+  height: stretch;
+}
+
+@media screen and (max-width: 768px) {
+  .pl-header {
+    padding: var(--medium-page-padding) var(--medium-page-padding) 0 var(--medium-page-padding);
+  }
+
+  .pl-body {
+    padding: 0 var(--medium-page-padding) var(--medium-page-padding) var(--medium-page-padding);
+  }
+
+  .pl-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 600px) {
+  .pl-page {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .pl-header {
+    padding: var(--mobile-page-padding) var(--mobile-page-padding) 0 var(--mobile-page-padding);
+  }
+
+  .pl-body {
+    padding: 0 var(--mobile-page-padding) var(--mobile-page-padding) var(--mobile-page-padding);
+  }
+
+  .pl-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+/* ─── FIXED-HEIGHT MODE ────────────────────────────────────────
+   For pages that need a locked-to-viewport shell with their OWN
+   internal scroll region(s) instead of the page/body scrolling
+   normally — e.g. the reservation-style forms, where two columns
+   scroll independently and the submit buttons stay fixed at the
+   bottom. `.pl-body` itself does not scroll in this mode; the
+   page's own content owns that. Applies at every width (not just
+   the mobile breakpoint) since these pages have always used a
+   locked viewport on desktop too. */
+.pl-page--fixed {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.pl-body--fixed {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.pl-body--no-padding {
+  padding: 0;
+}
+
+/* Thin, theme-matched scrollbar — mirrors the convention already
+   used by ReservationForm's .rf-col so the look is consistent
+   wherever a page's body actually needs a visible scrollbar. */
+.pl-body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-dark) transparent;
+}

@@ -1,0 +1,138 @@
+
+
+/* CARD */
+.offers-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-main);
+  border-radius: 18px;
+  padding: 12px;
+  position: relative;
+  box-shadow: var(--shadow-primary);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.offers-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* IMAGE */
+.offers-card-image {
+  width: 120px;
+  height: 120px;
+}
+
+.offers-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* INFO */
+.offers-card-info {
+  text-align: center;
+}
+
+.offers-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  height: 40px;
+}
+
+.offers-card-price {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ORIGINAL PRICE */
+.offers-card-original {
+  color: var(--text-secondary);
+  margin-left: 6px;
+  font-size: 12px;
+  position: relative;
+}
+
+.offers-card-original::after {
+  content: "";
+  position: absolute;
+  left: -6%;
+  top: 50%;
+  width: 112%;
+  height: 1.5px;
+  background: var(--text-secondary);
+  transform: rotate(-12deg);
+  transform-origin: center;
+  pointer-events: none;
+  animation: strike-in 0.25s ease-out;
+}
+
+/* BADGE */
+.offers-card-badge {
+  font-size: 11px;
+  background: var(--bg-surface);
+  color: var(--color-red);
+  padding: 3px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+@media screen and (max-width: 992px) {
+}
+
+@media screen and (max-width: 578px) {
+}
+/* =============================================
+   FAV-EMPTY — shared "nothing here" state used by
+   FavouriteCategories, FavouriteDishList,
+   FavouriteDishDetail, and OffersGrid. Centered both
+   horizontally and vertically in whatever container
+   it sits in: spans the full width when it's a grid
+   item (food-category-container), and fills the
+   available height when it's a lone block child
+   (.fav-empty-page modifier).
+============================================= */
+.fav-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 70px 20px;
+  gap: 6px;
+  width: 100%;
+}
+
+.fav-empty-page {
+  min-height: 50vh;
+}
+
+.fav-empty-icon {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-red) 14%, var(--bg-main)), color-mix(in srgb, var(--color-red-secondary) 8%, var(--bg-main)));
+}
+
+.fav-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.fav-empty-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 320px;
+}

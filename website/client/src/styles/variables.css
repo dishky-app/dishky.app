@@ -1,0 +1,92 @@
+/* ==========================================================================
+   DISHKY — DESIGN TOKENS
+   Single source of truth for spacing, layout, radius and type scale.
+   Nothing else in the codebase should hardcode a page gutter, section
+   padding, container width or heading size — read these variables instead.
+
+   Breakpoints (documented here because CSS custom properties cannot be used
+   inside @media queries; every media query in the project uses these exact
+   values, mirrored in tailwind.config.js `screens`):
+
+     xs   < 480px      extra small phones
+     sm   480 – 767    phones / large phones
+     md   768 – 1023   tablets
+     lg   1024 – 1279  laptops
+     xl   1280 – 1535  desktops
+     2xl  1536+        large desktops
+   ========================================================================== */
+
+:root {
+  /* ---- Page gutters (space between viewport edge and content) ---------- */
+  --page-gutter: 16px;
+
+  /* ---- Container ------------------------------------------------------- */
+  --container-max: 1400px;
+
+  /* ---- Section vertical rhythm ---------------------------------------- */
+  /* Fluid: 64px on a phone, up to 160px on a large desktop. */
+  --section-space: clamp(48px, 7vw, 108px);
+  --section-space-tight: clamp(36px, 5vw, 76px);
+
+  /* ---- Grid gaps ------------------------------------------------------- */
+  --gap-sm: 12px;
+  --gap-md: clamp(16px, 2vw, 24px);
+  --gap-lg: clamp(24px, 4vw, 56px);
+  --gap-xl: clamp(40px, 6vw, 96px);
+
+  /* ---- Radius ---------------------------------------------------------- */
+  --radius-card: clamp(20px, 2.4vw, 28px);
+  --radius-pill: 999px;
+
+  /* ---- Touch ----------------------------------------------------------- */
+  --touch-min: 44px;
+
+  /* ---- Header ---------------------------------------------------------- */
+  --header-h: 64px;
+  --header-offset: 12px; /* gap between viewport top and the floating pill */
+  --header-clearance: calc(var(--header-h) + var(--header-offset) + 12px);
+
+  /* ---- Fluid type scale ------------------------------------------------ */
+  /* Display sizes use vw-driven clamp() so they never overflow a 320px
+     screen and never look timid on 2560px. Min values are chosen so the
+     longest unbreakable word in each heading still fits at 320px. */
+  --fs-hero: clamp(2.35rem, 1.2rem + 5.6vw, 6.75rem);
+  --fs-display: clamp(2.1rem, 1.1rem + 4.4vw, 5rem);
+  --fs-section: clamp(1.9rem, 1rem + 3.4vw, 4.25rem);
+  --fs-sub: clamp(1.5rem, 1rem + 1.8vw, 2.5rem);
+  --fs-body-lg: clamp(1rem, 0.94rem + 0.3vw, 1.2rem);
+  --fs-body: clamp(0.9375rem, 0.9rem + 0.18vw, 1.05rem);
+  --fs-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.9rem);
+
+  --lh-tight: 1.02;
+  --lh-snug: 1.15;
+  --lh-body: 1.6;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --page-gutter: 32px;
+    --header-h: 68px;
+    --header-offset: 16px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --page-gutter: 48px;
+    --container-max: 1440px;
+    --header-h: 72px;
+    --header-offset: 20px;
+  }
+}
+
+/* Short landscape screens (phones on their side): tighten vertical rhythm so
+   sections are not 200px of padding on a 360px-tall viewport. */
+@media (max-height: 520px) and (orientation: landscape) {
+  :root {
+    --section-space: 48px;
+    --section-space-tight: 40px;
+    --header-h: 52px;
+    --header-offset: 8px;
+  }
+}

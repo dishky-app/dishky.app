@@ -1,0 +1,279 @@
+/* ═══════════════════════════════════════════════════════
+   Staffs.css  —  Dishky Admin  —  Staffs page
+   Depends on Common.css + ModalCSS.css
+═══════════════════════════════════════════════════════ */
+
+.experience-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.experience-input-row input {
+    flex: 1;
+}
+
+.staff-image-preview {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+}
+
+.exp-delete-btn {
+    background-color: transparent !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.radio-group {
+    display: flex;
+    gap: 10px;
+}
+
+.staff-preview-card {
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #f0f0f0;
+}
+
+.preview-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.preview-header-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-header-details-name {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.preview-header-details-others {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.preview-section {
+    margin-bottom: 12px;
+}
+
+.preview-section h4 {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #111;
+}
+
+/* ------------------------------- PREVIEW ------------------------------- */
+.preview {
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+.preview p {
+    margin: 4px 0;
+}
+
+/* ------------------------------- RESPONSIVE ------------------------------- */
+@media (max-width: 768px) {
+}
+
+/* ═══════════════════════════════════════════════
+   RICH TABLE ROW DESIGN (matching Staff Details)
+═══════════════════════════════════════════════ */
+
+/* Name cell */
+.st-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.st-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0;
+}
+
+.st-avatar-photo {
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+.st-name {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.st-join {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 1px;
+}
+
+/* Role badge */
+.st-role-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: #f0f0f0;
+    color: #444;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Salary */
+.st-salary {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+}
+
+/* Experience */
+.st-exp {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* Contact */
+.st-contact {
+    font-size: 13px;
+    color: #555;
+}
+
+/* Branch (Super Admin only column) */
+.st-branch {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+}
+
+/* Work type badge */
+.st-worktype-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.st-wt-fulltime {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.st-wt-parttime {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.st-wt-doubleshift {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* Action buttons */
+.st-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+/* ── Salary table extras ── */
+.st-neg-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ee5253;
+}
+
+.st-pos-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1dd1a1;
+}
+
+.st-zero-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: #bbb;
+}
+
+.st-remain-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 90px;
+}
+
+.st-remain-val {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.st-mini-bar-track {
+    height: 5px;
+    background: #f0f0f0;
+    border-radius: 3px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.st-mini-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 992 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+  .preview-header-details-name {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 578px) {
+  .staff-image-preview {
+    width: 90px;
+    height: 90px;
+  }
+
+  .preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .preview-header-details-name {
+    font-size: 17px;
+  }
+
+  .radio-group {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .experience-input-row {
+    flex-wrap: wrap;
+  }
+}

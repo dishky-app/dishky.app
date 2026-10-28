@@ -1,0 +1,79 @@
+/* ═══════════════════════════════════════════════════════
+   FavouriteDetails.css  —  Dishky Admin  —  FavouriteDetails page
+   Depends on Common.css
+═══════════════════════════════════════════════════════ */
+
+.favourite-details-image {
+  position: relative;
+  width: 150px !important;
+  height: 150px;
+}
+
+.favourite-details-image img {
+  width: 150px !important;
+  height: 100% !important;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.tag-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #f2f2f2;
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.action {
+  display: flex;
+  gap: 10px;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .favourite-details-image,
+  .favourite-details-image img {
+    width: 110px !important;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+}
+
+@media (max-width: 578px) {
+  .favourite-details-image,
+  .favourite-details-image img {
+    width: 90px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkbox-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+
+  .action,
+  .actions {
+    flex-direction: column;
+  }
+}

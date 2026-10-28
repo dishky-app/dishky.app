@@ -1,0 +1,453 @@
+
+
+.clickable {
+  cursor: pointer;
+}
+
+.evt-res-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.evt-res-name {
+  font-weight: 600;
+}
+
+.evt-res-id-small {
+  font-size: 10px;
+}
+
+.evt-res-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.evt-res-email {
+  font-size: 11px;
+  color: #888;
+}
+
+/* INLINE STATUS BUTTONS — text only, no emoji */
+.evt-res-inline-status {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.evt-res-istatus-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9f9f9;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+  color: #888;
+}
+
+.evt-res-istatus-btn:hover {
+  border-color: #bbb;
+  color: #111;
+}
+
+.evt-res-istatus-btn.active.evt-res-istatus-pending {
+  background: #fef3c7;
+  border-color: #fcd34d;
+  color: #92400e;
+}
+
+.evt-res-istatus-btn.active.evt-res-istatus-confirmed {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+  color: #065f46;
+}
+
+.evt-res-istatus-btn.active.evt-res-istatus-completed {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+  color: #3730a3;
+}
+
+.evt-res-istatus-btn.active.evt-res-istatus-cancelled {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+@keyframes res-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes res-modal-up {
+  from {
+    transform: scale(0.88) translateY(24px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.evt-res-req {
+  color: #e74c3c;
+}
+
+.evt-res-form-input {
+  height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  padding: 0 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #111;
+  background: #f9fafb;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.evt-res-form-input:focus {
+  border-color: #111;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.evt-res-form-input.error {
+  border-color: #e74c3c;
+  background: #fff5f5;
+}
+
+/* SOURCE CHIPS */
+.evt-res-source-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.evt-res-source-chip {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.evt-res-source-chip:hover {
+  border-color: #777;
+  background-color: var(--off-white);
+}
+
+.evt-res-source-chip.active {
+  background: var(--color-blue);
+  color: #fff;
+  border-color: var(--color-blue);
+}
+
+.evt-res-source-chip.active.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+.evt-res-source-chip.active.status-confirmed {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #6ee7b7;
+}
+
+/* ══ SEATING PREFERENCE GRID ══ */
+.evt-res-pref-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+
+.evt-res-pref-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 2px 6px;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.evt-res-pref-card:hover {
+  border-color: #999;
+  transform: translateY(-1px);
+}
+
+.evt-res-pref-card.active {
+  border-color: var(--color-blue);
+  background: var(--color-paleblue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.evt-res-pref-visual {
+  width: 50px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.evt-res-pref-visual svg {
+  width: 100%;
+  height: 100%;
+}
+
+.evt-res-pref-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}
+
+.evt-res-pref-card.active .evt-res-pref-label {
+  color: #111;
+}
+
+@keyframes cdpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+
+  .evt-res-pref-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Pref manager rows inside modal ── */
+.evt-res-pref-manage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #f0f0f0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+}
+
+.evt-res-pref-remove-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ef4444;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  transition: background 0.15s;
+}
+
+.evt-res-pref-remove-btn:hover {
+  background: #fee2e2;
+}
+
+/* ── Call button wrapper + tooltip ── */
+.evt-res-call-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+/* Portal tooltip — position:fixed set inline via JS, so no position here */
+.evt-res-call-tooltip {
+  min-width: 200px;
+  background: #fff;
+  color: #111;
+  border-radius: 10px;
+  padding: 10px 12px;
+  z-index: 99999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  border: 1px solid #f0f0f0;
+  pointer-events: none;
+}
+
+/* old bottom-arrow removed — portal uses left-pointing arrow */
+
+.evt-res-call-tooltip-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #222;
+  margin-bottom: 6px;
+}
+
+.evt-res-call-tooltip-row {
+  font-size: 12px;
+  color: #555;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.evt-res-call-tooltip-row:last-child {
+  border-bottom: none;
+}
+
+/* ══════════════════════════════════════════════
+   NEW: All 5 Slot badge colours
+══════════════════════════════════════════════ */
+.evt-res-slot-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.evt-res-slot-badge.slot-bf {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.evt-res-slot-badge.slot-br {
+  background: #ecfccb;
+  color: #3f6212;
+}
+
+.evt-res-slot-badge.slot-lu {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.evt-res-slot-badge.slot-ht {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.evt-res-slot-badge.slot-di {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.evt-res-slot-badge.slot-any {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.evt-res-slot-chip-label {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.evt-res-slot-chip-time {
+  font-size: 10px;
+  opacity: .7;
+}
+
+.evt-res-tpref-thumb {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* ── Upload image button ── */
+.evt-res-upload-img-btn {
+  padding: 5px 10px;
+  border: 1.5px dashed #a3e4d7;
+  border-radius: 8px;
+  background: #f0fdf9;
+  color: #0d9488;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s ease;
+}
+
+.evt-res-upload-img-btn:hover {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+}
+
+/* ── Pref manage row preview ── */
+.evt-res-pref-manage-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #f0f0f0;
+}
+
+.evt-res-pref-manage-preview {
+  flex-shrink: 0;
+}
+
+.evt-res-pref-thumb-sm {
+  width: 42px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+
+.evt-res-pref-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  font-size: 14px;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+  .evt-res-pref-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .evt-res-pref-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .evt-res-pref-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

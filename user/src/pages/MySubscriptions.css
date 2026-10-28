@@ -1,0 +1,376 @@
+
+
+.sub-new-btn {
+  font-size: 13px;
+  padding: 10px 18px;
+}
+
+.my-orders-state .sub-new-btn {
+  margin-top: 14px;
+}
+
+.sub-plan-type-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  background: var(--bg-very-light);
+  border: 1px solid var(--border-lightest);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+/* ── Card dish preview — the readability fix: show what's actually
+   on the plan (top 3 unique dishes) instead of just a meal count. ── */
+.sub-card-dish-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 6px;
+}
+
+.sub-card-dish-line {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-very-light);
+  border: 1px solid var(--border-lightest);
+  border-radius: 8px;
+  padding: 4px 9px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub-card-dish-line--empty {
+  color: var(--text-tertiary);
+  font-style: italic;
+  font-weight: 500;
+  background: none;
+  padding: 0;
+}
+
+.sub-card-dish-more {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-red);
+  align-self: center;
+  padding: 0 2px;
+}
+
+/* ══════════════════════════════════════════
+   Subscription Details page (routed, replaces the old modal)
+══════════════════════════════════════════ */
+
+.mod-status-pill--paused {
+  --status-a: #f5a623;
+  --status-b: #f7931e;
+  --status-text: #b3690a;
+}
+
+.sub-hero-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sub-hero-price {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--color-red);
+}
+
+.sub-hero-price-unit {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+
+/* Per-slot schedule breakdown — a quick-scan card per (slot [+ week])
+   listing each dish and the days it's served, above the full table.
+   Each slot gets its own accent color so the eye can jump straight to
+   e.g. "dinner" without reading every label. */
+.sub-schedule-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.sub-schedule-group {
+  --slot-accent: var(--text-tertiary);
+  background: var(--bg-very-light);
+  border: 1px solid var(--border-lightest);
+  border-left: 3px solid var(--slot-accent);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.sub-schedule-group--breakfast {
+  --slot-accent: #f5a623;
+}
+
+.sub-schedule-group--brunch {
+  --slot-accent: #d4a017;
+}
+
+.sub-schedule-group--lunch {
+  --slot-accent: #16a34a;
+}
+
+.sub-schedule-group--hi-tea {
+  --slot-accent: #7c3aed;
+}
+
+.sub-schedule-group--dinner {
+  --slot-accent: var(--color-red);
+}
+
+.sub-schedule-group-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sub-schedule-group-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.sub-schedule-group-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+}
+
+.sub-schedule-group-week {
+  font-weight: 600;
+  text-transform: none;
+  color: var(--text-tertiary);
+  letter-spacing: normal;
+}
+
+.sub-schedule-group-count {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--slot-accent);
+  background: color-mix(in srgb, var(--slot-accent) 16%, var(--bg-main));
+  border-radius: 999px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sub-schedule-dish-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sub-schedule-dish-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 0;
+  flex-wrap: wrap;
+}
+
+.sub-schedule-dish-row:not(:last-child) {
+  border-bottom: 1px dashed var(--border-lightest);
+}
+
+.sub-schedule-dish-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sub-schedule-day-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+
+.sub-day-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--slot-accent);
+  background: color-mix(in srgb, var(--slot-accent) 14%, var(--bg-main));
+  border-radius: 6px;
+  padding: 3px 6px;
+  line-height: 1.3;
+}
+
+/* Full table — collapsed behind a toggle so the schedule cards above
+   stay the primary, easy-to-scan view. */
+.sub-full-table-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-very-light);
+  border: 1px solid var(--border-lightest);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.sub-full-table-chevron {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+}
+
+.sub-full-table-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* Full slot/dish/day(+week) table */
+.sub-summary-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-lightest);
+  border-radius: 12px;
+}
+
+.sub-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.sub-summary-table th,
+.sub-summary-table td {
+  text-align: left;
+  padding: 9px 14px;
+  white-space: nowrap;
+}
+
+.sub-summary-table thead th {
+  background: var(--bg-very-light);
+  color: var(--text-tertiary);
+  font-weight: 700;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sub-summary-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid var(--border-lightest);
+}
+
+.sub-summary-table tbody td {
+  color: var(--text-primary);
+}
+
+.sub-details-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 4px 0 14px;
+  flex-wrap: wrap;
+}
+
+.sub-details-actions .btn-3d {
+  flex: 0 0 auto;
+}
+
+.sub-details-actions .btn-3d .front {
+  padding: 0 22px;
+  font-size: 13px;
+  min-height: 40px;
+}
+
+/* ── Mobile: pin the pause/resume/cancel row to the bottom of the
+   screen, matching the Cancel/Submit bar on Catering/Celebration/
+   PreBooking/Reservation (.form-btn-row in ReservationForm.css).
+   Fixed rather than sticky, for the same reason documented there —
+   this page's .pl-body doesn't reliably resolve a definite height
+   for a sticky child to stick within. */
+@media (max-width: 600px) {
+  .sub-details-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    z-index: 60;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px var(--mobile-page-padding);
+    gap: 8px;
+    background: var(--bg-main);
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+    justify-content: stretch;
+    flex-wrap: nowrap;
+  }
+
+  .sub-details-actions .btn-3d {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .sub-details-actions .btn-3d .front {
+    padding: 0 12px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* .sub-details-actions is now fixed (out of flow), so its scroll
+     container needs matching space reserved at its own end —
+     otherwise the last section renders straight through where the
+     bar now floats.
+     This used to be a `.pl-body:has(> * .sub-details-actions)` rule,
+     but below 600px .sub-details-actions is portalled straight to
+     document.body by FormBtnRowPortal — so it's no longer a DOM
+     descendant of .pl-body once portalled, and :has() stopped
+     matching, silently dropping the reserved padding (same bug fixed
+     in ReservationForm.css's .form-btn-row rule). Keying off
+     .sub-hero-bottom — unique to this page's content and unaffected
+     by where the portalled button row ends up in the DOM — rather
+     than the shared .mod-scroll wrapper class, which MyOrderDetails
+     also uses for a page with no fixed bottom bar; keying off that
+     instead would wrongly pad MyOrderDetails too. */
+  .pl-body:has(.sub-hero-bottom) {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 600px) {
+
+  .sub-summary-table th,
+  .sub-summary-table td {
+    padding: 7px 9px;
+    font-size: 11.5px;
+  }
+
+  .sub-schedule-groups {
+    grid-template-columns: 1fr;
+  }
+
+  .sub-schedule-dish-row {
+    flex-wrap: wrap;
+  }
+}

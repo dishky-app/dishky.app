@@ -1,0 +1,900 @@
+.food-category {
+  padding: 36px;
+  height: stretch;
+}
+
+/* .food-header's real definition lives in FoodList.css, which several
+   pages that also use this className (MyOrders, MyOrderDetails,
+   OrderDetails, Profile, FavouriteDishList, FavouriteCategories) don't
+   import — this file (FoodCategory.css) is the one thing all of them
+   *do* import, so the sticky/transparent treatment is added here too
+   to actually reach them. Duplicated intentionally rather than
+   consolidated into one shared file, since untangling every page's
+   CSS imports into a single header stylesheet is a bigger refactor
+   than this fix calls for. */
+.food-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.food-header.header-scrolled {
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 0 var(--border-lighter, rgba(0, 0, 0, 0.06));
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* =============================================
+   VIEW TOGGLE ROW
+============================================= */
+
+.view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 8px 0;
+}
+
+.view-toggle-btns {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.view-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.view-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.view-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.view-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* edge — inactive (neutral grey) */
+.view-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(to left,
+      hsl(0, 0%, 42%) 0%,
+      hsl(0, 0%, 52%) 8%,
+      hsl(0, 0%, 52%) 92%,
+      hsl(0, 0%, 42%) 100%);
+}
+
+/* front — inactive */
+.view-btn .front {
+  display: block;
+  position: relative;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+  border-radius: 6px;
+}
+
+.view-btn:hover {
+  filter: brightness(108%);
+}
+
+.view-btn:hover .front {
+  color: var(--color-red);
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.view-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.view-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* edge — active (red) */
+.view-btn.active .edge {
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+/* front — active */
+.view-btn.active .front {
+  color: var(--bg-main);
+  background: var(--color-red);
+}
+
+/* AFTER */
+.view-btn .front img {
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+  z-index: 999;
+  /* filter: var(--view-btn-filter, brightness(0) saturate(100%) invert(24%) sepia(97%) saturate(7462%) hue-rotate(6deg) brightness(98%) contrast(107%)); */
+}
+
+.grid-icon,
+.list-icon {
+  width: 18px;
+  height: 18px;
+  filter: var(--filter);
+}
+
+/* =============================================
+   PROMO CAROUSEL  (.pc-*)
+============================================= */
+
+.pc-root {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
+  height: 90px;
+  position: relative;
+}
+
+.pc-viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  height: 90px;
+  border-radius: 16px;
+}
+
+.pc-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.pc-page {
+  display: flex;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
+}
+
+/* Each card fills its share of the page width */
+.pc-page--4 .pc-card {
+  flex: 1 1 calc(25% - 6px);
+  max-width: calc(25% - 6px);
+}
+
+.pc-page--3 .pc-card {
+  flex: 1 1 calc(33.333% - 6px);
+  max-width: calc(33.333% - 6px);
+}
+
+.pc-page--2 .pc-card {
+  flex: 1 1 calc(50% - 4px);
+  max-width: calc(50% - 4px);
+}
+
+.pc-page--1 .pc-card {
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+/* ─────────────────────────────────────────
+   PROMO CARD — the center of attraction
+───────────────────────────────────────── */
+.pc-card {
+  flex: 1;
+  min-width: 0;
+  height: 90px;
+  display: flex;
+  align-items: stretch;
+  border-radius: 16px;
+  border: none;
+  background: var(--bg-main);
+  cursor: pointer;
+  overflow: hidden;
+  text-align: left;
+  padding: 0;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  outline: none;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
+.pc-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13);
+}
+
+.pc-card:active {
+  transform: scale(0.975);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Bold red bottom border — the visual anchor */
+.pc-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--color-red);
+  border-radius: 0 0 16px 16px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pc-card:hover::after {
+  opacity: 1;
+}
+
+/* ── Media ── */
+.pc-card__media {
+  width: 88px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-main);
+  overflow: hidden;
+}
+
+.pc-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.35s ease;
+}
+
+.pc-card:hover .pc-card__media img {
+  transform: scale(1.08);
+}
+
+/* ── Body ── */
+.pc-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Top row: type pill + badge */
+.pc-card__top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pc-card__badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Title — the main focus */
+.pc-card__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: "Geom", sans-serif;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Bottom row: price + CTA */
+.pc-card__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.pc-card__price-group {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+}
+
+.pc-card__price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-red);
+  font-family: "Geom", sans-serif;
+  line-height: 1;
+}
+
+.pc-card__old-price {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.pc-card__discount {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-red);
+  white-space: nowrap;
+}
+
+/* CTA — small arrow pill */
+.pc-card__cta {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--bg-main);
+  background: var(--color-red);
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+  line-height: 1.6;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+
+.pc-card:hover .pc-card__cta {
+  opacity: 0.88;
+}
+
+/* ── Nav arrows ── */
+.pc-arrow {
+  color: var(--text-primary);
+  height: 32px;
+  width: 32px;
+  font-size: 18px;
+  border-radius: 999px;
+  background: var(--bg-main);
+  cursor: pointer;
+  border: 1px solid var(--bg-surface);
+  transition: all 0.3s;
+  box-shadow: 6px 6px 12px var(--text-tertiary), -6px -6px 12px var(--bg-surface);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pc-arrow:disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.pc-arrow:hover:not(:disabled) {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  transform: scale(1.08);
+}
+
+.pc-arrow:hover:not(:disabled)::after {
+  border-color: var(--bg-main);
+}
+
+.pc-arrow::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid var(--text-secondary);
+  border-top: 2px solid var(--text-secondary);
+  transition: border-color 0.18s ease;
+}
+
+.pc-arrow-left::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid var(--text-secondary);
+  border-top: 2px solid var(--text-secondary);
+  transition: border-color 0.18s ease;
+  transform: rotate(-135deg) translateX(-1px);
+  text-align: center !important;
+}
+
+.pc-arrow-right::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid var(--text-secondary);
+  border-top: 2px solid var(--text-secondary);
+  transition: border-color 0.18s ease;
+  transform: rotate(45deg) translateX(-1px);
+  text-align: center !important;
+}
+
+/* ── Dot indicators ── */
+.pc-dots {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pc-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border-light);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.22s ease, width 0.22s ease;
+}
+
+.pc-dot.active {
+  background: var(--color-red);
+  width: 16px;
+  border-radius: 3px;
+}
+
+/* =============================================
+   FOOD CATEGORY GRID
+============================================= */
+
+.food-category-container {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 14px;
+  padding: 10px 0 0 0;
+  transition: all 0.3s ease;
+}
+
+.food-category-items {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border-radius: 20px;
+  padding: 16px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  box-shadow: var(--shadow-card-normal);
+  transition: transform 0.25s ease;
+  will-change: transform;
+  contain: layout paint;
+  transform: translateZ(0);
+}
+
+.special {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.special:hover {
+  transform: translateY(0px) !important;
+  background-color: var(--color-red);
+  color: var(--bg-main);
+  box-shadow: none !important;
+}
+
+.special .food-category-name {
+  color: var(--bg-main);
+}
+
+.food-category-items:hover {
+  transform: translateY(-6px);
+  background-color: var(--color-red);
+  color: var(--bg-main);
+  box-shadow: var(--card-shadow)
+}
+
+.food-category-items:hover .food-category-name {
+  color: var(--bg-main);
+}
+
+.food-category-items.favourites .food-category-name::after {
+  content: "";
+  margin-left: 6px;
+  color: var(--color-red);
+}
+
+.food-category-image {
+  width: 110px !important;
+  height: 110px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.food-category-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+@media (hover: none) {
+  .food-category-items:hover {
+    transform: none;
+  }
+}
+
+.food-category-name {
+  font-size: 16px;
+  min-height: 40px;
+  text-align: center;
+  font-family: "Geom", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-primary);
+  align-content: center;
+}
+
+/* ── Dedicated "actions" card — a food-category-items tile that holds
+   no category, just the Subscribe / Events & Booking buttons, so a
+   customer can reach either without those buttons crowding every
+   single real category tile. Built on the shared .chip 3D-push style
+   (see shared/buttons.css) so they read as real buttons rather than
+   text links. ── */
+.food-category-actions-card {
+  justify-content: center;
+}
+
+.food-category-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  height: stretch;
+}
+
+.special .food-category-actions {
+  padding: 6px 0 !important;
+}
+
+.food-category-action-btn {
+  width: 100%;
+  flex: 1;
+  font-size: 13px;
+}
+
+.food-category-action-btn .front {
+  padding: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 100%;
+  text-align: center;
+  align-content: center;
+
+  font-size: 16px;
+  min-height: 40px;
+  text-align: center;
+  font-family: "Geom", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  align-content: center;
+
+  background: var(--color-red) !important;
+}
+
+.food-category-action-btn .edge {
+  background: linear-gradient(to left, var(--edge-color-dark) 0%, var(--edge-color-light) 8%, var(--edge-color-light) 92%, var(--edge-color-dark) 100%) !important;
+}
+
+.food-category-action-btn .front,
+.food-category-action-btn .edge,
+.food-category-action-btn .shadow {
+  border-radius: 20px !important;
+}
+
+.special .food-category-action-btn .front {
+  background: var(--color-red);
+  color: var(--bg-main);
+}
+
+.food-category-items.list.food-category-actions-card {
+  align-items: stretch;
+}
+
+.food-category-items.list .food-category-actions {
+  flex-direction: row;
+  width: 100%;
+}
+
+.food-category-items.list .food-category-action-btn {
+  width: auto;
+  flex: 1;
+}
+
+.food-category-container.grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.food-category-container.list {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.food-category-items.list {
+  flex-direction: row;
+  height: auto;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 6px;
+}
+
+.food-category-items.list .food-category-image {
+  width: 60px !important;
+  height: 60px !important;
+}
+
+.food-category-items.list .food-category-name {
+  font-size: 18px;
+  text-align: left;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: "Geom", sans-serif;
+  margin: 0;
+}
+
+
+/* =============================================
+   RESPONSIVE
+============================================= */
+@media screen and (max-width: 1200px) {
+  .food-category-container {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .food-category {
+    padding: var(--medium-page-padding);
+  }
+
+  .food-category-container {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+
+  .food-category-container {
+    gap: 20px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .food-category {
+    padding: 20px;
+  }
+
+  .food-category-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .pc-root {
+    height: 82px;
+  }
+
+  .pc-viewport {
+    height: 82px;
+  }
+
+  .pc-card {
+    height: 82px;
+  }
+
+  .pc-card__media {
+    width: 76px;
+  }
+}
+
+@media screen and (max-width: 578px) {
+
+  /* Scroll .food-category-container on its own instead of the whole
+     page: .food-category becomes a fixed-height flex column so
+     .view-toggle (the sticky search/promo/view-switch bar) stays a
+     normal, non-scrolling flex item, and .food-category-container —
+     already a CSS grid, so overflow-y just works on it directly —
+     becomes the one scrolling region for the category tiles. Without
+     this, .page-transition-wrapper (App.css) was the only scroll
+     container, so .view-toggle relied on position: sticky within
+     that outer scroll to stay put; making the grid scroll internally
+     here is simpler and matches the fixed-bar pattern used elsewhere
+     (FoodItem/FoodList's bottom bars) of pinning chrome and letting
+     only the content area scroll. */
+  .food-category {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: var(--mobile-page-padding);
+  }
+
+  .view-toggle {
+    flex: 0 0 auto;
+  }
+
+  .food-category-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    align-content: start;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 6px
+  }
+
+  .food-category-items {
+    height: 150px;
+  }
+
+  .food-category-container.list {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px !important;
+  }
+
+  /* On mobile: full-width single card — already handled globally */
+  .pc-root {
+    height: 80px;
+    gap: 6px;
+  }
+
+  .pc-viewport {
+    height: 80px;
+  }
+
+  .pc-card {
+    height: 80px;
+    border-radius: 14px;
+    padding: 8px 10px;
+  }
+
+  .pc-card__media {
+    width: 80px;
+  }
+
+  .pc-card__title {
+    font-size: 12px;
+  }
+
+  .pc-card__price {
+    font-size: 13px;
+  }
+
+  .section-title {
+    font-size: 16px;
+  }
+
+  .view-toggle-btns {
+    flex-direction: column;
+  }
+
+  .pc-arrow,
+  .pc-arrow-left,
+  .pc-arrow-left {
+    display: none;
+  }
+}
+
+/* =============================================
+   FAV-EMPTY — shared "nothing here" state used by
+   FavouriteCategories, FavouriteDishList,
+   FavouriteDishDetail, and OffersGrid. Centered both
+   horizontally and vertically in whatever container
+   it sits in: spans the full width when it's a grid
+   item (food-category-container), and fills the
+   available height when it's a lone block child
+   (.fav-empty-page modifier).
+============================================= */
+.fav-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 70px 20px;
+  gap: 6px;
+  width: 100%;
+}
+
+.fav-empty-page {
+  min-height: 50vh;
+}
+
+.fav-empty-icon {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-red) 14%, var(--bg-main)), color-mix(in srgb, var(--color-red-secondary) 8%, var(--bg-main)));
+}
+
+.fav-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.fav-empty-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 320px;
+}

@@ -1,0 +1,48 @@
+/* ---- checkbox ---- */
+.dk-check { display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer; font-size: 0.9rem; line-height: 1.45; color: rgba(255, 255, 255, 0.7); }
+.dk-check__input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.dk-check__box {
+  flex-shrink: 0; margin-top: 1px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px;
+  border: 1.5px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.04);
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.dk-check:hover .dk-check__box { border-color: #f33716; }
+.dk-check__tick { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 20; stroke-dashoffset: 20; transition: stroke-dashoffset 0.28s ease 0.05s; }
+.dk-check__input:checked + .dk-check__box { background: #f33716; border-color: #f33716; box-shadow: 0 6px 18px -6px rgba(243, 55, 22, 0.8); transform: scale(1.04); }
+.dk-check__input:checked + .dk-check__box .dk-check__tick { stroke-dashoffset: 0; }
+.dk-check__input:focus-visible + .dk-check__box { outline: 2px solid #fff; outline-offset: 3px; }
+.dk-check__input[aria-invalid="true"] + .dk-check__box { border-color: #f33716; box-shadow: 0 0 0 4px rgba(243, 55, 22, 0.2); }
+.dk-check__text a { color: #fff; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(243, 55, 22, 0.8); }
+
+/* ---- segmented switch ---- */
+.dk-seg { position: relative; display: grid; grid-template-columns: repeat(var(--n), 1fr); padding: 4px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); }
+.dk-seg__thumb {
+  position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / var(--n)); border-radius: 999px; background: #fff;
+  transform: translateX(calc(var(--i) * 100%)); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.6);
+}
+.dk-seg__opt { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.55rem 0.5rem; border-radius: 999px; cursor: pointer; font-size: 0.875rem; font-weight: 700; color: rgba(255, 255, 255, 0.7); transition: color 0.25s; }
+.dk-seg__opt.is-on { color: #000; }
+.dk-seg__opt:focus-within { outline: 2px solid #f33716; outline-offset: -2px; }
+.dk-seg__badge { font-style: normal; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.02em; padding: 0.15rem 0.45rem; border-radius: 999px; background: #f33716; color: #fff; }
+
+/* ---- plan tiles ---- */
+.dk-plan {
+  position: relative; display: flex; flex-direction: column; gap: 0.2rem; padding: 1rem 0.95rem 0.9rem; cursor: pointer; min-width: 0;
+  border-radius: 20px; border: 1.5px solid rgba(255, 255, 255, 0.14); background: rgba(255, 255, 255, 0.03);
+  transition: border-color 0.25s, background-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.dk-plan:hover { border-color: rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
+.dk-plan:focus-within { outline: 2px solid #f33716; outline-offset: 2px; }
+.dk-plan.is-on { border-color: #f33716; background: linear-gradient(160deg, rgba(243, 55, 22, 0.22), rgba(243, 55, 22, 0.04) 70%); box-shadow: 0 18px 40px -20px rgba(243, 55, 22, 0.7); }
+.dk-plan__name { padding-right: 1.6rem; font-family: var(--font-display, inherit); font-weight: 800; font-size: 1rem; color: #fff; }
+.dk-plan__price { display: flex; align-items: baseline; gap: 2px; color: #fff; }
+.dk-plan__price b { font-family: var(--font-display, inherit); font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+.dk-plan__price small { font-size: 0.75rem; color: rgba(255, 255, 255, 0.55); }
+.dk-plan__note { font-size: 0.72rem; color: rgba(255, 255, 255, 0.5); }
+.dk-plan__tick { position: absolute; top: 0.7rem; right: 0.7rem; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; border: 1.5px solid rgba(255, 255, 255, 0.25); color: transparent; transition: all 0.25s; }
+.dk-plan.is-on .dk-plan__tick { background: #f33716; border-color: #f33716; color: #fff; transform: scale(1.05); }
+.dk-plan__badge { position: absolute; top: -10px; left: 0.9rem; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 999px; background: #fff; color: #000; }
+@media (prefers-reduced-motion: reduce) { .dk-plan, .dk-seg__thumb, .dk-check__box, .dk-check__tick { transition: none; } }
+
+/* disabled primary action */
+.btn-primary:disabled, .btn-primary[aria-disabled="true"] { cursor: not-allowed; opacity: 0.45; filter: grayscale(0.4); box-shadow: none; transform: none; }

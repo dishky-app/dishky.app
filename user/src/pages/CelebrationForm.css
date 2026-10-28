@@ -1,0 +1,518 @@
+
+
+/* =========================
+   CONTAINER
+========================= */
+.clp-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  height: calc(100vh - 135px);
+}
+
+.clp-section {
+  background: transparent;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-dark) transparent;
+}
+
+.clp-section::-webkit-scrollbar {
+  width: 4px;
+}
+
+.clp-section::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 4px;
+}
+
+/* =========================
+   BLOCK (white card wrapper)
+========================= */
+.clp-block {
+  background: var(--bg-very-light);
+  padding: 14px 16px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--border-lightest);
+}
+
+.clp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clp-sub-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+/* =========================
+   EVENT TYPE GRID
+========================= */
+.clp-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.clp-type-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px;
+  border-radius: 14px;
+  border: 2px solid var(--border-lightest);
+  background: var(--bg-very-light);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.clp-type-card:hover {
+  border-color: var(--color-red);
+  transform: translateY(-2px);
+  scale: 1 !important;
+  box-shadow: 0 6px 16px var(--shadow-card-xs);
+}
+
+.clp-type-card.active {
+  border-color: var(--color-red);
+  background: var(--color-red);
+  box-shadow: 0 6px 20px var(--shadow-red-md);
+}
+
+.clp-type-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.clp-type-card.active .clp-type-label {
+  color: var(--bg-main);
+}
+
+/* =========================
+   CHECKBOX CARDS
+========================= */
+.clp-check-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.clp-check-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-lightest);
+  background: var(--bg-very-light);
+  cursor: pointer;
+  transition: all 0.18s;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.clp-check-card:hover {
+  border-color: var(--color-red);
+  transform: translateY(-2px);
+  transition: 0.2s ease-in;
+}
+
+.clp-check-card.active {
+  border-color: var(--color-red);
+  background: var(--color-red);
+  font-weight: 700;
+}
+
+.clp-check-label {
+  flex: 1;
+  font-size: 12px;
+}
+
+.clp-check-card.active .clp-check-label,
+.clp-check-card.active span {
+  color: var(--bg-main);
+}
+
+/* =========================
+   DECORATION
+========================= */
+.clp-deco-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.clp-deco-none-btn {
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--border-muted);
+  background: var(--bg-very-light);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+}
+
+.clp-deco-none-btn:hover {
+  border-color: var(--text-placeholder);
+  color: var(--text-secondary);
+}
+
+.clp-deco-none-btn.active {
+  border-color: var(--color-red);
+  background: var(--color-red);
+  color: var(--bg-main);
+}
+
+.clp-deco-card {
+  position: relative;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-lightest);
+  background: var(--bg-very-light);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.clp-deco-card:hover {
+  border-color: var(--color-red);
+  transform: translateY(-2px);
+  scale: 1 !important;
+}
+
+.clp-deco-card.active {
+  border-color: var(--color-red);
+  background: var(--color-red);
+}
+
+.clp-deco-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.clp-deco-price {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-red);
+}
+
+.clp-deco-desc {
+  font-size: 10px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.clp-deco-card.active .clp-deco-label,
+.clp-deco-card.active .clp-deco-price,
+.clp-deco-card.active .clp-deco-desc {
+  color: var(--bg-main);
+}
+
+/* =========================
+   AV PRICE NOTE
+========================= */
+.clp-av-price {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--btn-default);
+  margin-top: 2px;
+}
+
+@keyframes clpBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes clpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+}
+
+@media (max-width: 768px) {
+
+  .clp-container {
+    flex-direction: column;
+    height: auto;
+    gap: 16px;
+  }
+
+  .clp-section {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: visible;
+  }
+
+  .clp-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clp-deco-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clp-check-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 578px) {
+
+  .clp-container {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .clp-type-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .clp-deco-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .clp-check-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ═══════════════════════════════════════
+   SPECIAL MENTION EXPANSION
+═══════════════════════════════════════ */
+.clp-extra-item-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clp-extra-item-wrap:hover {
+  transform: translateY(-2px);
+  transition: 0.2s ease-in;
+}
+
+.clp-mention-box {
+  margin-left: 4px;
+  animation: clp-slide-in 0.2s ease;
+}
+
+@keyframes clp-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.clp-mention-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-lightest);
+  background: var(--color-amber-bg);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-primary);
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.2s;
+}
+
+.clp-mention-textarea:focus {
+  border-color: var(--color-red);
+  background: var(--bg-main);
+}
+
+.clp-mention-textarea::placeholder {
+  color: var(--text-placeholder);
+}
+
+/* ── Guest limit message ── */
+.clp-guest-limit-msg {
+  margin-top: 6px;
+  background: var(--color-amber-bg);
+  border: 1px solid var(--color-amber-pale);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--color-amber-dark);
+  line-height: 1.5;
+}
+
+.clp-catering-link {
+  background: none;
+  border: none;
+  color: var(--color-error-dark);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+  text-decoration: underline;
+  font-family: inherit;
+}
+
+/* ── Luxury disabled ── */
+.clp-deco-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+}
+
+.clp-deco-lock-msg {
+  font-size: 10px;
+  color: var(--color-rose-dark);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* ── Price summary block ── */
+.clp-price-summary .clp-card {
+  gap: 0;
+}
+
+.clp-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--text-tertiary);
+}
+
+.clp-price-row:last-child {
+  border-bottom: none;
+}
+
+.clp-price-total {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-top: 4px;
+  padding-top: 10px;
+}
+
+/* ── Mention textarea ── */
+.clp-mention-textarea {
+  display: block !important;
+  width: 100% !important;
+  font-size: 14px !important;
+  font-family: inherit !important;
+  color: var(--text-primary) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid var(--m-placeholder) !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 6px 0 !important;
+  box-sizing: border-box !important;
+  resize: none !important;
+  caret-color: var(--color-red) !important;
+  transition: border-color 0.3s !important;
+  line-height: 1.5 !important;
+}
+
+.clp-mention-textarea:focus {
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.clp-mention-textarea:hover {
+  border: none !important;
+  border-bottom: 1px solid var(--text-tertiary) !important;
+  background: transparent !important;
+}
+
+.clp-mat-area {
+  position: relative;
+  width: 100%;
+  padding-top: 20px;
+}
+
+.clp-mat-area-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--color-red);
+  border-radius: 1px;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.clp-mat-area:focus-within .clp-mat-area-bar {
+  width: 100%;
+}
+
+/* Restored: .loading is applied by CelebrationForm.js on its submit button
+   (className={`btn-3d red${loading ? " loading" : ""}`}). The rule was
+   originally scoped to .clp-submit, a class no longer rendered by the
+   component - kept here verbatim rather than removed, since .loading
+   itself is still live. */
+.clp-submit.loading,
+.clp-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

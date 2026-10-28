@@ -1,0 +1,54 @@
+/* Ticket UI extras (prefix tk-). Everything else uses the Admin Panel stylesheets. */
+.tk-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tk-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.tk-card { background: #fff; border: 1px solid #ececec; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.tk-card h4 { margin: 0; font-size: 15px; }
+.tk-section { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14px; margin: 0; }
+.tk-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 2px; }
+.tk-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.tk-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tk-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.tk-timeline li { border-left: 2px solid #e5e7eb; padding-left: 12px; font-size: 13.5px; }
+.tk-timeline .tk-when { color: #888; font-size: 12px; }
+.tk-comment { border: 1px solid #ececec; border-radius: 10px; padding: 10px 12px; }
+.tk-comment.internal { background: #fffbeb; border-color: #fde68a; }
+.tk-comment .tk-meta { font-size: 12px; color: #888; margin-bottom: 4px; display: flex; gap: 8px; align-items: center; }
+.tk-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin-bottom: 12px; }
+a.tk-kpi-link { text-decoration: none; color: inherit; display: block; }
+a.tk-kpi-link .kpi-card { height: 100%; transition: transform .12s ease; }
+a.tk-kpi-link:hover .kpi-card { transform: translateY(-2px); }
+.kpi-card.bad h3 { color: #dc2626; }
+.tk-progress { height: 8px; background: var(--color-offwhite, #f1f1f1); border-radius: 99px; overflow: hidden; }
+.tk-progress > span { display: block; height: 100%; background: var(--color-blue); }
+.tk-perm-table td, .tk-perm-table th { text-align: center; }
+.tk-perm-table td:first-child, .tk-perm-table th:first-child { text-align: left; }
+.tk-perm-group td { background: #f8fafc; font-weight: 700; text-align: left !important; }
+.tk-warn { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+.tk-link-box { word-break: break-all; background: #f3f4f6; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; }
+@media (max-width: 900px) { .tk-grid { grid-template-columns: 1fr; } }
+
+/* ── Admin dialog tweaks (.admin-modal is the Admin Panel's own; these only make short dialogs hug their content) ── */
+.admin-modal.tk-modal { min-height: 0; height: auto; width: min(480px, 94vw); max-height: 90vh; }
+.admin-modal.tk-modal.tk-modal-wide { width: min(680px, 94vw); }
+.admin-modal.tk-modal .admin-modal-body { padding: 4px 2px 8px; gap: 12px; }
+.admin-modal.tk-modal .admin-modal-body > p { margin: 0; }
+.tk-datetime { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tk-datetime > * { min-width: 0; }
+.tk-label { font-size: 12px; color: #6b7280; font-weight: 600; letter-spacing: .02em; }
+.tk-card textarea.mat-input, .admin-modal textarea.mat-input { min-height: 64px; }
+.tk-unread strong { color: var(--color-blue); }
+.tk-notes { width: min(340px, 92vw); }
+
+/* ── Pages: never squash cards inside the flex column (fixes overlapping dashboard cards) ── */
+.inner-page > .tk-kpis, .inner-page > .tk-card, .inner-page > .tk-grid, .inner-page > .tk-pills,
+.inner-page > .header, .inner-page > .filter-bar, .inner-page > .table-wrapper.tk-fixed { flex: none; }
+.tk-kpis { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; padding: 6px 2px 14px; }
+.tk-kpis .kpi-card { width: auto; min-width: 0; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
+.tk-kpis .kpi-card p { line-height: 1.25; }
+.inner-page > .table-wrapper { min-height: 160px; }
+
+/* page-level mat forms (Account, Roles settings) */
+.tk-fields-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.tk-pw-form { display: flex; flex-direction: column; gap: 12px; }
+.tk-form .auth-password-mat input.mat-input { padding-right: 38px !important; }
+.tk-form .admin-form-group input.mat-input { height: 36px; }

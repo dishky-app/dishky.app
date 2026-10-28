@@ -1,0 +1,63 @@
+/* Responsive layer for the Super Admin console and the Developer Panel (same file in both).
+   Below 992px the sidebar becomes an off-canvas drawer (hamburger in the top bar + dimmed backdrop). */
+.topbar-menu-btn { display: none; align-items: center; justify-content: center; background: none; border: 0; padding: 6px; margin-right: 6px; border-radius: 8px; cursor: pointer; color: #333; flex-shrink: 0; }
+.topbar-menu-btn:hover { background: #f3f4f6; }
+.sidebar-backdrop { display: none; }
+.topbar-left { min-width: 0; }
+.topbar-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+img, svg { max-width: 100%; }
+
+@media (max-width: 992px) {
+  .app > .sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 1001; width: 260px !important; max-width: 86vw; transition: transform .28s ease; box-shadow: 4px 0 24px rgba(0, 0, 0, .18); }
+  .app > .sidebar.is-closed { transform: translateX(-105%); box-shadow: none; }
+  .app > .sidebar.is-open { transform: none; }
+  .sidebar-backdrop { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, .4); z-index: 1000; }
+  .app-main, .app-main.expanded, .app-main.collapsed { margin-left: 0 !important; width: 100%; }
+  .topbar-menu-btn { display: flex; }
+  .page { padding: 16px; }
+  .tk-grid { grid-template-columns: 1fr !important; }
+  .sa-cols-2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .page { padding: 10px; overflow-y: auto; }
+  .inner-page { overflow: visible !important; flex: none; min-height: 0; }
+  .inner-page > .table-wrapper { max-height: none; height: auto !important; }
+  .header { flex-wrap: wrap; gap: 10px; }
+  .header-btn-container { flex-wrap: wrap; }
+  .filter-bar { display: flex; flex-direction: column; gap: 10px; }
+  .filter-groups { display: flex; flex-wrap: wrap; gap: 10px; }
+  .filter-groups > * { flex: 1 1 150px; min-width: 0; max-width: none !important; }
+  .tk-pills { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .tk-pills > * { flex: none; }
+  .sa-field { flex-wrap: wrap; gap: 2px 12px; }
+  .sa-pager { justify-content: center; }
+  .tk-actions > * { flex: 1 1 auto; }
+  .admin-modal.tk-modal { width: 96vw; max-height: 92vh; height: auto; padding: 14px; }
+  .admin-modal.tk-modal.tk-modal-wide { width: 96vw; }
+  .admin-modal-footer { flex-wrap: wrap; }
+}
+
+@media (max-width: 578px) {
+  .topbar { padding: 0 8px; }
+  .topbar-title { display: block !important; font-size: 15px !important; max-width: calc(100vw - 170px); }
+  .header-btn-container { flex-direction: row; }
+  .header-btn-container > * { flex: 1 1 auto; }
+  .tk-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .tk-kpis .kpi-card { padding: 12px; }
+  .tk-kpis .kpi-card h3 { font-size: 20px; }
+  .tk-datetime { grid-template-columns: 1fr; }
+  .tk-card { padding: 12px; }
+  .table-wrapper table th, .table-wrapper table td { padding-left: 8px; padding-right: 8px; white-space: nowrap; }
+  .table-wrapper table td:nth-child(2) { white-space: normal; min-width: 160px; }
+  .admin-modal-footer > * { flex: 1 1 auto; }
+}
+
+/* Collapse sections (shared with the Admin Panel): block layout so wrapped tables / cards / KPI grids keep their own layout. */
+.collapse-section.cs-block > .collapse-section-inner { display: block; }
+.header-back { margin-bottom: 2px; font-size: 12.5px; }
+.collapse-section.cs-block { flex: none; }
+
+.table-wrapper { position: relative; }
+.sa-count { padding: 8px 2px; }

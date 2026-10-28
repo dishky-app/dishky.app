@@ -1,0 +1,506 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   buttons.css — 3D Push Button System + Chip + Sort + Action Variants
+   Requires: variables.css
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── BASE: Shared 3D push structure ─── */
+/* All button types (.home-btn, .chip, .sort-btn, .floating-btn, .theme-toggle,
+   .form-action-btn, .action-btn, .btn-3d) share this base pattern.
+   The .shadow, .edge, and .front layers are the 3D components. */
+
+/* ─── GLOBAL LAYER DEFAULTS (overridden per-button below) ─── */
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+.front {
+  display: block;
+  position: relative;
+  padding: 12px 27px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  color: white;
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+/* ─── COLOR VARIANTS (used with .btn-3d) ─── */
+
+.red .edge {
+  background: linear-gradient(to left,
+    var(--edge-color-dark) 0%,
+    var(--edge-color-light) 8%,
+    var(--edge-color-light) 92%,
+    var(--edge-color-dark) 100%);
+}
+.red .front {
+  background: var(--color-red);
+  color: var(--bg-main);
+}
+
+.green .edge {
+  background: linear-gradient(to left,
+    var(--edge-color-green-dark) 0%,
+    var(--edge-color-green-light) 8%,
+    var(--edge-color-green-light) 92%,
+    var(--edge-color-green-dark) 100%);
+}
+.green .front {
+  background: var(--color-green);
+  color: var(--bg-main);
+}
+
+.white .edge {
+  background: linear-gradient(to left,
+    hsl(0, 0%, 42%) 0%,
+    hsl(0, 0%, 52%) 8%,
+    hsl(0, 0%, 52%) 92%,
+    hsl(0, 0%, 42%) 100%);
+}
+.white .front {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* ─── HOME BUTTON ─── */
+
+.home-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.home-btn .shadow {
+  border-radius: 10px;
+}
+
+.home-btn .edge {
+  border-radius: 10px;
+  background: linear-gradient(to left,
+    hsl(0, 0%, 42%) 0%,
+    hsl(0, 0%, 52%) 8%,
+    hsl(0, 0%, 52%) 92%,
+    hsl(0, 0%, 42%) 100%);
+}
+
+.home-btn .front {
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  border-radius: 10px;
+}
+
+.home-btn:hover { filter: brightness(108%); }
+.home-btn:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.home-btn:hover .front { color: var(--color-red); transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.home-btn:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+.home-btn:active .front { transform: translateY(-2px); transition: transform 34ms; }
+.home-btn:focus:not(:focus-visible) { outline: none; }
+
+.home-btn.active .edge {
+  background: linear-gradient(to left,
+    var(--edge-color-dark) 0%,
+    var(--edge-color-light) 8%,
+    var(--edge-color-light) 92%,
+    var(--edge-color-dark) 100%);
+}
+.home-btn.active .front {
+  color: var(--bg-main);
+  background: var(--color-red);
+}
+
+.home-btn .front img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  z-index: 999;
+  filter: var(--img-theme-filter);
+}
+
+.home-btn-icon { cursor: pointer; }
+
+/* ─── CHIP (filter pill) ─── */
+
+.chip {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: fit-content;
+}
+
+.chip .shadow { border-radius: 999px; }
+
+.chip .edge {
+  border-radius: 999px;
+  background: linear-gradient(to left,
+    hsl(0, 0%, 42%) 0%,
+    hsl(0, 0%, 52%) 8%,
+    hsl(0, 0%, 52%) 92%,
+    hsl(0, 0%, 42%) 100%);
+}
+
+.chip .front {
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+}
+
+.chip:hover { filter: brightness(108%); }
+.chip:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.chip:hover .front { color: var(--color-red); transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.chip:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+.chip:active .front { transform: translateY(-2px); transition: transform 34ms; }
+.chip:focus:not(:focus-visible) { outline: none; }
+
+.chip.active .edge {
+  background: linear-gradient(to left,
+    var(--edge-color-dark) 0%,
+    var(--edge-color-light) 8%,
+    var(--edge-color-light) 92%,
+    var(--edge-color-dark) 100%);
+}
+.chip.active .front { color: var(--bg-main); background: var(--color-red); }
+
+/* ─── SORT BUTTON ─── */
+
+.sort-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sort-btn .shadow { border-radius: 999px; }
+
+.sort-btn .edge {
+  border-radius: 999px;
+  background: linear-gradient(to left,
+    hsl(0, 0%, 42%) 0%,
+    hsl(0, 0%, 52%) 8%,
+    hsl(0, 0%, 52%) 92%,
+    hsl(0, 0%, 42%) 100%);
+}
+
+.sort-btn .front {
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+}
+
+.sort-btn:hover { filter: brightness(108%); }
+.sort-btn:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.sort-btn:hover .front { color: var(--color-red); transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.sort-btn:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+.sort-btn:active .front { transform: translateY(-2px); transition: transform 34ms; }
+.sort-btn:focus:not(:focus-visible) { outline: none; }
+
+.sort-btn.active .edge {
+  background: linear-gradient(to left,
+    var(--edge-color-dark) 0%,
+    var(--edge-color-light) 8%,
+    var(--edge-color-light) 92%,
+    var(--edge-color-dark) 100%);
+}
+.sort-btn.active .front { color: var(--bg-main); background: var(--color-red); }
+
+@media (max-width: 578px) {
+  .sort-btn .front { padding: 5px 10px; font-size: 11px; }
+}
+
+/* ─── FLOATING BUTTON ─── */
+
+.floating-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.floating-btn .shadow { border-radius: 999px; }
+
+.floating-btn .edge {
+  border-radius: 999px;
+  background: linear-gradient(to left,
+    var(--edge-color-dark) 0%,
+    var(--edge-color-light) 8%,
+    var(--edge-color-light) 92%,
+    var(--edge-color-dark) 100%);
+}
+
+.floating-btn .front {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 999px;
+  font-weight: 600;
+  color: #f0f0f0;
+  background: var(--color-red);
+}
+
+.floating-btn:hover { filter: brightness(108%); }
+.floating-btn:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.floating-btn:hover .front { transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.floating-btn:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+.floating-btn:active .front { transform: translateY(-2px); transition: transform 34ms; }
+
+/* ─── THEME TOGGLE ─── */
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  cursor: pointer;
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.theme-toggle .shadow { border-radius: 999px; }
+
+.theme-toggle .edge {
+  border-radius: 999px;
+  background: linear-gradient(to left,
+    hsl(0, 0%, 42%) 0%,
+    hsl(0, 0%, 52%) 8%,
+    hsl(0, 0%, 52%) 92%,
+    hsl(0, 0%, 42%) 100%);
+}
+
+.theme-toggle .front {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-main);
+}
+
+.theme-toggle:hover { filter: brightness(108%); }
+.theme-toggle:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.theme-toggle:hover .front { transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.theme-toggle:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+
+/* ─── FORM ACTION BUTTON (submit / done / cancel) ─── */
+
+.form-action-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  width: fit-content;
+  flex-shrink: 0;
+}
+
+.form-action-btn .shadow {
+  background: hsl(0deg 0% 0% / 0.25);
+}
+
+.form-action-btn.submit .edge {
+  background: linear-gradient(to left,
+    var(--edge-color-dark) 0%,
+    var(--edge-color-light) 8%,
+    var(--edge-color-light) 92%,
+    var(--edge-color-dark) 100%);
+}
+.form-action-btn.submit .front {
+  padding: 12px 27px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--bg-main);
+  background: var(--color-red);
+}
+
+.form-action-btn.done .edge {
+  background: linear-gradient(to left,
+    var(--edge-color-green-dark) 0%,
+    var(--edge-color-green-light) 8%,
+    var(--edge-color-green-light) 92%,
+    var(--edge-color-green-dark) 100%);
+}
+.form-action-btn.done .front {
+  padding: 12px 27px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--bg-main);
+  background: var(--color-green);
+}
+
+.form-action-btn.cancel .edge {
+  background: linear-gradient(to left,
+    hsl(0, 0%, 48%) 0%,
+    hsl(0deg 0% 56%) 8%,
+    hsl(0deg 0% 56%) 92%,
+    hsl(0, 0%, 48%) 100%);
+}
+.form-action-btn.cancel .front {
+  padding: 12px 27px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+}
+
+.form-action-btn:hover { filter: brightness(108%); }
+.form-action-btn:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.form-action-btn:hover .front { transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.form-action-btn:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+.form-action-btn:active .front { transform: translateY(-2px); transition: transform 34ms; }
+.form-action-btn:focus:not(:focus-visible) { outline: none; }
+.form-action-btn.disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+
+/* ─── BTN-3D (generic 3D button with color slot) ─── */
+
+.btn-3d {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+.btn-3d .shadow { background: hsl(0deg 0% 0% / 0.25); }
+
+.btn-3d .front {
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 500;
+  min-height: 36px;
+  align-content: center;
+  height: 100%;
+}
+
+.btn-3d img { width: 20px; aspect-ratio: 1/1; }
+
+.btn-3d:hover { filter: brightness(108%); }
+.btn-3d:hover .shadow { transform: translateY(4px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.btn-3d:hover .front { transform: translateY(-6px); transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5); }
+.btn-3d:active .shadow { transform: translateY(1px); transition: transform 34ms; }
+.btn-3d:active .front { transform: translateY(-2px); transition: transform 34ms; }
+.btn-3d:focus:not(:focus-visible) { outline: none; }
+
+/* ─── BACK BUTTON ─── */
+
+.back-button {
+  width: 30px;
+  height: 50px;
+  border-radius: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+
+.back-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  border-left: 3px solid var(--text-primary);
+  border-bottom: 3px solid var(--text-primary);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* ─── UTILITY MODIFIERS ─── */
+
+.sm-padding .front {
+  padding: 6px 14px !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+}
+
+.sq-padding .front {
+  height: 40px !important;
+  width: 40px !important;
+  padding: 0 !important;
+}

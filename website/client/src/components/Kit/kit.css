@@ -1,0 +1,44 @@
+/* Shared interactive kit used by the home page and the module pages. */
+.kit-seg { display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(0,0,0,.06); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.kit-seg::-webkit-scrollbar { display: none; }
+.kit-seg--dark { background: rgba(255,255,255,.1); }
+.kit-seg__btn { position: relative; border: 0; background: none; padding: 9px 16px; min-height: 40px; border-radius: 999px; font: 600 13px/1 var(--font-body, Manrope, sans-serif); color: rgba(0,0,0,.6); cursor: pointer; white-space: nowrap; transition: color .25s; }
+.kit-seg--dark .kit-seg__btn { color: rgba(255,255,255,.65); }
+.kit-seg__btn.is-on { color: #ffffff; }
+.kit-seg__pill { position: absolute; inset: 0; border-radius: 999px; background: #f33716; box-shadow: 0 8px 20px -8px rgba(243.0,55.0,22.0,.8); }
+.kit-seg__label { position: relative; display: inline-flex; align-items: center; gap: 6px; }
+
+.kit-browser { border-radius: 18px; overflow: hidden; background: #ffffff; border: 1px solid rgba(0,0,0,.1); box-shadow: 0 40px 80px -30px rgba(0,0,0,.45); }
+.kit-browser--dark { background: #121212; border-color: rgba(255,255,255,.12); color: #ffffff; }
+.kit-browser__bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: rgba(0,0,0,.05); }
+.kit-browser--dark .kit-browser__bar { background: rgba(255,255,255,.06); }
+.kit-browser__bar span { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+.kit-browser__bar span:nth-child(2) { background: #f45138; }
+.kit-browser__bar span:nth-child(3) { background: #e4290c; }
+.kit-browser__bar em { margin-left: 10px; font: 500 11px/1 var(--font-body, sans-serif); font-style: normal; opacity: .5; }
+.kit-browser__body { padding: 16px; }
+
+.kit-phone { position: relative; width: min(100%, 290px); margin-inline: auto; aspect-ratio: 9 / 18.5; border-radius: 38px; padding: 9px; background: #0b0b0b; box-shadow: 0 40px 70px -25px rgba(0,0,0,.55), inset 0 0 0 2px #2a2a2a; }
+.kit-phone__notch { position: absolute; z-index: 3; top: 14px; left: 50%; width: 84px; height: 22px; transform: translateX(-50%); border-radius: 999px; background: #0b0b0b; }
+.kit-phone__screen { position: relative; height: 100%; border-radius: 30px; overflow: hidden; background: #f6f6f6; color: #111111; }
+
+.kit-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; font: 700 11px/1.4 var(--font-body, sans-serif); letter-spacing: .02em; }
+.kit-chip--ok { background: #ececec; color: #e4290c; }
+.kit-chip--warn { background: #e2e2e2; color: #e4290c; }
+.kit-chip--bad { background: #fee2e2; color: #e4290c; }
+.kit-chip--info { background: #ececec; color: #e4290c; }
+.kit-chip--mute { background: rgba(0,0,0,.07); color: rgba(0,0,0,.65); }
+.kit-chip--brand { background: #f33716; color: #ffffff; }
+
+.kit-photo { position: relative; overflow: hidden; border-radius: var(--radius-card, 24px); background: #1a1a1a; }
+.kit-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.22,1,.36,1); }
+.kit-photo:hover img { transform: scale(1.06); }
+.kit-photo__shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,.65)); pointer-events: none; }
+
+.kit-glow { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; background: rgba(243.0,55.0,22.0,.16); }
+.kit-pulse { animation: kit-pulse 2s ease-in-out infinite; }
+@keyframes kit-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(243.0,55.0,22.0,.45); } 50% { box-shadow: 0 0 0 10px rgba(243.0,55.0,22.0,0); } }
+.kit-sheen { position: relative; overflow: hidden; }
+.kit-sheen::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); transition: transform .9s; }
+.kit-sheen:hover::after { transform: translateX(120%); }
+@media (prefers-reduced-motion: reduce) { .kit-pulse { animation: none; } .kit-photo img { transition: none; } }

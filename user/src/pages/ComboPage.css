@@ -1,0 +1,1026 @@
+/* ============================================================
+   ComboPage.css — full-width, responsive combo builder using
+   the FoodList swipeable-reel pattern for item browsing, plus
+   a compact angled progress strip (90°/45°/135°) for grouping.
+============================================================ */
+
+:root {
+  
+  
+  --combo-line: rgba(0, 0, 0, 0.08);
+  --combo-radius: 26px;
+  
+}
+
+/* ── Page ─────────────────────────────────────────────────── */
+.combo-page {
+  width: 100%;
+  height: stretch;
+  padding: 36px;
+  box-sizing: border-box;
+  font-family: "Geom", system-ui, sans-serif;
+  color: var(--text-primary);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.combo-phase-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.combo-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.combo-icon-btn .front {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.combo-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--color-red);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* ── Grouping strip — promo banner with dish photos ───────────
+   Mirrors the reference banner: a price row up top (struck-through
+   "Regular Price" beside a red "Combo @ Just" pill), then the
+   selected dish photos layered underneath as plain cutouts —
+   larger main dish in the middle, smaller sides overlapping it.
+──────────────────────────────────────────────────────────── */
+.combo-group-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  max-width: 380px;
+  justify-content: center;
+  padding: 16px 12px;
+  border-radius: 20px;
+  background-color: var(--color-pale-red) !important;
+}
+
+/* All three dishes picked — lift the strip out of the details
+   column and center it over the page as a completion banner.
+   `layout` on the motion.div (see ComboPage.js) animates the
+   jump from in-flow to fixed automatically; undoing a pick just
+   drops this class and the same layout animation sends it back. */
+.combo-group-strip--complete {
+  position: fixed;
+  inset: 0;
+  margin: 16px auto;
+  width: fit-content;
+  height: fit-content;
+  z-index: 40;
+  max-width: 420px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+}
+
+.combo-group-strip-pricing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.combo-group-strip-regular,
+.combo-group-strip-final {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.3;
+}
+
+.combo-group-strip-regular {
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.combo-group-strip-regular-label,
+.combo-group-strip-final-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.combo-group-strip-regular-label {
+  color: var(--text-secondary);
+}
+
+.combo-group-strip-final-label {
+  color: #fff;
+}
+
+.combo-group-strip-regular-price {
+  position: relative;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.combo-group-strip-regular-price::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  top: 50%;
+  height: 2px;
+  background: var(--color-red, #e63946);
+  transform: rotate(-8deg);
+}
+
+.combo-group-strip-final {
+  background: var(--color-red, #e63946);
+  border-radius: 12px;
+  padding: 6px 16px;
+}
+
+.combo-group-strip-final-price {
+  font-size: 19px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.combo-group-strip-photos {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 110px !important;
+}
+
+.combo-group-node {
+  display: block;
+  width: 90px;
+  height: 90px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.combo-group-node img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
+}
+
+.combo-group-node--slot-0 {
+  width: 110px;
+  height: 110px;
+  z-index: 2;
+}
+
+.combo-group-node--slot-1 {
+  width: 90px;
+  height: 90px;
+  margin-left: -18px;
+  z-index: 3;
+}
+
+.combo-group-node--slot-2 {
+  width: 78px;
+  height: 100px;
+  margin-left: -14px;
+  z-index: 1;
+}
+
+/* Beyond the original 3 slots — admin can configure more sections
+   via Manage Categories, so keep styling every extra one instead of
+   leaving it unstyled. */
+.combo-group-node--slot-3,
+.combo-group-node--slot-4,
+.combo-group-node--slot-5 {
+  width: 78px;
+  height: 100px;
+  margin-left: -14px;
+  z-index: 1;
+}
+
+/* Small circular 3D button — cart-row remove, sheet close */
+.combo-compact-btn {
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.combo-compact-btn .shadow,
+.combo-compact-btn .edge {
+  border-radius: 50%;
+}
+
+.combo-compact-btn .front {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Group pills (subcategory switch) — uses the shared .chip ─ */
+.combo-size-row {
+  position: relative;
+  z-index: 999;
+}
+
+.combo-size-pills {
+  display: flex;
+  gap: 6px;
+  overflow-y: visible;
+  scrollbar-width: none;
+}
+
+.combo-size-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.combo-topbar .combo-size-pills {
+  flex: 1;
+}
+
+/* ── Section pills (Dishes / Desserts / Beverages) — now live
+   inline in the topbar next to the phase label, so they read as a
+   compact step indicator rather than a full pill row. Plain progress
+   indicator, not a button, so no hover/tap affordance. ── */
+.combo-topbar-section-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.combo-topbar-section-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.combo-topbar-section-pills .combo-section-pill {
+  padding: 6px 14px;
+  font-size: 12.5px;
+  white-space: nowrap;
+}
+
+.combo-section-pill {
+  cursor: default;
+  opacity: 0.55;
+  transition: opacity 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.combo-section-pill.active {
+  opacity: 1;
+}
+
+.combo-section-pill--done:not(.active) {
+  opacity: 0.8;
+}
+
+/* Done + upcoming pills are rendered disabled (only the active
+   pill stays live) — make that visually unambiguous and strip any
+   hover/tap affordance Button3D would otherwise add. */
+.combo-section-pill:disabled,
+.combo-section-pill[aria-disabled="true"] {
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(35%);
+}
+
+/* ── Swipeable reel (FoodList pattern) ───────────────────── */
+.combo-reel {
+  height: calc(100vh - 400px);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between !important;
+  width: 100%;
+  contain: layout;
+  overflow: visible;
+  touch-action: pan-x;
+  position: relative;
+}
+
+.combo-reel-empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.combo-reel-details {
+  position: relative;
+  z-index: 10;
+  width: 34%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.combo-reel-name {
+  font-size: clamp(21px, 4vw, 34px);
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+  overflow-wrap: break-word;
+}
+
+.combo-reel-price {
+  font-size: clamp(18px, 2.2vw, 25px);
+  font-weight: 700;
+  color: var(--color-red);
+  margin: 10px 0 12px;
+}
+
+.combo-reel-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+/* Image conveyor */
+.combo-reel-images {
+  position: relative;
+  height: 100%;
+  width: 66%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s ease;
+}
+
+/* Each phase's reel sits at its own horizontal position instead of
+   every section landing in the same spot — position nudges right
+   as you move through the admin-configured sections. Slots beyond
+   the first 3 reuse the last offset. */
+.combo-reel-images--slot-0 {
+  transform: translateX(-22%);
+}
+
+.combo-reel-images--slot-1 {
+  transform: translateX(-14%);
+}
+
+.combo-reel-images--slot-2 {
+  transform: translateX(-6%);
+}
+
+.combo-reel-images--slot-3,
+.combo-reel-images--slot-4,
+.combo-reel-images--slot-5 {
+  transform: translateX(-6%);
+}
+
+/* Up/down buttons that change the active dish, floating over the
+   right edge of the image column so they're reachable without
+   depending on the swipe gesture. */
+.combo-reel-nav {
+  position: absolute;
+  right: 36px;
+  bottom: 0px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 30;
+}
+
+.combo-reel-image-wrapper {
+  position: absolute;
+  width: 40%;
+  max-width: 300px;
+  aspect-ratio: 1 / 1;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Two of the five reel wrappers exist only to keep the dish two
+   steps away pre-rendered (so its image is already loaded and
+   ready when it swipes into view) — they stay in the DOM but are
+   fully invisible and non-interactive. */
+.combo-reel-image-wrapper--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.combo-reel-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0px 30px 22px rgba(0, 0, 0, 0.18));
+}
+
+/* ── Save-to-favourites + checkout (now Button3D) ────────── */
+.combo-save-btn {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.combo-checkout-bar {
+  margin-top: 12px;
+}
+
+.combo-cart-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Generic modal ────────────────────────────────────────── */
+/* Open/close animation is handled by ModalTransition.js — this class
+   only supplies the backdrop's own layout (dimmed, blurred, centered
+   flex), not position/inset (ModalTransition's own
+   .modal-transition-overlay class supplies those). */
+.combo-overlay {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.combo-modal {
+  width: 340px;
+  max-width: 100%;
+  background: var(--bg-main);
+  border-radius: 20px;
+  padding: 26px 22px;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2);
+}
+
+.combo-modal-title {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--text-primary);
+}
+
+.combo-modal-text {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.combo-modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.combo-modal-actions .btn-3d {
+  flex: 1;
+}
+
+/* ── Bottom sheet (My Combo / Receipt) ───────────────────── */
+.combo-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 4000;
+}
+
+.combo-sheet-modal {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  max-height: 85vh;
+  background: var(--bg-main);
+  border-radius: var(--combo-radius) var(--combo-radius) 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.combo-sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--combo-line);
+  margin: 10px auto 16px;
+}
+
+.combo-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--combo-line);
+}
+
+.combo-sheet-header h3 {
+  font-size: 19px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.combo-sheet-body {
+  overflow-y: auto;
+  scrollbar-width: none;
+  margin-bottom: 16px;
+}
+
+.combo-sheet-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cart list — plain text rows, no thumbnails, like "My Order" */
+.combo-cart-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.combo-cart-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.03));
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.combo-cart-row.filled {
+  background: var(--color-pale-red);
+}
+
+.combo-cart-row.empty {
+  opacity: 0.7;
+}
+
+.combo-cart-row-icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.combo-cart-row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.combo-cart-row-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+.combo-cart-row-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.combo-cart-row-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.combo-cart-row-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.combo-cart-row-empty {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* Quantity */
+.combo-cart-qty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.combo-qty-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.03));
+}
+
+.combo-qty-val {
+  min-width: 18px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.combo-cart-divider {
+  height: 1px;
+  background: var(--combo-line);
+  margin: 14px 0;
+}
+
+/* Totals — plain rows like the receipt's Subtotal/Tax/Total */
+.combo-cart-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combo-cart-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.combo-cart-savings {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-green, #2e9e5b);
+}
+
+.combo-cart-total-row.final {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--color-green);
+  box-shadow: 0 10px 24px rgba(217, 68, 45, 0.28);
+}
+
+/* Checkout amount pill inside the Button3D front face */
+.combo-checkout-amount {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 13px;
+}
+
+/* ── Receipt confirmation ────────────────────────────────── */
+.combo-receipt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 6px 4px 4px;
+}
+
+.combo-receipt-check {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--color-green, #1a9b4c);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.combo-receipt h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  color: var(--text-primary);
+}
+
+.combo-receipt-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.combo-receipt-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 22px;
+}
+
+.combo-receipt-done {
+  width: 100%;
+}
+
+/* ── Responsive (mirrors FoodList breakpoints) ───────────── */
+
+/* Tablet and below — reel details get a touch more room, type steps down */
+@media screen and (max-width: 992px) {
+  .combo-page {
+    padding: var(--medium-page-padding, 24px);
+  }
+
+  .combo-reel-details {
+    width: 38%;
+  }
+
+  .combo-reel-images {
+    width: 62%;
+  }
+
+  .combo-reel-images--slot-0 {
+    transform: translateX(-16%);
+  }
+
+  .combo-reel-images--slot-1 {
+    transform: translateX(-10%);
+  }
+
+  .combo-reel-images--slot-2 {
+    transform: translateX(-4%);
+  }
+
+  .combo-group-strip {
+    max-width: 360px;
+  }
+}
+
+/* Small tablets / large phones in landscape — narrow the image
+   column further before the layout fully stacks at 578px, so the
+   details pane doesn't get crushed in the gap between breakpoints */
+@media screen and (max-width: 768px) {
+  .combo-reel-details {
+    width: 42%;
+  }
+
+  .combo-reel-images {
+    width: 58%;
+  }
+
+  /* Below 768px, don't stagger starter/main/beverages horizontally —
+     keep the reel in one static, centered position for every phase. */
+  .combo-reel-images--slot-0,
+  .combo-reel-images--slot-1,
+  .combo-reel-images--slot-2,
+  .combo-reel-images--slot-3,
+  .combo-reel-images--slot-4,
+  .combo-reel-images--slot-5 {
+    transform: translateX(0);
+  }
+
+  .combo-reel-image-wrapper {
+    max-width: 220px;
+  }
+}
+
+/* Phones — stack the reel, center everything */
+@media screen and (max-width: 578px) {
+  .combo-page {
+    padding: var(--mobile-page-padding, 16px);
+  }
+
+  .combo-reel {
+    flex-direction: column-reverse;
+    height: auto;
+    min-height: 0;
+    gap: 18px;
+  }
+
+  .combo-reel-details {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .combo-reel-images {
+    width: 100%;
+    height: 240px;
+  }
+
+  .combo-reel-images--slot-0,
+  .combo-reel-images--slot-1,
+  .combo-reel-images--slot-2,
+  .combo-reel-images--slot-3,
+  .combo-reel-images--slot-4,
+  .combo-reel-images--slot-5 {
+    transform: translateX(0);
+  }
+
+  .combo-reel-image-wrapper {
+    width: 300px;
+    height: 100%;
+  }
+
+  /* .combo-reel switches to column-reverse here (images render
+     above the text), so the nav's old bottom:0 anchor would land
+     it down by the text instead of the images — pin it to the
+     top of the stack (where the image block now sits) instead. */
+  /* Prev/next nav buttons removed entirely on mobile widths — swipe
+     gesture is the primary interaction there and the buttons were
+     mostly redundant screen clutter at this size. */
+  .combo-reel-nav {
+    display: none;
+  }
+
+  .combo-group-strip {
+    max-width: 300px;
+    align-items: center;
+    margin: 16px auto;
+  }
+
+  .combo-group-strip-pricing {
+    justify-content: center;
+  }
+
+  .combo-group-strip-photos {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .combo-sheet-modal {
+    max-width: 100%;
+  }
+
+  /* Topbar now carries phase label + section pills + actions —
+     let it wrap onto a second line on narrow phones instead of
+     squeezing everything into one cramped row. */
+  .combo-topbar {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .combo-topbar-section-pills {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Extra-small phones — tighten further */
+@media screen and (max-width: 380px) {
+  .combo-page {
+    padding: 12px;
+  }
+
+  .combo-reel-images {
+    width: 100%;
+    height: 180px;
+  }
+
+  .combo-reel-image-wrapper {
+    max-width: 210px;
+  }
+
+  .combo-group-strip {
+    max-width: 100%;
+  }
+
+  .combo-group-strip-photos {
+    height: 85px;
+  }
+
+  .combo-group-node--slot-0 {
+    width: 85px;
+    height: 85px;
+  }
+
+  .combo-group-node--slot-1 {
+    width: 70px;
+    height: 70px;
+  }
+
+  .combo-group-node--slot-2 {
+    width: 60px;
+    height: 78px;
+  }
+
+  .combo-group-node--slot-3,
+  .combo-group-node--slot-4,
+  .combo-group-node--slot-5 {
+    width: 60px;
+    height: 78px;
+  }
+
+  .combo-phase-label {
+    font-size: 12.5px;
+  }
+}
+
+/* Desktop — page stays full-width, but content gets a comfortable
+   cap instead of stretching edge to edge on large monitors */
+@media screen and (min-width: 1200px) {
+  .combo-page {
+    padding: 44px 64px;
+  }
+
+  .combo-reel-desc {
+    font-size: 15px;
+    max-width: 380px;
+  }
+
+  .combo-reel-image-wrapper {
+    max-width: 340px;
+  }
+
+  .combo-sheet-modal {
+    max-width: 500px;
+  }
+}
+
+@media screen and (max-height: 670px) {
+  .combo-topbar {
+    gap: 6px;
+    margin: 0;
+  }
+}
+
+/* Short viewports (landscape phones, small laptop windows) — the
+   reel's calc(100vh - 240px) can get cramped or overflow, so give
+   it a lower floor and shrink the group strip to compensate. */
+@media screen and (max-height: 560px) {
+  .combo-reel {
+    height: auto;
+    min-height: 280px;
+  }
+
+  .combo-group-strip {
+    margin-top: 10px;
+  }
+
+  .combo-group-strip-photos {
+    height: 80px;
+  }
+}

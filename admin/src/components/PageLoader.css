@@ -1,0 +1,307 @@
+/* ═══════════════════════════════════════════════════
+   PageLoader.css  —  Dishky Admin Panel
+   Styles for the shared PageLoader component.
+   Import path: src/components/PageLoader.css
+   (auto-imported by PageLoader.jsx — no manual import needed)
+
+   Full-page variant is a top-down vegetable cutter scene (chef's knife
+   chopping a carrot on a wooden board). Colour/timing tokens live in the
+   ":root" block below; the SVG gradients in PageLoader.jsx read these
+   directly via stop-color: var(...).
+═══════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* wooden board */
+  --board-top: #dba05c;
+  --board-mid: #b87a3c;
+  --board-shadow: #7a4e24;
+  --board-grain: #5a3412;
+  --board-rim: #6b4520;
+
+  /* carrot */
+  --carrot-light: #ff9e52;
+  --carrot-base: #f3782e;
+  --carrot-dark: #c85a1b;
+  --carrot-core: #ffe3b0;
+  --carrot-ring: #ffb870;
+  --carrot-green: #8bab55;
+  --carrot-green-dark: #54702f;
+
+  /* knife */
+  --knife-blade-light: #f6f9fb;
+  --knife-blade-mid: #cbd5db;
+  --knife-blade-dark: #838d96;
+  --knife-handle: #1c1611;
+  --knife-handle-light: #362c22;
+  --knife-rivet: #caa227;
+}
+
+/* ── Full-page variant ─────────────────────────── */
+.pl-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  z-index: 500;
+  background: #fff;
+}
+
+/* Scoped variant — fills the nearest positioned ancestor (a page's own
+   container) instead of the browser viewport, so the sidebar/topbar stay
+   visible. Used for every loading state except the very first app load. */
+.pl-page-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Card wrapping the scene + label ──────────── */
+/* Sized to match the User Panel's PageLoader (was max-width: min(560px, 90vw)
+   / .loader-visual max-width: 420px) and expressed with vw-based clamps
+   instead of a single 90vw ceiling, so it scales smoothly with viewport
+   width at every breakpoint rather than only at the point where 90vw
+   first exceeds the max-width cap. */
+.loader-card {
+  width: 100%;
+  max-width: clamp(160px, 45vw, 280px);
+  padding: clamp(8px, 1.5vw, 16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.loader-visual {
+  position: relative;
+  width: 100%;
+  max-width: 210px;
+  aspect-ratio: 900 / 500;
+}
+
+.loader-visual svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ---------- grounding shadow the whole board casts ---------- */
+.board-ambient-shadow {
+  fill: rgba(0, 0, 0, 0.12);
+  filter: blur(14px);
+}
+
+/* ---------- cutting board (flat top-down slab) ---------- */
+.board-top {
+  fill: url(#gradBoard);
+}
+
+.board-rim {
+  fill: none;
+  stroke: var(--board-rim);
+  stroke-width: 3;
+  opacity: 0.55;
+}
+
+.board-top-highlight {
+  fill: rgba(255, 255, 255, 0.16);
+  filter: blur(6px);
+}
+
+.board-grain path {
+  fill: none;
+  stroke: var(--board-grain);
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.35;
+}
+
+/* ---------- carrot ---------- */
+#carrot {
+  transform-box: view-box;
+}
+
+#carrot-shadow {
+  fill: rgba(0, 0, 0, 0.2);
+  filter: blur(3px);
+}
+
+#carrot-body {
+  fill: url(#gradCarrot);
+  stroke: rgba(0, 0, 0, 0.08);
+  stroke-width: 1;
+}
+
+#carrot-highlight {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.leaf {
+  fill: url(#gradGreen);
+}
+
+.leaf-stem {
+  fill: var(--carrot-green-dark);
+}
+
+/* ---------- falling slices & crumbs (built at runtime) ---------- */
+.fx-slice,
+.fx-slice-shadow {
+  transform-box: view-box;
+}
+
+.fx-slice-shadow {
+  fill: rgba(0, 0, 0, 0.22);
+  filter: blur(2.5px);
+}
+
+.fx-crumb {
+  fill: var(--carrot-base);
+}
+
+/* ---------- knife ---------- */
+#knife-swing {
+  transform-box: view-box;
+}
+
+#knife-shadow {
+  fill: rgba(0, 0, 0, 0.24);
+  filter: blur(5px);
+}
+
+.handle {
+  fill: url(#gradHandle);
+}
+
+.handle-highlight {
+  fill: rgba(255, 255, 255, 0.14);
+}
+
+.bolster {
+  fill: var(--knife-blade-dark);
+}
+
+.rivet {
+  fill: var(--knife-rivet);
+}
+
+.blade {
+  fill: url(#gradBlade);
+  stroke: rgba(0, 0, 0, 0.18);
+  stroke-width: 1;
+}
+
+.blade-spine-shine,
+.blade-edge-shine {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+
+/* ── Inline / section variant ─────────────────── */
+.pl-inline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px 20px;
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  box-sizing: border-box;
+}
+
+/* ── Inline: simple spinner ring ──────────────── */
+.pl-inline .pl-ring {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--color-offwhite, #e5e7eb);
+  border-top-color: var(--color-accent, #111);
+  animation: pl-spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Label text ────────────────────────────────── */
+/* Scaled down to match the halved .loader-card/.loader-visual above
+   (was clamp(15px, 2.6vw, 19px) / margin-top clamp(10px, 2.4vw, 18px)),
+   matching the User Panel's PageLoader label size. */
+.pl-label {
+  margin: clamp(6px, 1.4vw, 10px) 0 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(11px, 1.6vw, 13px);
+  letter-spacing: 0.01em;
+  color: #6b6b6b;
+  text-align: center;
+}
+
+.pl-inline .pl-label {
+  font-family: inherit;
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-3, #6b6b6b);
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+/* ── Trailing dots on the full-page label ─────── */
+.pl-dots span {
+  display: inline-block;
+  opacity: 0;
+  color: #c9832f;
+  animation: pl-dot-blink 1.4s infinite;
+}
+
+.pl-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.pl-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pl-dot-blink {
+
+  0%,
+  20% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-dots span {
+    animation-duration: 2.6s;
+  }
+}

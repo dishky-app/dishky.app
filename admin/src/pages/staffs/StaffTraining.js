@@ -1,0 +1,458 @@
+/**
+ * StaffTraining.js  —  Dishky Admin Panel
+ * Staff training records page
+ */
+
+import React, { useState, useEffect } from "react";
+
+import { exportToExcel } from "../../utils/excelUtils";
+import api from "../../api";
+
+import closeIcon from "../../icon/close-icon.png";
+import editIcon from "../../icon/edit-icon.png";
+import deleteIcon from "../../icon/delete-icon.png";
+import { useToast } from "../../useToast";
+import { allowTextInput } from "../../App";
+import CustomDropdown from "../../components/CustomDropdown";
+import Button3D from "../../components/Button3D";
+import FilePreviewLink from "../../components/FilePreviewLink";
+import useAnimatedModal from "../../hooks/useAnimatedModal";
+import CollapseChevron from "../../components/CollapseChevron";
+import CollapseSection from "../../components/CollapseSection";
+import PageLoader from "../../components/PageLoader";
+import { MultiPillGroup } from "../../components/FilterBar";
+import { useVenue } from "../../context/VenueContext";
+import useRoleTitles from "./useRoleTitles";
+
+import "./StaffModules.css";
+
+const typeColors = {
+  Online: { bg: "#dbeafe", color: "#1e40af" },
+  Training: { bg: "#d1fae5", color: "#065f46" },
+  Internship: { bg: "#fef3c7", color: "#92400e" },
+  Workshop: { bg: "#ede9fe", color: "#4c1d95" },
+};
+
+export default function StaffTraining({ adminData, setAdminData }) {
+  // ── Hooks
+
+  const { toast } = useToast();
+  const { venueParam, venueId: activeVenueId } = useVenue();
+  const { roleTitles: jobRoles } = useRoleTitles();
+
+  const [trainings, setTrainings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const addTrainingModal = useAnimatedModal("staffTraining-add");
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const trainingDetailModal = useAnimatedModal("staffTraining-detail");
+  const [trainingSearch, setTrainingSearch] = useState("");
+  const [trainingTypeFilters, setTrainingTypeFilters] = useState(new Set());
+  const toggleSet = (setter, val) =>
+    setter(prev => { const next = new Set(prev); next.has(val) ? next.delete(val) : next.add(val); return next; });
+  const [form, setForm] = useState({
+    staffId: "", role: "", duration: "", type: "", certificate: ""
+  });
+  const [formErrors, setFormErrors] = useState({});
+  const [editingTraining, setEditingTraining] = useState(null); // the original {..., staffId} being edited, or null when adding
+
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const res = await api.get("/staff", { params: venueParam() });
+        const all = res.data.flatMap(s =>
+          (s.training || []).map(t => ({ ...t, staffId: s.id, staffName: s.name }))
+        );
+        setTrainings(all);
+      } catch (err) {
+        console.error("Failed to load staff training data:", err);
+        toast.error("Failed to load training data. Please reload the page.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeVenueId]);
+
+  const submitTraining = async (e) => {
+    e.preventDefault();
+    const err = {};
+    if (!form.staffId) err.staffId = true;
+    if (!form.role) err.role = true;
+    if (!form.duration) err.duration = true;
+    if (!form.type) err.type = true;
+    if (Object.keys(err).length) { setFormErrors(err); return; }
+    try {
+      const isEditing = !!editingTraining;
+      // Editing can move a record to a different staff member — if so,
+      // remove it from the original staff's array and add it to the
+      // new one; otherwise just update it in place.
+      const record = { id: isEditing ? editingTraining.id : String(Date.now()), role: form.role, duration: form.duration, type: form.type, certificate: form.certificate };
+
+      if (isEditing && editingTraining.staffId === form.staffId) {
+        const staff = adminData.staff.find(s => s.id === form.staffId);
+        const updated = { ...staff, training: (staff.training || []).map(t => t.id === editingTraining.id ? record : t) };
+        const res = await api.put(`/staff/${form.staffId}`, updated);
+        setTrainings(prev => prev.map(t => (t.id === editingTraining.id && t.staffId === editingTraining.staffId) ? { ...record, staffId: form.staffId, staffName: staff.name } : t));
+        setAdminData(prev => ({ ...prev, staff: prev.staff.map(s => s.id === form.staffId ? res.data : s) }));
+      } else if (isEditing) {
+        // Moved to a different staff member: pull from old, push to new.
+        const oldStaff = adminData.staff.find(s => s.id === editingTraining.staffId);
+        const newStaff = adminData.staff.find(s => s.id === form.staffId);
+        const oldUpdated = { ...oldStaff, training: (oldStaff.training || []).filter(t => t.id !== editingTraining.id) };
+        const newUpdated = { ...newStaff, training: [...(newStaff.training || []), record] };
+        const [oldRes, newRes] = await Promise.all([
+          api.put(`/staff/${editingTraining.staffId}`, oldUpdated),
+          api.put(`/staff/${form.staffId}`, newUpdated),
+        ]);
+        setTrainings(prev => prev
+          .filter(t => !(t.id === editingTraining.id && t.staffId === editingTraining.staffId))
+          .concat([{ ...record, staffId: form.staffId, staffName: newStaff.name }]));
+        setAdminData(prev => ({
+          ...prev,
+          staff: prev.staff.map(s => s.id === oldRes.data.id ? oldRes.data : s.id === newRes.data.id ? newRes.data : s)
+        }));
+      } else {
+        const staff = adminData.staff.find(s => s.id === form.staffId);
+        const updated = { ...staff, training: [...(staff.training || []), record] };
+        const res = await api.put(`/staff/${form.staffId}`, updated);
+        setTrainings(prev => [...prev, { ...record, staffId: form.staffId, staffName: staff.name }]);
+        setAdminData(prev => ({
+          ...prev,
+          staff: prev.staff.map(s => s.id === form.staffId ? res.data : s)
+        }));
+      }
+
+      setForm({ staffId: "", role: "", duration: "", type: "", certificate: "" });
+      setEditingTraining(null);
+      setFormErrors({});
+      addTrainingModal.close(() => setShowForm(false));
+      toast.success(isEditing ? "Training record updated" : "Training record saved");
+    } catch (err) {
+      toast.error(editingTraining ? "Failed to update training record" : "Failed to save training record");
+      console.error("Training save failed:", err);
+    }
+  };
+
+  const openEditTraining = (t) => {
+    setEditingTraining(t);
+    setForm({ staffId: t.staffId || "", role: t.role || "", duration: t.duration || "", type: t.type || "", certificate: t.certificate || "" });
+    setFormErrors({});
+    setShowForm(true);
+    addTrainingModal.open();
+  };
+
+  const closeTrainingModal = () => {
+    addTrainingModal.close(() => setShowForm(false));
+    setFormErrors({});
+    setEditingTraining(null);
+    setForm({ staffId: "", role: "", duration: "", type: "", certificate: "" });
+  };
+
+  const deleteTraining = (t) => {
+    toast.confirm(`Delete this training record for ${t.staffName}?`, async () => {
+      try {
+        const staff = adminData.staff.find(s => s.id === t.staffId);
+        const updated = { ...staff, training: (staff.training || []).filter(rec => rec.id !== t.id) };
+        const res = await api.put(`/staff/${t.staffId}`, updated);
+        setTrainings(prev => prev.filter(rec => !(rec.id === t.id && rec.staffId === t.staffId)));
+        setAdminData(prev => ({ ...prev, staff: prev.staff.map(s => s.id === t.staffId ? res.data : s) }));
+        toast.success("Training record deleted");
+      } catch (err) {
+        toast.error("Failed to delete training record");
+        console.error("Training delete failed:", err);
+      }
+    });
+  };
+
+  const handleFile = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => setForm(prev => ({ ...prev, certificate: reader.result }));
+    if (file) reader.readAsDataURL(file);
+  };
+
+  const filteredTrainings = trainings.filter(t => {
+    const q = trainingSearch.toLowerCase();
+    const matchSearch = !q ||
+      (t.role || "").toLowerCase().includes(q) ||
+      (t.staffName || "").toLowerCase().includes(q) ||
+      (t.type || "").toLowerCase().includes(q);
+    const matchType = trainingTypeFilters.size === 0 || trainingTypeFilters.has(t.type);
+    return matchSearch && matchType;
+  });
+
+  const exportTrainings = () => {
+    if (!filteredTrainings.length) { toast.warning("No training records to export"); return; }
+    const rows = filteredTrainings.map(t => ({
+      "Staff Name": t.staffName || "—",
+      Role: t.role || "—",
+      Type: t.type || "—",
+      "Duration (days)": t.duration || "—",
+      "Certificate": t.certificate ? "Yes" : "No",
+    }));
+    exportToExcel({ rows, sheetName: "Training", fileName: `training_${new Date().toISOString().slice(0, 10)}.xlsx` });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="inner-page">
+        <PageLoader fill label="Loading training records…" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="inner-page">
+
+      {/* HEADER */}
+      <div className="header">
+        <div className="header-title-row">
+          <div className="header-collapse-col">
+            <button
+              type="button"
+              className="header-collapse-btn"
+              onClick={() => setHeaderCollapsed(prev => !prev)}
+              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={headerCollapsed ? "Expand header" : "Collapse header"}
+              aria-expanded={!headerCollapsed}
+            >
+              <CollapseChevron collapsed={headerCollapsed} />
+            </button>
+          </div>
+          <div className="header-title-col">
+            <div className="header-title-with-count">
+              <h2 className="title">Training</h2>
+              <span className="result-count">{filteredTrainings.length} record(s)</span>
+            </div>
+          </div>
+        </div>
+        <div className="header-btn-container">
+          <Button3D onClick={exportTrainings}>Export</Button3D>
+          <Button3D onClick={() => { setEditingTraining(null); setForm({ staffId: "", role: "", duration: "", type: "", certificate: "" }); setShowForm(true); addTrainingModal.open(); }}>+ Add Training</Button3D>
+        </div>
+      </div>
+
+      {/* FILTER BAR */}
+      <CollapseSection collapsed={headerCollapsed}>
+        <div className="filter-bar">
+          <div className="filter-groups">
+            <input
+              className="search-input"
+              placeholder=" Search staff, role, type…"
+              value={trainingSearch}
+              onChange={e => setTrainingSearch(allowTextInput(trainingSearch, e.target.value, 100, 5))}
+            />
+            <MultiPillGroup
+              label="Type"
+              options={["Online", "Training", "Internship", "Workshop"].map(t => [t, t])}
+              value={trainingTypeFilters}
+              onToggle={(key) => toggleSet(setTrainingTypeFilters, key)}
+            />
+            {(trainingSearch || trainingTypeFilters.size > 0) && (
+              <button className="ae-clear-filter" onClick={() => { setTrainingSearch(""); setTrainingTypeFilters(new Set()); }}>Clear</button>
+            )}
+          </div>
+        </div>
+      </CollapseSection>
+
+      {/* EMPTY STATE */}
+      {filteredTrainings.length === 0 && (
+        <div className="sm-empty">
+          <p>{trainings.length === 0 ? "No training records yet" : "No records match filters"}</p>
+          <span>{trainings.length === 0 ? "Start tracking staff training and certifications" : "Try adjusting your search or filters"}</span>
+        </div>
+      )}
+
+      {/* CARD GRID */}
+      <div className={`career-grid-wrapper${headerCollapsed ? " header-is-collapsed" : ""}`}>
+        <div className="card-grid">
+          {filteredTrainings.map((t, i) => {
+            const colors = typeColors[t.type] || { bg: "#f5f4f1", color: "#3a3a3a" };
+            return (
+              <div className="card st-card" key={t.id || i} onClick={() => { setSelected(t); trainingDetailModal.open(); }}>
+                {/* accent bar coloured by type */}
+                <div className="st-card-accent" style={{ background: colors.color }} />
+
+                <div className="st-card-body">
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    {t.type && (
+                      <span
+                        className="st-type-chip"
+                        style={{ background: colors.bg, color: colors.color }}
+                      >
+                        {t.type}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* role title */}
+                  <h3 className="st-card-role">{t.role}</h3>
+
+                  {/* meta */}
+                  <div className="st-card-meta">
+                    <span className="st-meta-item">👤 {t.staffName}</span>
+                    {t.duration && (
+                      <span className="st-meta-item">⏱ {t.duration} days</span>
+                    )}
+                  </div>
+
+                  {/* certificate badge */}
+                  {t.certificate && (
+                    <div className="st-cert-badge">✔ Certified</div>
+                  )}
+                </div>
+
+                <div className="st-actions sc-card-actions" onClick={e => e.stopPropagation()}>
+                  <Button3D variant="cancel" iconOnly title="Edit" onClick={() => openEditTraining(t)}><img src={editIcon} alt="" /></Button3D>
+                  <Button3D variant="danger" iconOnly title="Delete" onClick={() => deleteTraining(t)}><img src={deleteIcon} alt="" /></Button3D>
+                </div>
+
+                <div className="st-card-footer">
+                  <div className="st-ribbon-wing1"></div>
+                  <div className="st-ribbon-wing1-sq1"></div>
+                  <label className="st-ribbon-label">{i < 10 ? `0${i + 1}` : i + 1}</label>
+                  <div className="st-ribbon-wing2"></div>
+                  <div className="st-ribbon-wing1-sq2"></div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ADD / EDIT MODAL */}
+      {addTrainingModal.shouldRender && (
+        <div className={`modal-overlay ${addTrainingModal.overlayClass}`}>
+          <form className={`admin-modal ${addTrainingModal.modalClass}`} onSubmit={submitTraining}>
+            <div className="admin-modal-header">
+              <h3>{editingTraining ? "Edit Training Record" : "Add Training Record"}</h3>
+              <Button3D variant="cancel" iconOnly onClick={closeTrainingModal}><img alt="" src={closeIcon} /></Button3D>
+            </div>
+
+            <div className="admin-modal-body">
+              <div className="horizontal-form-group">
+                <div className={`admin-form-group${formErrors.staffId ? " mat-select-error" : ""}`}>
+                  <CustomDropdown
+                    label="Staff Member"
+                    value={form.staffId || ""}
+                    onChange={v => { setForm({ ...form, staffId: v }); setFormErrors(p => ({ ...p, staffId: false })); }}
+                    options={adminData.staff.map(s => ({ value: s.id, label: s.name }))}
+                    placeholder="Select staff member"
+                    hasError={!!formErrors.staffId}
+                  />
+                </div>
+
+                <div className={`admin-form-group${formErrors.role ? " mat-select-error" : ""}`}>
+                  <CustomDropdown
+                    label="Role"
+                    value={form.role}
+                    onChange={v => { setForm({ ...form, role: v }); setFormErrors(p => ({ ...p, role: false })); }}
+                    options={jobRoles}
+                    placeholder="Select role"
+                    hasError={!!formErrors.role}
+                  />
+                </div>
+              </div>
+
+              <div className="horizontal-form-group">
+                <div className="admin-form-group">
+                  <div className="mat">
+                    <input
+                      className={`mat-input${formErrors.duration ? " mat-error" : ""}`}
+                      placeholder=" "
+                      type="number"
+                      min="1"
+                      value={form.duration}
+                      onChange={e => { setForm({ ...form, duration: e.target.value }); setFormErrors(p => ({ ...p, duration: false })); }}
+                    />
+                    <label className={`mat-label${formErrors.duration ? " mat-label-error" : ""}`}>Duration (days)<span className="rf-req">*</span></label>
+                    <span className={`mat-bar${formErrors.duration ? " mat-bar-error" : ""}`} />
+                  </div>
+                </div>
+
+                <div className={`admin-form-group${formErrors.type ? " mat-select-error" : ""}`}>
+                  <CustomDropdown
+                    label="Type"
+                    value={form.type}
+                    onChange={v => { setForm({ ...form, type: v }); setFormErrors(p => ({ ...p, type: false })); }}
+                    options={["Online", "Training", "Internship", "Workshop"]}
+                    placeholder="Select type"
+                    hasError={!!formErrors.type}
+                  />
+                </div>
+              </div>
+
+              <div className="admin-form-group">
+                <label>Certificate (optional)</label>
+                <div className="file-wrap">
+                  <input type="file" onChange={handleFile} className="file-input" />
+                  <div className="file-label">
+                    {form.certificate ? "✔ File selected" : "Choose file…"}
+                  </div>
+                </div>
+                {form.certificate && (
+                  <img src={form.certificate} alt="Certificate preview" className="staff-image-preview" />
+                )}
+              </div>
+            </div>
+
+            <div className="admin-modal-footer">
+              <Button3D variant="cancel" onClick={closeTrainingModal}>Cancel</Button3D>
+              <Button3D type="submit">{editingTraining ? "Update Training" : "Save Training"}</Button3D>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* DETAIL MODAL */}
+      {trainingDetailModal.shouldRender && (
+        <div className={`modal-overlay ${trainingDetailModal.overlayClass}`}>
+          <div className={`admin-modal ${trainingDetailModal.modalClass}`} onClick={e => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <div>
+                <h3>{selected.role}</h3>
+                <span className="sc-modal-sub">Training Record</span>
+              </div>
+              <Button3D variant="cancel" iconOnly onClick={() => trainingDetailModal.close(() => setSelected(null))}><img alt="" src={closeIcon} /></Button3D>
+            </div>
+
+            <div className="admin-modal-body">
+              <table className="data-table">
+                <tbody>
+                  <tr><td>Staff</td><td>{selected.staffName}</td></tr>
+                  <tr><td>Role</td><td>{selected.role}</td></tr>
+                  <tr><td>Duration</td><td>{selected.duration} days</td></tr>
+                  <tr><td>Type</td><td>{selected.type}</td></tr>
+                  {selected.certificate && (
+                    <tr>
+                      <td>Certificate</td>
+                      <td>
+                        <FilePreviewLink
+                          href={selected.certificate}
+                          thumbnail={selected.certificateThumbnail}
+                          download={`${selected.staffName || "certificate"}.file`}
+                          label="Preview / Download ↓"
+                          className="clickable"
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="admin-modal-footer">
+              <Button3D variant="danger" onClick={() => { trainingDetailModal.close(() => setSelected(null)); deleteTraining(selected); }}>Delete</Button3D>
+              <Button3D variant="cancel" onClick={() => { trainingDetailModal.close(() => setSelected(null)); openEditTraining(selected); }}>Edit</Button3D>
+              <Button3D onClick={() => trainingDetailModal.close(() => setSelected(null))}>Close</Button3D>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}

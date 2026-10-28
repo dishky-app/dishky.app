@@ -1,0 +1,6 @@
+/* ═══════════════════════════════════════════════════════
+   KitchenActivityLog.css  —  Dishky Admin  —  KitchenActivityLog page
+   Depends on Common.css
+═══════════════════════════════════════════════════════ */
+
+@import "../service/ServiceActivityLog.css";

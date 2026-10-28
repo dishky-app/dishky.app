@@ -1,0 +1,713 @@
+/* ═══════════════════════════════════════════════════════
+   StaffModules.css  —  Dishky Admin  —  StaffModules page
+   Depends on Common.css + ModalCSS.css
+═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
+
+/* ── CARD GRID ────────────────────────────────── */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 32px;
+}
+
+/* ── CARD ─────────────────────────────────────── */
+.card {
+    background: var(--surface);
+    padding: 20px 22px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: var(--t);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.22s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-med);
+}
+
+.card:hover::before {
+    transform: scaleX(1);
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.card p {
+    font-size: 13px;
+    color: var(--ink-3);
+    margin: 3px 0;
+    line-height: 1.5;
+}
+
+.card span {
+    font-size: 12px;
+    color: var(--ink-4);
+    margin-top: 8px;
+    display: block;
+}
+
+.career-grid-wrapper {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+/* ── MISC VALUES ──────────────────────────────── */
+.st-neg-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #d94040;
+}
+
+.st-pos-val {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a9e6b;
+}
+
+.st-zero-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-4);
+}
+
+.st-remain-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 90px;
+}
+
+.st-remain-val {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.st-mini-bar-track {
+    height: 4px;
+    background: var(--surface-3);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.st-mini-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* ── AVATAR ───────────────────────────────────── */
+.st-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ── ROLE BADGE ───────────────────────────────── */
+.st-role-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+/* ── WORK-TYPE ────────────────────────────────── */
+.st-worktype-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.st-wt-fulltime {
+    background: #d4edda;
+    color: #1a5c2e;
+}
+
+.st-wt-parttime {
+    background: #fff3cd;
+    color: #7a5000;
+}
+
+.st-wt-doubleshift {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.st-actions {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.st-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.st-name {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.st-join {
+    font-size: 11px;
+    color: var(--ink-4);
+    margin-top: 1px;
+}
+
+.st-salary {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.st-exp {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-3);
+}
+
+.st-contact {
+    font-size: 13px;
+    color: var(--ink-3);
+}
+
+.staff-image-preview {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 8px;
+    border: 1px solid var(--border-med);
+}
+
+.experience-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.experience-input-row input {
+    flex: 1;
+}
+
+.exp-delete-btn {
+    background: transparent !important;
+    width: auto !important;
+    border: none !important;
+    cursor: pointer !important;
+    color: var(--ink-4) !important;
+    font-size: 14px !important;
+    padding: 2px 4px !important;
+}
+
+.radio-group {
+    display: flex;
+    gap: 12px;
+}
+
+.preview-header {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.preview-header-details-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+
+.preview-header-details-others {
+    font-size: 14px;
+    color: var(--ink-3);
+    margin-bottom: 4px;
+}
+
+.preview-section {
+    margin-bottom: 12px;
+}
+
+.preview-section h4 {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.staff-preview-card {
+    border-radius: var(--radius-md);
+    padding: 16px;
+    border: 1px solid var(--border);
+}
+
+@media(max-width:768px) {
+}
+
+/* ══════════════════════════════════════════════════
+   TRAINING & CAREER CARDS  (st-card / sc-card)
+   Uiverse-inspired: clipped banner + bottom ribbon
+   ══════════════════════════════════════════════════ */
+
+/* ── Shared card shell ───────────────────────────── */
+.card.st-card,
+.card.sc-card {
+    padding: 0;
+    height: 100%;
+    height: 280px;
+    overflow: visible;
+    /* allow ribbon to overflow bottom */
+    display: flex;
+    flex-direction: column;
+    border-radius: 2rem 0 var(--radius-lg) var(--radius-lg);
+    background: var(--surface-2);
+    border: 2px solid #fff;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    position: relative;
+    margin-bottom: 32px;
+}
+
+.card.st-card:hover,
+.card.sc-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Disable the generic top stripe ─────────────── */
+.card.st-card::before,
+.card.sc-card::before {
+    content: none;
+}/* ── Accent bar = top-right diagonal banner ──────── */
+/* The colored <div> is repurposed as a clipped banner */
+.st-card-accent {
+    position: absolute;
+    top: 28px;
+    right: -2px;
+    height: 26px;
+    width: 110px;
+    border-radius: 0;
+    background: var(--ink);
+    /* overridden inline per card */
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+/* ── Card body ───────────────────────────────────── */
+.st-card-body,
+.sc-card-body {
+    padding: 18px 20px 14px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+    padding-right: 118px;
+}
+
+/* ── Role / title text ───────────────────────────── */
+.st-card-role {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+/* ── Meta row (staff name, duration) ─────────────── */
+.st-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.st-meta-item {
+    font-size: 12px;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Type chip ───────────────────────────────────── */
+.st-type-chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+/* ── Certificate badge ───────────────────────────── */
+.st-cert-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #065f46;
+    background: #d1fae5;
+    padding: 3px 10px;
+    border-radius: 999px;
+    width: fit-content;
+}
+
+/* ── Card footer / ribbon ────────────────────────── */
+/* Both st-card-footer and sc-footer share ribbon treatment */
+.st-card-footer,
+.sc-footer {
+    margin-top: 1.5rem;
+    display: grid;
+    place-items: center;
+    height: 50px;
+    background-color: #393e7f;
+    position: relative;
+    width: 110%;
+    left: -5%;
+    top: 10px;
+    position: relative;
+    border-radius: 0 0 2rem 2rem;
+}
+
+.st-ribbon-wing1 {
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 12px;
+    height: 16px;
+    background-color: #282c61;
+    z-index: 0;
+    clip-path: polygon(100% 0%, 0% 100%, 100% 100%);
+}
+
+.st-ribbon-wing2 {
+    position: absolute;
+    top: -15px;
+    right: 0;
+    width: 12px;
+    height: 16px;
+    background-color: #282c61;
+    z-index: 0;
+    clip-path: polygon(0% 0%, 0% 100%, 100% 100%);
+}
+
+/* ── Ribbon circle label ─────────────────────────── */
+/* Used via .sc-ribbon-label in career cards,
+   and replicated via .st-ribbon-label in training cards */
+.st-ribbon-label,
+.sc-ribbon-label {
+    display: block;
+    width: 64px;
+    aspect-ratio: 1/1;
+    background-color: #fff;
+    position: relative;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    border: 8px solid #393e7f;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    line-height: 1;
+    font-size: 1.5rem;
+}
+
+/* Wing curves on the circle */
+.st-ribbon-label::before,
+.st-ribbon-label::after,
+.sc-ribbon-label::before,
+.sc-ribbon-label::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    bottom: 50%;
+}
+
+.st-ribbon-label::before,
+.sc-ribbon-label::before {
+    right: calc(100% + 4px);
+    border-bottom-right-radius: 18px;
+    box-shadow: 4px 4px 0 #393e7f;
+}
+
+.st-ribbon-label::after,
+.sc-ribbon-label::after {
+    left: calc(100% + 4px);
+    border-bottom-left-radius: 18px;
+    box-shadow: -4px 4px 0 #393e7f;
+}
+
+/* ═══════════════════════════════════════════════════
+   CAREER CARD  (sc-card) specifics
+   ═══════════════════════════════════════════════════ */
+.sc-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sc-role-chip {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.sc-exp-chip {
+    font-size: 11px;
+    color: var(--ink-4);
+    font-weight: 500;
+}
+
+.sc-desc {
+    font-size: 13px;
+    color: var(--ink-3);
+    line-height: 1.55;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.sc-modal-sub {
+    font-size: 12px;
+    color: var(--ink-4);
+    margin-top: 2px;
+    display: block;
+}
+
+/* ═══════════════════════════════════════════════════
+   EMPTY STATE  (shared)
+   ═══════════════════════════════════════════════════ */
+.sm-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    gap: 6px;
+}
+
+.sm-empty-icon {
+    font-size: 36px;
+    margin-bottom: 6px;
+}
+
+.sm-empty p {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-2);
+    margin: 0;
+}
+
+.sm-empty span {
+    font-size: 13px;
+    color: var(--ink-4);
+}
+
+.file-wrap {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.file-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+.file-label {
+    display: block;
+    padding: 9px 12px;
+    border: 1px dashed var(--border-med);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--ink-3);
+    background: var(--color-paleblue);
+    cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1080 / 992 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 992px) {
+}
+
+@media (max-width: 578px) {
+}
+
+@media (max-width: 480px) {
+}
+
+/* ═══════════════════════════════════════════
+   SALARY HISTORY MODAL (StaffSalary.js)
+═══════════════════════════════════════════ */
+.salary-history-modal {
+    width: 92%;
+    max-width: 760px;
+}
+
+.sh-section-title {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-2, #333);
+}
+
+.sh-empty {
+    padding: 14px 0;
+    color: var(--ink-3, #888);
+    font-size: 13.5px;
+}
+
+.sh-table-wrap {
+    max-height: 260px;
+    overflow-y: auto;
+    border-radius: var(--radius-sm, 8px);
+}
+
+.sh-table-wrap table.data-table {
+    width: 100%;
+}
+
+.sh-table-wrap table.data-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.sh-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-left: 4px;
+}
+
+.sh-timeline-item {
+    display: flex;
+    gap: 12px;
+    position: relative;
+}
+
+.sh-timeline-dot {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4361ee;
+    margin-top: 5px;
+}
+
+.sh-timeline-body {
+    flex: 1;
+}
+
+.sh-timeline-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sh-timeline-date {
+    font-size: 12.5px;
+    color: var(--ink-3, #888);
+}
+
+.sh-timeline-pct {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #1dd1a1;
+    background: #e6fbf5;
+    padding: 1px 7px;
+    border-radius: 999px;
+}
+
+.sh-timeline-change {
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.sh-timeline-note {
+    font-size: 12.5px;
+    color: var(--ink-3, #888);
+    margin-top: 2px;
+    font-style: italic;
+}
+
+@media (max-width: 578px) {
+    .salary-history-modal {
+        width: 96%;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   CAREER CARD ACTIONS (StaffCareer.js edit/delete)
+═══════════════════════════════════════════ */
+.sc-card-actions {
+    padding: 0 16px 10px;
+    justify-content: flex-end;
+}

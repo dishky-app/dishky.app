@@ -1,0 +1,2028 @@
+/* ═══════════════════════════════════════════════════════
+   EventsPage.css  –  Modern user-facing events page
+   Uses var() from App.css for perfect theme integration
+═══════════════════════════════════════════════════════ */
+
+/* ── Page Root ────────────────────────────────────────── */
+.ep-page {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: "Geom", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── Hero ─────────────────────────────────────────────── */
+.ep-hero {
+  position: relative;
+  width: 100%;
+  min-height: 220px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ep-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--text-primary) 0%, #1e1e1e 40%, #2d1b69 100%);
+}
+
+.ep-hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(168, 85, 247, 0.25) 0%, transparent 70%);
+}
+
+.ep-hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.ep-hero-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  /* .ep-hero has overflow:hidden, so this can only stick within the
+     hero's own bounds (not scroll past it), same as any sticky
+     header naturally would relative to its scrolling ancestor —
+     matches the effect elsewhere without needing to restructure the
+     hero. Starts transparent (blends with the hero gradient it's
+     already sitting on) and only picks up its own solid backdrop
+     once scrolled, same transparent-then-solid rule as every other
+     header — keeps it legible once it's pinned in front of the
+     hero's own gradient/content sliding underneath. */
+  background: transparent;
+  padding: 36px 36px 12px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ep-hero-topbar .back-button::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: clamp(3px, 1vw, 4px);
+    width: clamp(9px, 2.6vw, 12px);
+    height: clamp(9px, 2.6vw, 12px);
+    border-left: 3px solid var(--bg-main);
+    border-bottom: 3px solid var(--bg-main);
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.ep-hero-topbar.header-scrolled {
+  background: color-mix(in srgb, var(--text-primary) 40%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ep-hero-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--bg-main);
+  margin: 0 0 6px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.ep-hero-sub {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* ── Filter Section ────────────────────────────────────── */
+.ep-filter-section {
+  padding: 16px 36px 0;
+  overflow-y: visible;
+}
+
+.ep-filter-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 4px;
+}
+
+/* ── Events Grid ───────────────────────────────────────── */
+.ep-events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+  padding: 16px 36px;
+}
+
+/* ── Event Card ────────────────────────────────────────── */
+.ep-event-card {
+  background: var(--bg-surface);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card-normal);
+  cursor: pointer;
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease;
+  border: 1px solid var(--border-light);
+  will-change: transform;
+}
+
+.ep-event-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.ep-event-card.ep-past {
+  opacity: 0.6;
+}
+
+/* almost-full card glow border */
+.ep-event-card.ep-almost-full {
+  border-color: #ee525344;
+  box-shadow: var(--shadow-card-normal), 0 0 0 2px #ee525322;
+}
+
+/* Card Visual */
+.ep-card-visual {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 20px 20px 0 0;
+}
+
+.ep-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+}
+
+.ep-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+  pointer-events: none;
+}
+
+.ep-card-type-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: var(--bg-main);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  letter-spacing: 0.02em;
+}
+
+.ep-booked-ribbon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #16a34a;
+  color: var(--bg-main);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.ep-past-ribbon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--bg-main);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+
+.ep-urgency-tag {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: var(--color-red);
+  color: var(--bg-main);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  animation: ep-pulse 1.8s ease infinite;
+}
+
+.ep-urgency-blink {
+  animation: ep-blink 0.7s ease infinite !important;
+}
+
+.ep-specialized-tag {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: var(--bg-main);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+/* Reward badge */
+.ep-reward-badge {
+  position: absolute;
+  top: 40px;
+  left: 12px;
+  background: linear-gradient(135deg, #f9ca24, #f0932b);
+  color: var(--bg-main);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  animation: ep-pulse 2s ease infinite;
+  box-shadow: 0 2px 8px rgba(249, 202, 36, 0.45);
+}
+
+/* 🔥 capacity fire badge */
+.ep-fire-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #ee5253, #ff6b6b);
+  color: var(--bg-main);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  animation: ep-blink 0.9s ease infinite;
+  box-shadow: 0 2px 8px rgba(238, 82, 83, 0.5);
+}
+
+@keyframes ep-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes ep-blink {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes ep-bounce-in {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes ep-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ep-ring-expand {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Card Body */
+.ep-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ep-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.ep-card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.ep-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ep-meta-item {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ── Countdown Badge ───────────────────────────────────── */
+.ep-countdown-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  width: fit-content;
+  background: #e8f4fd;
+  color: var(--color-blue);
+  border: 1px solid #bde0f5;
+}
+
+.ep-countdown-urgent {
+  background: var(--color-error-bg) !important;
+  color: var(--color-error-dark) !important;
+  border-color: var(--border-error) !important;
+  animation: ep-blink 1s ease infinite;
+}
+
+.ep-countdown-sheet {
+  font-size: 13px;
+  padding: 6px 14px;
+}
+
+/* ── Booking Closed Badge ──────────────────────────────── */
+.ep-booking-closed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--btn-default);
+  color: var(--text-secondary);
+  border: 1px solid #d1d5db;
+  width: fit-content;
+}
+
+.ep-booking-closed-sheet {
+  font-size: 13px;
+  padding: 6px 14px;
+}
+
+.ep-closed-btn {
+  background: var(--btn-default) !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+}
+
+/* ── Capacity Bar ──────────────────────────────────────── */
+.ep-capacity-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ep-capacity-bar {
+  height: 5px;
+  background: var(--border-lightest);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ep-cap-sheet {
+  height: 7px;
+  border-radius: 4px;
+}
+
+.ep-capacity-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.ep-capacity-label {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── Highlights & dishes ───────────────────────────────── */
+.ep-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ep-highlight-chip {
+  font-size: 11px;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .ep-highlight-chip {
+  background: rgba(22, 163, 74, 0.15);
+  color: #4ade80;
+}
+
+.ep-dishes-teaser {
+  font-size: 12px;
+  color: #7c3aed;
+  font-weight: 500;
+  background: rgba(124, 58, 237, 0.08);
+  padding: 4px 10px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+[data-theme="dark"] .ep-dishes-teaser {
+  background: rgba(124, 58, 237, 0.18);
+}
+
+/* Card Footer */
+.ep-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.ep-price-block {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.ep-free-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.ep-price-amount {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ep-price-per {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.ep-booked-btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: default;
+}
+
+/* ── Carousel ──────────────────────────────────────────── */
+.ep-carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.ep-carousel-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.ep-carousel-slide {
+  flex: 0 0 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.ep-carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ep-car-prev,
+.ep-car-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.ep-car-prev {
+  left: 10px;
+}
+
+.ep-car-next {
+  right: 8px;
+}
+
+.ep-car-prev::after,
+.ep-car-next::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.ep-car-prev::after {
+  border-left: 3px solid var(--text-light);
+  border-bottom: 3px solid var(--text-light);
+}
+
+.ep-car-next::after {
+  border-right: 3px solid var(--text-light);
+  border-top: 3px solid var(--text-light);
+}
+
+.ep-car-prev:hover,
+.ep-car-next:hover {
+  transform: translateY(-50%) scale(1.08);
+}
+
+.ep-car-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 5;
+}
+
+.ep-car-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.ep-car-dot.active {
+  background: var(--bg-main);
+  width: 18px;
+  border-radius: 3px;
+}
+
+.ep-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 60px 20px;
+  min-height: 40vh;
+  color: var(--text-secondary);
+}
+
+.ep-empty p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.ep-empty-sub {
+  font-size: 13px !important;
+  color: var(--text-secondary) !important;
+  font-weight: 400 !important;
+}
+
+/* ── Sheet Overlay ─────────────────────────────────────── */
+/* Open/close animation is handled by ModalTransition.js — this class
+   only supplies the backdrop's own layout (fixed, dimmed, bottom-
+   aligned flex), not any animation or position/inset (ModalTransition's
+   own .modal-transition-overlay class supplies those). */
+.ep-sheet-overlay {
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9990;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+
+.ep-sheet {
+  background: var(--bg-main);
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.ep-sheet-image-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ep-sheet-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ep-sheet-type-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ep-sheet-type-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bg-main);
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.ep-sheet-spec-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7c3aed;
+  background: rgba(124, 58, 237, 0.1);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.ep-sheet-reward-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #d97706;
+  background: linear-gradient(135deg, #fef9c3, #fde68a);
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid #fcd34d;
+  animation: ep-pulse 2s ease infinite;
+}
+
+.ep-sheet-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.ep-sheet-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Sheet urgency row */
+.ep-sheet-urgency-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Sheet capacity */
+.ep-sheet-capacity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ep-sheet-cap-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ep-sheet-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  background: var(--bg-surface);
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-light);
+}
+
+.ep-sheet-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ep-meta-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.ep-meta-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ep-sheet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ep-section-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ep-highlights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ep-highlight-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ep-highlight-check {
+  color: #16a34a;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ep-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
+.ep-menu-item {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+}
+
+.ep-menu-img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+}
+
+.ep-menu-img-placeholder {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: var(--bg-surface);
+}
+
+.ep-menu-info {
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ep-menu-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ep-menu-price {
+  font-size: 11px;
+  color: var(--color-red);
+  font-weight: 600;
+}
+
+.ep-menu-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-light);
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  min-height: 80px;
+}
+
+.ep-sheet-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ep-tag {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.ep-sheet-cta {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.ep-cta-booked-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ep-cta-booked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--color-pale-green);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.ep-cta-booked span:first-child {
+  font-size: 15px;
+  font-weight: 700;
+  color: #16a34a;
+}
+
+.ep-cta-booking-id {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── Enroll Modal ─────────────────────────────────────── */
+.ep-enroll-modal {
+  background: var(--bg-main);
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.ep-enroll-header {
+  padding: 20px 20px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--border-light);
+  flex-shrink: 0;
+}
+
+.ep-enroll-evt-thumb {
+  width: 72px;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ep-enroll-evt-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ep-enroll-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.ep-enroll-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+}
+
+.ep-enroll-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 500;
+}
+
+.ep-enroll-date {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+
+.ep-reward-teaser {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: linear-gradient(135deg, #fef9c3, #fefce8);
+  border-top: 1px solid #fde68a;
+  border-bottom: 1px solid #fde68a;
+  font-size: 13px !important;
+  color: #92400e;
+  flex-shrink: 0;
+}
+
+.ep-reward-teaser span:first-child {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ep-enroll-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Briefly pulses a highlight around the field scrolled to on
+   validation failure, so the eye lands on it immediately rather
+   than having to re-scan the whole form for red error text. Same
+   pattern as ReservationForm.css's rf-error-flash. */
+@keyframes ep-error-flash {
+
+  0%,
+  100% {
+    box-shadow: none;
+  }
+
+  25%,
+  75% {
+    box-shadow: 0 0 0 3px var(--color-error-bg);
+  }
+}
+
+.ep-error-flash {
+  animation: ep-error-flash 1.1s ease;
+  border-radius: 10px;
+}
+
+.ep-price-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border-radius: 10px;
+  border: 1px solid var(--border-light);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ep-price-total {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ep-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ep-form-field label {
+  position: absolute;
+  top: 24px;
+  /* sits on the baseline when idle */
+  left: 0;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--m-label-idle);
+  pointer-events: none;
+  transition:
+    top 0.25s var(--m-ease),
+    font-size 0.25s var(--m-ease),
+    font-weight 0.25s var(--m-ease),
+    color 0.25s var(--m-ease),
+    letter-spacing 0.25s var(--m-ease);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ep-form-field input,
+.ep-form-field textarea {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.ep-form-field input:focus,
+.ep-form-field textarea:focus {
+  border-color: var(--color-red);
+  box-shadow: 0 0 0 3px rgba(243, 55, 22, 0.1);
+}
+
+.ep-form-field-guest {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ep-form-field-guest label {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--text-secondary) !important;
+  pointer-events: none !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  text-transform: uppercase !important;
+}
+
+.ep-guests-row {
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: 10px;
+  overflow: hidden;
+  width: fit-content;
+  padding: 4px;
+}
+
+.ep-qty-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.ep-qty-btn:hover {
+  background: var(--border-light);
+}
+
+.ep-qty-val {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-left: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Enroll footer: row layout for side-by-side buttons ── */
+.ep-enroll-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: var(--bg-main);
+  flex-shrink: 0;
+}
+
+/* ── 3-D push button base (shared: submit = red, cancel = white) ── */
+.ep-action-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  flex-shrink: 0;
+}
+
+.ep-action-btn .ep-btn-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.ep-action-btn:hover .ep-btn-shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.ep-action-btn:active .ep-btn-shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* Submit variant — red */
+.ep-action-btn.submit .ep-btn-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+.ep-action-btn.submit .ep-btn-front {
+  display: block;
+  position: relative;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--bg-main);
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+  white-space: nowrap;
+}
+
+/* Cancel variant — white */
+.ep-action-btn.cancel .ep-btn-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(to left,
+      hsl(0deg 0% 60%) 0%,
+      hsl(0deg 0% 78%) 8%,
+      hsl(0deg 0% 78%) 92%,
+      hsl(0deg 0% 60%) 100%);
+}
+
+.ep-action-btn.cancel .ep-btn-front {
+  display: block;
+  position: relative;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--text-secondary, var(--text-lighter));
+  background: var(--bg-main);
+  border: 1.5px solid var(--border-lightest);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+  white-space: nowrap;
+}
+
+/* Shared hover / active push animation */
+.ep-action-btn:hover {
+  filter: brightness(108%);
+}
+
+.ep-action-btn:hover .ep-btn-front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.ep-action-btn:active .ep-btn-front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.ep-action-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.ep-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Success Screen ────────────────────────────────────── */
+.ep-success-screen {
+  padding: 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ep-success-screen h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ep-success-screen p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCRATCH CARD — redesigned: canvas floats ON TOP of prize
+═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════
+   SCRATCH CARD — Premium Gold Foil Design
+══════════════════════════════════════════════════════ */
+.sc-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 8px 8px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sc-wrapper.sc-anim-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card shell — relative parent for canvas overlay */
+.sc-card-shell {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--c, #ff9f43) 30%, transparent),
+    0 12px 40px rgba(0, 0, 0, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--bg-main);
+}
+
+.sc-card-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 21px;
+  opacity: 0.12;
+  filter: blur(8px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sc-card-inner {
+  position: relative;
+  z-index: 1;
+  padding: 22px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 160px;
+  justify-content: center;
+  background: linear-gradient(160deg, var(--bg-main) 60%, color-mix(in srgb, var(--c, #ff9f43) 8%, var(--bg-main)));
+}
+
+/* Confetti dots decoration */
+.sc-confetti-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sc-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c, #ff9f43);
+  opacity: 0.15;
+}
+
+.sc-dot:nth-child(1) {
+  top: 12%;
+  left: 8%;
+  width: 8px;
+  height: 8px;
+}
+
+.sc-dot:nth-child(2) {
+  top: 20%;
+  right: 10%;
+  width: 5px;
+  height: 5px;
+  opacity: 0.1;
+}
+
+.sc-dot:nth-child(3) {
+  bottom: 15%;
+  left: 12%;
+  width: 4px;
+  height: 4px;
+}
+
+.sc-dot:nth-child(4) {
+  bottom: 22%;
+  right: 8%;
+  width: 7px;
+  height: 7px;
+  opacity: 0.12;
+}
+
+.sc-dot:nth-child(5) {
+  top: 50%;
+  left: 5%;
+  width: 5px;
+  height: 5px;
+  opacity: 0.08;
+}
+
+.sc-dot:nth-child(6) {
+  top: 60%;
+  right: 5%;
+  width: 4px;
+  height: 4px;
+}
+
+.sc-dot:nth-child(7) {
+  top: 8%;
+  left: 45%;
+  width: 6px;
+  height: 6px;
+  opacity: 0.1;
+}
+
+.sc-dot:nth-child(8) {
+  bottom: 8%;
+  right: 40%;
+  width: 5px;
+  height: 5px;
+}
+
+/* Prize badge */
+.sc-prize-badge {
+  padding: 6px 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sc-prize-label-text {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--bg-main);
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.sc-prize-desc-text {
+  font-size: 12.5px;
+  color: var(--text-lighter);
+  margin: 0;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Code row */
+.sc-code-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.sc-code {
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  background: #f5f5f5;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1.5px dashed var(--border-dark);
+  color: var(--text-primary);
+}
+
+/* Canvas overlaid absolutely inside .sc-card-shell */
+.sc-canvas-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border-radius: 20px;
+  z-index: 10;
+}
+
+/* Progress row */
+.sc-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.sc-progress-track {
+  flex: 1;
+  height: 7px;
+  background: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sc-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.1s ease;
+}
+
+.sc-pct {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 36px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   FIXES & IMPROVEMENTS — appended
+═══════════════════════════════════════════════════════════ */
+
+/* Close button (replaces image-based .ep-sheet-close) */
+.ep-sheet-close-btn {
+  position: absolute;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  transition: ease 300ms;
+  top: 24px;
+  right: 24px;
+  padding: 0 !important;
+}
+
+.ep-sheet-close-btn:hover {
+  scale: 1.5;
+}
+
+.ep-sheet-close-btn img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Improved Scratch Card ─── */
+.sc-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px 4px;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.sc-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border-lightest);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* ─── Improved Success Screen ─── */
+.ep-success-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.ep-success-header {
+  padding: 32px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ep-success-check-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(22, 163, 74, 0.35);
+  animation: ep-bounce-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  margin-bottom: 4px;
+}
+
+.ep-success-check {
+  font-size: 32px;
+  color: var(--bg-main);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ep-success-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary, var(--text-primary));
+  margin: 0;
+}
+
+.ep-success-event-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, var(--text-primary));
+  margin: 0;
+}
+
+.ep-success-date {
+  font-size: 12px;
+  color: var(--text-secondary, var(--text-light));
+  margin: 0;
+}
+
+.ep-success-divider {
+  width: calc(100% - 48px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+
+.ep-success-divider::before,
+.ep-success-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-lightest);
+}
+
+.ep-success-divider span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Event Start Countdown */
+.ep-start-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  width: fit-content;
+  background: var(--color-pale-green);
+  color: var(--color-green);
+  border: 1px solid #bbf7d0;
+}
+
+.ep-start-imminent {
+  background: #fef9c3 !important;
+  color: #ca8a04 !important;
+  border-color: #fcd34d !important;
+  animation: ep-blink 0.8s ease infinite;
+}
+
+.ep-start-sheet {
+  font-size: 13px;
+  padding: 6px 14px;
+}
+
+/* Booking Deadline days-left badge */
+.ep-booking-days-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  width: fit-content;
+  background: var(--color-blue-light);
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.ep-booking-days-urgent {
+  background: var(--color-error-bg) !important;
+  color: var(--color-error-dark) !important;
+  border-color: var(--border-error) !important;
+  animation: ep-blink 1s ease infinite;
+}
+
+.ep-booking-days-sheet {
+  font-size: 13px;
+  padding: 6px 14px;
+}
+
+.ep-hero-text {
+  padding: 10px 36px;
+}
+
+@media (max-width: 1024px) {
+  .ep-hero-text {
+    padding: var(--medium-page-padding);
+  }
+
+  .ep-filter-section {
+    padding: 10px var(--medium-page-padding) 0;
+  }
+
+  .ep-events-grid {
+    padding: 10px var(--medium-page-padding);
+  }
+}
+
+@media (max-width: 578px) {
+  .ep-hero-text {
+    padding: var(--mobile-page-padding);
+  }
+
+  .ep-filter-section {
+    padding: 10px var(--mobile-page-padding) 0;
+  }
+
+  .ep-events-grid {
+    padding: 10px var(--mobile-page-padding);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   MATERIAL UNDERLINE INPUTS — matches ReservationForm
+   Targets enrollment form fields
+══════════════════════════════════════════════════════ */
+
+/* ── ep-form-field: material container ── */
+.ep-form-field {
+  position: relative !important;
+  padding-top: 10px !important;
+  gap: 0 !important;
+}
+
+.ep-form-field label {
+  position: absolute;
+  top: 24px;
+  /* sits on the baseline when idle */
+  left: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  pointer-events: none;
+  transition:
+    top 0.25s var(--m-ease),
+    font-size 0.25s var(--m-ease),
+    font-weight 0.25s var(--m-ease),
+    color 0.25s var(--m-ease),
+    letter-spacing 0.25s var(--m-ease);
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* Label floated when input is focused or filled */
+.ep-form-field:focus-within label,
+.ep-form-field input:not(:placeholder-shown)~label,
+.ep-form-field textarea:not(:placeholder-shown)~label {
+  top: 0 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--color-red, var(--color-red)) !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* ── Error state: label turns red, bar stays fully expanded ── */
+.ep-form-field.error label {
+  top: 0 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--color-red, var(--color-red)) !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+.ep-form-field.error input,
+.ep-form-field.error textarea {
+  border-bottom: 2px solid var(--color-red, var(--color-red)) !important;
+}
+
+.ep-form-field.error .ep-mat-bar {
+  width: 100% !important;
+  background: var(--color-red, var(--color-red)) !important;
+}
+
+@keyframes ep-err-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Input/Textarea: flat underline ── */
+.ep-form-field input,
+.ep-form-field textarea {
+  display: block !important;
+  width: 100% !important;
+  min-height: 36px !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  font-family: inherit !important;
+  color: var(--text-primary, #1a1d26) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(150, 155, 170, 0.4) !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 4px 0 !important;
+  box-sizing: border-box !important;
+  caret-color: var(--color-red, var(--color-red)) !important;
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ep-form-field textarea {
+  resize: none !important;
+  line-height: 1.5 !important;
+}
+
+.ep-form-field input::placeholder,
+.ep-form-field textarea::placeholder {
+  color: transparent !important;
+}
+
+.ep-form-field input:hover,
+.ep-form-field textarea:hover {
+  border: none !important;
+  border-bottom: 1px solid #94a0b4 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.ep-form-field input:focus,
+.ep-form-field textarea:focus {
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* ── Animated bar ── */
+.ep-mat-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: var(--color-red, var(--color-red));
+  border-radius: 1px;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.ep-form-field:focus-within .ep-mat-bar {
+  width: 100%;
+}
+
+/* ── Guest stepper: underline style ── */
+.ep-guests-row {
+  display: flex !important;
+  align-items: center !important;
+  border: none !important;
+  border: 2px solid rgba(150, 155, 170, 0.4) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  padding: 6px !important;
+  width: 100px;
+  overflow: visible !important;
+}
+
+.ep-qty-btn {
+  width: 28px !important;
+  height: 28px !important;
+  border: none !important;
+  background: var(--border-lighter) !important;
+  border-radius: 50% !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  cursor: pointer !important;
+  color: var(--text-primary) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background 0.15s !important;
+  box-shadow: 3px 3px 6px var(--border-dark), -3px -3px 6px var(--bg-main) !important;
+}
+
+.ep-qty-btn:hover {
+  background: #e5e5e5 !important;
+}
+
+.ep-qty-btn:active {
+  box-shadow: inset 2px 2px 6px var(--border-dark), inset -2px -2px 6px var(--bg-main) !important;
+}
+
+.ep-qty-val {
+  flex: 1 !important;
+  text-align: center !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  border: none !important;
+  height: auto !important;
+  min-width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+@media screen and (max-width: 768px) {
+  .ep-hero-topbar {
+    padding: var(--medium-page-padding) var(--medium-page-padding) 12px;
+  }
+}
+
+@media screen and (max-width: 578px) {
+  .ep-hero-topbar {
+    padding: var(--mobile-page-padding) var(--mobile-page-padding) 10px;
+  }
+}
+/* ── Attendee breakdown (ep-att-) ───────────────────────────────────────── */
+.ep-att { margin: 4px 0 14px; padding: 12px 14px; border: 1px solid #ececec; border-radius: 14px; background: #fafafa; }
+.ep-att-error { border-color: #ee5253; background: #fff6f6; }
+.ep-att-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.ep-att-title { font-weight: 700; font-size: 14px; color: #222; }
+.ep-att-total { font-weight: 700; font-size: 12px; color: #fff; background: #ee5253; padding: 3px 10px; border-radius: 999px; }
+.ep-att-section { margin: 10px 0 2px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #777; }
+.ep-att-section small { text-transform: none; letter-spacing: 0; font-weight: 500; color: #999; }
+.ep-att-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; }
+.ep-att-label { display: flex; flex-direction: column; font-size: 14px; color: #333; }
+.ep-att-label small { font-size: 11px; color: #999; }
+.ep-att-row .ep-guests-row { margin: 0; }
+.ep-att .ep-qty-btn:disabled { opacity: .35; cursor: not-allowed; }
+.ep-att-msg { margin: 8px 0 0; font-size: 12px; color: #ee5253; font-weight: 600; }

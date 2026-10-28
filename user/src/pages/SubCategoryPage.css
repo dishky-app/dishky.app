@@ -1,0 +1,57 @@
+.food-grid-title {
+  text-transform: capitalize;
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+/* SubCategoryPage doesn't import FoodGridList.css (where the base
+   .food-grid-header rule lives), so its sticky/transparent treatment
+   never reached this page — added directly here instead. Same
+   transparent-at-all-times + blur treatment as every other header. */
+.food-grid-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.food-grid-header.header-scrolled {
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 0 var(--border-lighter, rgba(0,0,0,0.06));
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.food-category-items {
+  background: var(--bg-main);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-primary);
+  transition: transform .2s ease;
+}
+
+.food-category-items:hover {
+  transform: translateY(-6px);
+}
+
+.food-category-image img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.food-category-name {
+  font-size: 16px;
+  text-align: center;
+  font-weight: 600;
+}

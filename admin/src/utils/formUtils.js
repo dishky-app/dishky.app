@@ -1,0 +1,13 @@
+/**
+ * formUtils — shared input helpers for admin forms.
+ *
+ *   toTitleCase("jOHN   doe ") -> "JOHN Doe "  (first letter of each word upper-cased, the rest untouched; one trailing space is kept so typing a 2nd word works)
+ *   digitsOnly10("98a76-54321") -> "9876543210"
+ */
+export const toTitleCase = (value) => {
+  const s = String(value ?? "").replace(/\s+/g, " ").replace(/^\s/, "");
+  // Only the first letter of each word is forced to upper case; the rest is left as typed, so GTR, MRK, McDonald stay intact.
+  return s.replace(/(^|[\s'’-])([^\s'’-])/g, (_, sep, first) => sep + first.toUpperCase());
+};
+
+export const digitsOnly10 = (value) => String(value ?? "").replace(/\D/g, "").slice(0, 10);

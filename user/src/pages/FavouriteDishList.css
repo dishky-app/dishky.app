@@ -1,0 +1,98 @@
+/* ─── FAVOURITE DISH LIST ─── */
+/* NOTE: .empty-favourites base styles live in FoodList.css (shared).
+   This file overrides color and adds dish-list-specific styles only. */
+
+@import "./FoodCategory.css";
+
+/* Override empty state color for dish context */
+.fav-dish-page .empty-favourites {
+  color: var(--text-light);
+}
+
+.food-category-items .btn-3d {
+  margin-top: auto;
+}
+
+.fav-food-category-items {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  border-radius: 20px;
+  padding: 16px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  box-shadow: var(--shadow-card-normal);
+  transition: transform 0.25s ease;
+  will-change: transform;
+  contain: layout paint;
+  transform: translateZ(0);
+}
+
+.fav-food-category-items:hover {
+  transform: translateY(-6px);
+  background-color: var(--color-red);
+  color: var(--bg-main);
+  box-shadow: var(--card-shadow)
+}
+
+.fav-food-category-image {
+  width: 110px !important;
+  height: 110px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fav-food-category-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.fav-food-category-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+}
+
+.fav-food-category-actions .btn-3d {
+  width: calc(100% - 44px);
+}
+
+.fav-food-category-name {
+  font-size: 16px;
+  min-height: 40px;
+  text-align: center;
+  font-family: "Geom", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--text-primary);
+  align-content: center;
+}
+
+.fav-customer-name {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+@media screen and (max-width: 992px) {
+  .fav-dish-page {
+    padding: var(--medium-page-padding);
+  }
+}
+
+@media screen and (max-width: 578px) {
+  .fav-dish-page {
+    padding: var(--mobile-page-padding);
+  }
+}

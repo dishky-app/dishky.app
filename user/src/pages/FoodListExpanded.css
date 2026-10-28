@@ -1,0 +1,365 @@
+.food-reel-expanded {
+  display: flex;
+  align-items: center;
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+.food-images-expanded {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  z-index: 0;
+  isolation: isolate;
+  height: stretch;
+}
+
+/* Soft ambient glow blob — sits behind the dish image */
+.food-images-expanded::after {
+  content: "";
+  position: absolute;
+  width: 55%;
+  height: 40%;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.72) 0%, rgba(43, 43, 43, 0.38) 50%, transparent 75%);
+  filter: blur(28px);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.food-images-expanded img::after {
+  content: "";
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.72) 0%, rgba(43, 43, 43, 0.38) 50%, transparent 75%);
+}
+
+/* Wishlist toggle — overlays the top-right corner of the dish image,
+   product-page style. .food-images-expanded already has position:
+   relative + isolation: isolate, so this sits safely above the
+   ambient glow blob (z-index: -1) without extra stacking-context work. */
+.food-list-expanded-wishlist {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 5;
+}
+
+.food-details-expanded {
+  position: relative;
+  z-index: 10;
+  padding: 12px;
+  width: 30%;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Above 1200px only .food-details-expanded-scroll (the header +
+     nutrition + description + ingredient carousel, grouped below)
+     scrolls on overflow — .food-details-expanded itself stays a
+     fixed-height frame so .btn-section stays pinned at the bottom
+     instead of scrolling away with the rest of the content. The
+     max-width: 1200px query further down resets this back to visible
+     so the page scrolls as a whole on tablet/mobile, same as before. */
+  overflow: hidden;
+}
+
+/* Groups food-details-expanded-header, dish-nutrition, dish-description
+   and the ingredient carousel into one scrollable region, separate from
+   btn-section (which stays outside this wrapper so it never scrolls
+   out of view). Only takes effect above 1200px — see the max-width:
+   1200px query below, which hands scrolling back to the page as a
+   whole at narrower widths. */
+.food-details-expanded-scroll {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.food-details-expanded-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dish-nutrition {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.dish-nutrition-item {
+  text-align: center;
+  width: 70px;
+  height: auto;
+  padding: 12px 10px;
+  background-color: var(--color-pale-red);
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-content: center;
+  border-radius: 20px;
+  gap: 5px;
+}
+
+.dish-nutrition-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 15px;
+  margin: 0 auto 6px auto;
+}
+
+.dish-nutrition-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--nutrition-icon-filter)
+}
+
+.dish-nutrition-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dish-nutrition-name {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.ingredient-head {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* ── Shape-aware drop shadow — follows the transparent outline of the PNG ── */
+.food-images-expanded .dish-image.image-main {
+  filter:
+    drop-shadow(0px 18px 22px rgba(0, 0, 0, 0.28)) drop-shadow(0px 6px 8px rgba(0, 0, 0, 0.18));
+  transition: filter 0.4s ease;
+}
+
+.food-images-expanded .dish-image.image-main::after {
+  content: "";
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.72) 0%, rgba(43, 43, 43, 0.38) 50%, transparent 75%);
+}
+
+.food-images-expanded:hover .dish-image.image-main {
+  filter:
+    drop-shadow(0px 26px 32px rgba(0, 0, 0, 0.32)) drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.2));
+}
+
+@media screen and (max-width: 1200px) {
+  .food-reel-expanded {
+    flex-direction: column;
+  }
+
+  .food-images-expanded {
+    width: 100%;
+    height: 40vh;
+  }
+
+  .food-details-expanded {
+    width: 100%;
+    /* Below 1200px .food-details-expanded goes back to scrolling as a
+       whole (matches pre-existing behavior) instead of only its inner
+       -scroll wrapper. */
+    overflow: visible;
+  }
+
+  /* Hand scrolling back to .food-details-expanded itself below 1200px —
+     the wrapper becomes a plain block so it grows with its content
+     instead of capping/scrolling independently. */
+  .food-details-expanded-scroll {
+    overflow: visible;
+  }
+
+  .dish-nutrition {
+    margin-top: 0;
+  }
+
+  .dish-nutrition-item {
+    width: 60px;
+    padding: 8px;
+  }
+
+  .dish-description {
+    margin: 0;
+  }
+
+  .ingredient-head {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+
+  .food-images-expanded {
+    height: 260px;
+  }
+
+  .dish-image.image-main {
+    max-width: 280px;
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 576px) {
+
+  .food-reel-expanded {
+    flex-direction: column;
+    height: stretch;
+  }
+
+  .food-images-expanded {
+    width: 100%;
+    height: 260px;
+  }
+
+  .food-images-expanded .dish-image.image-main {
+    filter:
+      drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.28)) drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.18));
+    transition: filter 0.4s ease;
+  }
+
+  .food-details-expanded {
+    width: 100%;
+    height: stretch;
+    padding: 0;
+    gap: 10px;
+    justify-content: initial;
+  }
+
+  /* Solid full-width bar pinned above .mobile-footer-nav (64px), like
+     the fixed bars on FoodList/FoodItem — not just floating buttons
+     at a bare offset, so scrolled content passes underneath it
+     instead of appearing to sit behind/through it.
+     Uses .food-details-expanded-btn-section (an extra class added
+     alongside .btn-section specifically on this page) rather than
+     .btn-section alone, because at this width the button bar is
+     portalled straight to document.body — see FoodListExpanded.js —
+     so it isn't affected by the page-transition-wrapper's transform
+     during route enter/exit, which otherwise breaks its fixed
+     positioning and causes it to glitch/jump. A plain unscoped
+     .btn-section rule here would also leak onto FoodList's own
+     .food-details .btn-section (FoodList.css), since both pages share
+     FoodList.css and this file loads after it — the extra class keeps
+     the two pages' fixed-bar rules independent. */
+  .food-details-expanded-btn-section {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    margin: 0;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 10px var(--mobile-page-padding);
+    background: var(--bg-main);
+    z-index: 60;
+  }
+
+  /* Reserve space at the bottom of the scrolling details column so
+     content never ends up hidden underneath the now-fixed bar. */
+  .food-details-expanded {
+    padding-bottom: 76px;
+  }
+
+  .image-main {
+    position: relative;
+    left: 0;
+  }
+
+  .dish-nutrition {
+    gap: 4px;
+    justify-content: space-between;
+  }
+
+}
+
+/* ======================================
+   LANDSCAPE MOBILE FIX (HEIGHT BASED)
+====================================== */
+
+@media screen and (max-height: 500px) {
+
+  .food-reel-expanded {
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .food-images-expanded {
+    width: 50%;
+    height: auto;
+  }
+
+  .food-details-expanded {
+    width: 50%;
+    height: auto;
+    padding: 8px;
+    justify-content: center;
+  }
+
+  .dish-name {
+    font-size: 20px;
+  }
+
+  .dish-price {
+    font-size: 18px;
+  }
+
+  .dish-nutrition {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .dish-nutrition-item {
+    width: 55px;
+    padding: 6px;
+  }
+
+}
+
+/* Dish name block — grid layout, same structural pattern as FoodList's
+   .dish-name-div: veg icon + name share a top row, the best-seller
+   ribbon gets its own row directly underneath, left-aligned with the
+   name rather than crowding the flex row horizontally. */
+.food-list-veg-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  row-gap: 8px;
+  align-items: center;
+}
+
+.food-list-veg-row .food-list-veg-badge {
+  grid-column: 1;
+  grid-row: 1;
+  position: static;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.food-list-veg-row .dish-name {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+
+.food-list-veg-row .food-list-best-seller-badge {
+  grid-column: 2;
+  grid-row: 2;
+  position: static;
+  width: 130px;
+  height: auto;
+  justify-self: start;
+}

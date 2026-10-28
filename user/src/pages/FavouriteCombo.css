@@ -1,0 +1,261 @@
+:root {
+  --fav-combo-line: rgba(0, 0, 0, 0.08);
+  --fav-combo-radius: 18px;
+  --shadow-md: 0 18px 45px rgba(0, 0, 0, 0.08);
+}
+
+.fav-combo-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.fav-combo-header-text h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.fav-combo-header-text p {
+  font-size: 13.5px;
+  color: var(--text-tertiary);
+  margin: 3px 0 0;
+}
+
+/* CONTENT */
+.fav-combo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* EMPTY STATE */
+.fav-combo-empty {
+  background: var(--bg-main);
+  border-radius: var(--fav-combo-radius);
+  padding: 56px 20px;
+  text-align: center;
+  box-shadow: var(--shadow-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+.fav-combo-empty .empty-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  margin-bottom: 16px;
+}
+
+.fav-combo-empty h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.fav-combo-empty p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 320px;
+}
+
+/* CARD */
+.fav-combo-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-main);
+  padding: 16px 18px;
+  border-radius: var(--fav-combo-radius);
+  box-shadow: var(--shadow-primary);
+  margin: 0;
+  border: 1px solid transparent;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.fav-combo-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--fav-combo-line);
+}
+
+.fav-combo-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* THUMBNAIL STACK — overlapping circles for starter/main/drink */
+.fav-combo-thumbs {
+  display: flex;
+  flex-shrink: 0;
+  padding-left: 10px;
+}
+
+.fav-combo-thumb {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--bg-secondary, #f3f4f6);
+  border: 2px solid var(--bg-main);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  margin-left: -10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.fav-combo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* INFO */
+.fav-combo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fav-combo-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+  white-space: wrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fav-combo-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fav-combo-chip {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.04));
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.fav-combo-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fav-combo-price {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--color-green);
+}
+
+.fav-combo-badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--color-blue);
+  font-weight: 600;
+}
+
+.fav-combo-actions .stepper-ctrl {
+  padding: 4px 8px;
+  gap: 0;
+}
+
+/* TOTAL PRICE (above quantity selector) */
+.price-section {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  align-items: center;
+}
+
+.price-section-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.price-section-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-green);
+  line-height: 1.2;
+}
+
+/* ACTIONS */
+.fav-combo-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 992px) {
+}
+
+@media (max-width: 578px) {
+
+  .fav-combo-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fav-combo-main {
+    flex-direction: column;
+  }
+
+  .fav-combo-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .fav-combo-header-text h1 {
+    font-size: 18px !important;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  .fav-combo-thumbs {
+    padding-left: 6px;
+  }
+
+  .fav-combo-thumb {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 380px) {
+
+  .fav-combo-chips {
+    gap: 4px;
+  }
+
+  .fav-combo-chip {
+    font-size: 10.5px;
+    padding: 2px 7px;
+  }
+}

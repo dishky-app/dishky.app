@@ -1,0 +1,291 @@
+/* ==========================================================================
+   DISHKY — VISUAL POLISH LAYER
+   Design idea: a kitchen pass at night. Dark sections carry a faint ember
+   glow and fine grain, like a heat lamp over steel; light sections stay
+   crisp and white, with layered, softly lit surfaces.
+
+   This file only adds finish (depth, light, hover feedback). It never
+   changes layout or sizing, so it is safe to remove or tune on its own.
+   Loaded after the base styles; compound selectors keep it above the
+   single-class rules it refines.
+   ========================================================================== */
+
+:root {
+  --ember: #f33716;
+  --ember-soft: #ff6a4d;
+  --ember-glow: rgba(243.0, 55.0, 22.0, 0.28);
+  --lift-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 1px 2px rgba(0, 0, 0, 0.04),
+    0 14px 34px -18px rgba(0, 0, 0, 0.22);
+  --shadow-card-hover: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 2px 4px rgba(0, 0, 0, 0.05),
+    0 26px 48px -20px rgba(243.0, 55.0, 22.0, 0.28), 0 18px 36px -18px rgba(0, 0, 0, 0.25);
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ---- Page finish --------------------------------------------------------- */
+/* Dark custom scrollbar for the whole site. */
+html,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3b3b3f #0a0a0b;
+}
+html {
+  background-color: #0a0a0b; /* keeps the scrollbar gutter dark on overscroll */
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0b;
+}
+::-webkit-scrollbar-thumb {
+  background: #3b3b3f;
+  border-radius: 999px;
+  border: 2px solid #0a0a0b;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f33716;
+}
+::-webkit-scrollbar-corner {
+  background: #0a0a0b;
+}
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Buttons: lit, pressable --------------------------------------------- */
+.btn-primary {
+  background-image: linear-gradient(180deg, #ff5a36 0%, #f33716 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 -1px 0 rgba(0, 0, 0, 0.12) inset,
+    0 10px 24px -12px rgba(243.0, 55.0, 22.0, 0.7);
+}
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 6px 16px -10px rgba(0, 0, 0, 0.25);
+}
+.btn-dark {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 12px 26px -14px rgba(0, 0, 0, 0.6);
+}
+/* Secondary buttons placed on dark surfaces keep their own transparent look. */
+[data-nav-theme="dark"] .btn-secondary,
+.btn-secondary.\!text-cream {
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background-image: linear-gradient(180deg, #ff6a4d 0%, #f33716 100%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 -1px 0 rgba(0, 0, 0, 0.12) inset,
+      0 16px 32px -12px rgba(243.0, 55.0, 22.0, 0.8);
+  }
+  .btn-secondary:hover {
+    background-color: #ffffff;
+  }
+  /* On dark surfaces the label is light, so the hover must stay dark: a white
+     fill here would hide the text. */
+  [data-nav-theme="dark"] .btn-secondary:hover,
+  .btn-secondary.\!text-cream:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+  }
+}
+
+/* ---- Light surfaces: layered, softly lit --------------------------------- */
+.card-surface {
+  box-shadow: var(--shadow-card);
+}
+.bg-white[class*="rounded-"][class*="border-ink/10"] {
+  box-shadow: var(--shadow-card);
+  transition: translate 0.5s var(--lift-ease), box-shadow 0.5s var(--lift-ease),
+    border-color 0.4s var(--lift-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  /* `translate` is its own property, so it never fights the scroll and entrance
+     animations that drive `transform`. */
+  .bg-white[class*="rounded-"][class*="border-ink/10"]:hover {
+    translate: 0 -4px;
+    border-color: rgba(243.0, 55.0, 22.0, 0.35);
+    box-shadow: var(--shadow-card-hover);
+  }
+}
+
+/* ---- Dark surfaces: glass over the ember glow ---------------------------- */
+[class*="rounded-"][class*="border-cream/12"] {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.015));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset, 0 20px 40px -24px rgba(0, 0, 0, 0.6);
+  transition: translate 0.5s var(--lift-ease), border-color 0.4s var(--lift-ease),
+    box-shadow 0.5s var(--lift-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  [class*="rounded-"][class*="border-cream/12"]:hover {
+    translate: 0 -4px;
+    border-color: rgba(255.0, 106.0, 77.0, 0.45);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 24px 48px -22px rgba(243.0, 55.0, 22.0, 0.35);
+  }
+}
+
+/* ---- Dark sections: soft neutral glow + fine grain -------------------------- */
+[data-nav-theme="dark"]:is(.bg-ink, .bg-charcoal):not(.dk-footer) {
+  background-image: radial-gradient(60% 50% at 88% 0%, rgba(255, 255, 255, 0.07), transparent 70%),
+    radial-gradient(50% 45% at 6% 100%, rgba(255, 255, 255, 0.04), transparent 70%), var(--grain);
+  background-size: auto, auto, 180px 180px;
+}
+
+/* ---- Forms --------------------------------------------------------------- */
+/* Browser autofill paints its own pale background and can leave white text on it
+   (visible text vanishes once the value is edited). Pin the colours instead. */
+.input { color-scheme: light; }
+.input-dark { color-scheme: dark; }
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #000;
+  caret-color: #000;
+  -webkit-box-shadow: 0 0 0 1000px #fff inset;
+  box-shadow: 0 0 0 1000px #fff inset;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+.input-dark:-webkit-autofill,
+.input-dark:-webkit-autofill:hover,
+.input-dark:-webkit-autofill:focus,
+.input-dark:-webkit-autofill:active,
+.dk-news__input:-webkit-autofill,
+.dk-news__input:-webkit-autofill:focus,
+.af-dark:-webkit-autofill,
+.af-dark:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px #161616 inset;
+  box-shadow: 0 0 0 1000px #161616 inset;
+}
+.input-dark, .af-dark { color: #fff; }
+.input:focus {
+  box-shadow: 0 0 0 4px rgba(243.0, 55.0, 22.0, 0.14);
+}
+
+/* ---- Hero atmosphere ----------------------------------------------------- */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.16) 1px, transparent 1.2px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(70% 60% at 78% 45%, #000000, transparent 75%);
+  mask-image: radial-gradient(70% 60% at 78% 45%, #000000, transparent 75%);
+}
+/* The dots never move. A red copy of the SAME grid (same size, same position,
+   slightly larger dots so it fully covers the grey ones) is revealed by a soft
+   diagonal band that sweeps across, so the pattern turns from grey to red as
+   the band passes and fades back to grey after it. */
+.hero-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(#f33716 1.1px, transparent 1.5px);
+  background-size: 26px 26px;
+  -webkit-mask-image: linear-gradient(105deg, transparent 38%, #000000 50%, transparent 62%);
+  mask-image: linear-gradient(105deg, transparent 38%, #000000 50%, transparent 62%);
+  -webkit-mask-size: 200% 100%;
+  mask-size: 200% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: dk-grid-wave 7s linear infinite;
+}
+@keyframes dk-grid-wave {
+  from { -webkit-mask-position: 125% 0; mask-position: 125% 0; }
+  to { -webkit-mask-position: -25% 0; mask-position: -25% 0; }
+}
+/* Admin card: same soft elevation as the other card, no red glow. */
+.hero-admin-card {
+  box-shadow: var(--shadow-card), 0 24px 48px -24px rgba(0, 0, 0, 0.3) !important;
+}
+@keyframes dk-nudge-r {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 5px 0; }
+}
+@keyframes dk-nudge-l {
+  0%, 100% { translate: 0 0; }
+  50% { translate: -5px 0; }
+}
+.dk-nudge-r { animation: dk-nudge-r 2.4s var(--lift-ease) infinite; }
+.dk-nudge-l { animation: dk-nudge-l 2.4s var(--lift-ease) infinite 1.2s; }
+
+/* ---- Number inputs: no up/down spinner ------------------------------------ */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ---- Inline field errors (replaces the browser's "Please fill out" bubble) --- */
+.input[aria-invalid="true"] {
+  border-color: #f33716;
+  box-shadow: 0 0 0 4px rgba(243.0, 55.0, 22.0, 0.14);
+}
+
+/* ---- Page backdrops (components/ReactBits/Backdrop.js) -------------------- */
+@keyframes fx-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, 8%, 0) scale(1.12); }
+}
+@keyframes fx-beam {
+  0% { transform: translateY(-12%); opacity: 0; }
+  20%, 80% { opacity: 1; }
+  100% { transform: translateY(12%); opacity: 0; }
+}
+.fx-blob { animation: fx-drift 22s ease-in-out infinite; will-change: transform; }
+.fx-beam { animation: fx-beam 11s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .fx-blob, .fx-beam { animation: none; }
+}
+
+/* ---- Section backgrounds are white or black only ----------------------------
+   Decorative glows behind sections (hero orbs, footer orbs) are neutral, never red. */
+.glow,
+.kit-glow {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+[data-nav-theme="dark"] .glow,
+[data-nav-theme="dark"] .kit-glow,
+.dk-footer__orb--a,
+.dk-footer__orb--b {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Page-backdrop canvases are already drawn in brand red / white / black: don't grey them out. */
+canvas[data-keep-color] { filter: none !important; }
+
+/* ---- Every page section is at least one screen tall, content centred ------------------------
+   Low specificity (:where) so a section that sets its own display/direction (flex hero etc.) keeps it.
+   Cards and form panels that happen to be <section>s opt out with .dk-auto-h. */
+:where(section:not(section section):not(.dk-auto-h)) {
+  min-height: 100vh; /* fallback */
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+}
+
+/* ---- Content protection: no text selection, no dragging images (fields stay editable) ------ */
+html, body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+input, textarea, select, [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+img, svg, video, canvas, a {
+  -webkit-user-drag: none;
+  user-drag: none;
+}

@@ -1,0 +1,203 @@
+/* ═══════════════════════════════════════════════════════
+   IngredientDetails.css  —  Dishky Admin  —  IngredientDetails page
+   Depends on Common.css
+═══════════════════════════════════════════════════════ */
+
+.back-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+
+.back-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  width: 12px;
+  height: 12px;
+  border-left: 3px solid #111;
+  border-bottom: 3px solid #111;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.ingredient-details-image {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.ingredient-details-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.tag-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: #f2f2f2;
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.action {
+  display: flex;
+  gap: 10px;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.action button,
+.actions button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.ingredient-detail-action {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.ingredient-detail-table {
+  width: 100%;
+  max-width: 500px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background-color: #ffffff;
+  margin-top: 10px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.ingredient-detail-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background-color: #414141;
+}
+
+.ingredient-detail-table th {
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+}
+
+.ingredient-detail-table td {
+  padding: 8px 10px;
+  font-size: 14px;
+  color: #333333;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.ingredient-detail-table tbody tr:hover {
+  background-color: rgb(234, 234, 234);
+}
+
+.ingredient-detail-table th:nth-child(2),
+.ingredient-detail-table td:nth-child(2) {
+  width: 50px;
+}
+
+.ingredient-detail-table td:nth-child(2) {
+  text-align: center;
+}
+
+/* Global Edit button in header */
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.details-header h2 {
+  flex: 1;
+  margin: 0;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .ingredient-details-image {
+    width: 110px;
+    height: 110px;
+  }.ingredient-detail-table {
+    max-width: 100%;
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+}
+
+@media (max-width: 578px) {
+  .ingredient-details-image {
+    width: 90px;
+    height: 90px;
+  }.ingredient-detail-table th,
+.ingredient-detail-table td {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .back-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkbox-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+
+  .action,
+  .actions,
+  .ingredient-detail-action {
+    flex-direction: column;
+  }
+
+  .action button,
+  .actions button {
+    width: 100%;
+  }
+}

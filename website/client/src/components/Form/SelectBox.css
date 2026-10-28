@@ -1,0 +1,16 @@
+.dk-select { position: relative; }
+.dk-select__btn { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; text-align: left; cursor: pointer; }
+.dk-select__btn.is-empty { color: rgba(0, 0, 0, 0.42); }
+.dk-select--dark .dk-select__btn.is-empty { color: rgba(255, 255, 255, 0.42); }
+.dk-select__chev { flex-shrink: 0; opacity: 0.6; transition: transform 0.2s; }
+.dk-select__chev.is-open { transform: rotate(180deg); }
+.dk-select__list {
+  position: absolute; z-index: 40; left: 0; right: 0; top: calc(100% + 6px); margin: 0; padding: 6px; list-style: none;
+  max-height: 280px; overflow-y: auto; border-radius: 16px; background: #fff; color: #000;
+  border: 1px solid rgba(0, 0, 0, 0.12); box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.5);
+}
+.dk-select--dark .dk-select__list { background: #0a0a0a; color: #fff; border-color: rgba(255, 255, 255, 0.16); }
+.dk-select__opt { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.6rem 0.75rem; border-radius: 10px; font-size: 0.95rem; cursor: pointer; }
+.dk-select__opt.is-active { background: rgba(243, 55, 22, 0.12); }
+.dk-select--dark .dk-select__opt.is-active { background: rgba(243, 55, 22, 0.22); }
+.dk-select__opt.is-selected { font-weight: 700; color: #f33716; }

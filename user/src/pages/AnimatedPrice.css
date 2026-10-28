@@ -1,0 +1,31 @@
+.price-odometer {
+  display: flex;
+  align-items: center;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.currency {
+  margin-right: 4px;
+}
+
+.digit-window {
+  width: 18px;
+  height: 28px;
+  overflow: hidden;
+  position: relative;
+}
+
+.digit-column {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.4s ease-in-out;
+}
+
+.digit {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

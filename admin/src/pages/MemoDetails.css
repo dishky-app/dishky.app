@@ -1,0 +1,340 @@
+/**
+ * MemoDetails.css  —  Dishky Admin Panel
+ * Built on .details-container / .details-header / .details-body /
+ * .section / .section-title from Common.css (same base LoyaltySettings
+ * and DishDetails use) — this file only adds the memo-specific bits:
+ * status header badge, summary grid, timeline, evidence grid,
+ * corrective-action list, and the small status-colored labels reused
+ * across several sections.
+ */
+
+.mdt-loading {
+  padding: 40px;
+  text-align: center;
+  color: #888;
+}
+
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mdt-header-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mdt-status--open { background: #e3f2fd; color: #1565c0; }
+.mdt-status--under-investigation { background: #fff3e0; color: #e65100; }
+.mdt-status--action-required { background: #fee2e2; color: #dc2626; }
+.mdt-status--in-progress { background: #fff9c4; color: #8a6d00; }
+.mdt-status--awaiting-verification { background: #ede7f6; color: #5e35b1; }
+.mdt-status--resolved { background: #d1fae5; color: #065f46; }
+.mdt-status--closed { background: #e5e7eb; color: #374151; }
+.mdt-status--cancelled { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
+
+.mdt-critical-flag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #f87171;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mdt-issue-summary .section-title {
+  font-size: 18px;
+}
+
+.mdt-what-happened {
+  white-space: pre-wrap;
+  color: #333;
+  line-height: 1.6;
+}
+
+.mdt-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px 20px;
+  margin: 8px 0;
+}
+
+.mdt-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mdt-summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+}
+
+.mdt-secondary-text {
+  color: #555;
+  font-size: 13.5px;
+}
+
+.mdt-byline {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.mdt-empty {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 13.5px;
+}
+
+.mdt-permission-note {
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.mdt-actions-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.mdt-chip-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.mdt-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f4f5f7;
+  font-size: 12px;
+}
+
+/* ── Evidence ── */
+.mdt-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.mdt-evidence-card {
+  position: relative;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.mdt-evidence-thumb {
+  display: block;
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  background: #eee;
+}
+
+.mdt-evidence-thumb--file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  text-decoration: none;
+}
+
+.mdt-evidence-video {
+  height: 140px;
+  background: #000;
+}
+
+.mdt-evidence-card:has(.mdt-evidence-video) {
+  grid-column: span 2;
+}
+
+.mdt-evidence-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+}
+
+.mdt-evidence-filename {
+  font-size: 11px;
+  font-weight: 600;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mdt-evidence-desc {
+  font-size: 10.5px;
+  color: #777;
+}
+
+.mdt-evidence-by {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.mdt-evidence-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ── Corrective actions / staff actions list ── */
+.mdt-corrective-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mdt-corrective-item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mdt-corrective-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.mdt-corrective-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: #9ca3af;
+}
+
+.mdt-ca-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f4f5f7;
+  color: #555;
+}
+
+.mdt-ca-status--pending { background: #e3f2fd; color: #1565c0; }
+.mdt-ca-status--in-progress { background: #fff9c4; color: #8a6d00; }
+.mdt-ca-status--completed { background: #d1fae5; color: #065f46; }
+.mdt-ca-status--overdue { background: #fee2e2; color: #dc2626; }
+.mdt-ca-status--cancelled { background: #f3f4f6; color: #9ca3af; }
+
+.mdt-ca-overdue-flag {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* ── Compensation status ── */
+.mdt-comp-status--pending { color: #e65100; }
+.mdt-comp-status--approved { color: #1565c0; }
+.mdt-comp-status--issued { color: #065f46; font-weight: 700; }
+.mdt-comp-status--rejected { color: #dc2626; }
+
+/* ── Reopen history ── */
+.mdt-reopen-entry {
+  border-left: 3px solid #f59e0b;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+
+/* ── Timeline (Requirement 22, 23) ── */
+.mdt-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  padding-left: 4px;
+}
+
+.mdt-timeline-item {
+  display: flex;
+  gap: 10px;
+  position: relative;
+}
+
+.mdt-timeline-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 26px;
+  bottom: -14px;
+  width: 1px;
+  background: #e5e7eb;
+}
+
+.mdt-timeline-icon {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f4f5f7;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.mdt-timeline-content {
+  flex: 1;
+  padding-top: 1px;
+}
+
+.mdt-timeline-summary {
+  font-size: 13.5px;
+  color: #1f2937;
+  margin: 0 0 2px;
+}
+
+.mdt-timeline-meta {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.mdt-timeline-notes {
+  font-size: 12px;
+  color: #555;
+  margin: 4px 0 0;
+  padding: 6px 8px;
+  background: #f9fafb;
+  border-radius: 6px;
+}
+
+.mdt-final-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}

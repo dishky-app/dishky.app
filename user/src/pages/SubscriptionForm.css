@@ -1,0 +1,379 @@
+/* ══════════════════════════════════════════
+   SubscriptionForm.css — User Panel
+   Builds on PreBooking.css + ReservationForm.css (both imported by
+   SubscriptionForm.js) — this file only adds the pieces specific to
+   the "pick a dish → tap the days" meal-plan builder.
+══════════════════════════════════════════ */
+
+/* Plan-type tiles reuse .slot-group but read as sentences, not times,
+   so they get a touch more room and left-aligned text. */
+.sub-plan-groups .slot-group {
+  flex: 1 1 160px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* ── Delivery Address grid — same 2-column field layout as the
+   catering form's Event Address section (.ucat-addr-grid), kept as
+   its own rule here so this file doesn't need to import
+   CateringForm.css just for one grid. ── */
+.sub-addr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 578px) {
+  .sub-addr-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+.sub-plan-groups .slot-group-label {
+  font-size: 13px;
+}
+
+.sub-plan-groups .slot-group-time {
+  text-align: left;
+}
+
+/* Small count badge on a meal-slot tile, so a customer can see at a
+   glance which slots already have meals scheduled without opening
+   each one. */
+.sub-slot-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  margin-left: 5px;
+  border-radius: 999px;
+  background: var(--color-red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.slot-group.active .sub-slot-count {
+  background: var(--bg-main);
+  color: var(--color-red);
+}
+
+/* ── STEP 2 — day picker: "Serve <dish> on: Mon Tue Wed…" ──
+   Sits inside the .pbp-card, above the scheduled list, only while a
+   dish is actively being assigned to days. */
+.sub-days-picker {
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--bg-very-light);
+  border: 1.5px solid var(--border-lightest);
+  margin-bottom: 12px;
+}
+
+.sub-days-picker-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.sub-days-picker-label strong {
+  color: var(--text-primary);
+}
+
+.sub-day-chip-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+
+/* "All Days" / "Weekdays" quick-select chips — sit above the individual
+   day checkboxes so a customer can fill a whole week (or Mon–Fri) for a
+   repeating dish in one tap instead of checking each day by hand. */
+.sub-day-quick-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.sub-day-quick-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border-lightest);
+  background: var(--bg-main);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sub-day-quick-chip:active {
+  background: var(--bg-very-light);
+}
+
+.sub-day-quick-chip.is-active {
+  background: color-mix(in srgb, var(--color-red) 10%, var(--bg-main));
+  border-color: var(--color-red);
+  color: var(--color-red);
+}
+
+/* Custom checkbox — a full tappable row (box + day label) rather than
+   a native checkbox, so the whole thing is one easy touch target on
+   mobile. The real <input type="checkbox"> stays in the DOM (visually
+   hidden) for accessibility/keyboard/screen-reader support; the box
+   and its checked state are drawn from CSS. */
+.sub-day-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-lightest);
+  background: var(--bg-main);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sub-day-checkbox:active {
+  background: var(--bg-very-light);
+}
+
+.sub-day-checkbox.is-checked {
+  background: color-mix(in srgb, var(--color-red) 10%, var(--bg-main));
+  border-color: var(--color-red);
+}
+
+.sub-day-checkbox:has(input:focus-visible) {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
+}
+
+.sub-day-checkbox input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sub-day-checkbox-box {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-lightest);
+  background: var(--bg-main);
+  position: relative;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.sub-day-checkbox.is-checked .sub-day-checkbox-box {
+  background: var(--color-red);
+  border-color: var(--color-red);
+}
+
+.sub-day-checkbox.is-checked .sub-day-checkbox-box::after {
+  content: "";
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -55%) rotate(45deg);
+}
+
+.sub-day-checkbox-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.sub-day-checkbox.is-checked .sub-day-checkbox-label {
+  color: var(--color-red);
+}
+
+.sub-days-picker-done {
+  display: block;
+  margin: 12px auto 0;
+  border: none;
+  background: none;
+  color: var(--color-red);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 10px;
+}
+
+.sub-days-picker-done:hover {
+  text-decoration: underline;
+}
+
+/* ── "Already scheduled" list — plain rows: dish name, the days it's
+   on, an Edit-days link, and a delete ×. Mirrors .pbp item rows so it
+   sits comfortably next to the rest of the booking-form family. ── */
+.sub-scheduled-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sub-scheduled-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--bg-very-light);
+  border: 1px solid var(--border-lightest);
+}
+
+.sub-scheduled-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sub-scheduled-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sub-scheduled-days {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.sub-scheduled-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sub-scheduled-edit {
+  border: none;
+  background: none;
+  color: var(--color-red);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 6px;
+  white-space: nowrap;
+}
+
+.sub-scheduled-edit:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .sub-days-picker-label {
+    font-size: 12.5px;
+  }
+
+  .sub-scheduled-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* ── Live builder summary: collapsible "Your Plan So Far" table ── */
+.sub-builder-summary {
+  margin: 2px 0 4px;
+}
+
+.sub-full-table-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--bg-very-light);
+  border: 1px solid var(--border-lightest);
+  border-radius: 12px;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.sub-full-table-chevron {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  transition: transform 0.2s ease;
+}
+
+.sub-full-table-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* ── Success screen: full schedule summary table ── */
+.sub-summary-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border-lightest);
+  border-radius: 12px;
+  margin: 4px 0 6px;
+}
+
+.sub-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.sub-summary-table th,
+.sub-summary-table td {
+  text-align: left;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.sub-summary-table thead th {
+  background: var(--bg-very-light);
+  color: var(--text-tertiary);
+  font-weight: 700;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.sub-summary-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid var(--border-lightest);
+}
+
+.sub-summary-table:last-child th,
+.sub-summary-table:last-child td {
+  width: 30px;
+}
+
+.sub-summary-table tbody td {
+  color: var(--text-primary);
+}
+
+@media (max-width: 600px) {
+  .sub-summary-table-wrap {
+    max-width: 100%;
+  }
+
+  .sub-summary-table th,
+  .sub-summary-table td {
+    padding: 7px 9px;
+    font-size: 11.5px;
+  }
+}

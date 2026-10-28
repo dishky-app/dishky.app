@@ -1,0 +1,12 @@
+.tg-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#faf7f2;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#2a2118}
+.tg-card{width:100%;max-width:420px;background:#fff;border-radius:18px;padding:32px 24px;box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:center}
+.tg-brand{font-weight:800;letter-spacing:.04em;color:#c0392b;margin-bottom:12px;font-size:14px;text-transform:uppercase}
+.tg-title{font-size:24px;margin:0 0 12px}
+.tg-text{margin:0 0 16px;color:#5b4f43;line-height:1.5}
+.tg-warn{color:#b9770e}
+.tg-btn{display:inline-block;border:0;background:#c0392b;color:#fff;border-radius:10px;padding:12px 20px;font-weight:600;text-decoration:none;cursor:pointer}
+.tg-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.tg-venue{display:flex;flex-direction:column;gap:2px;padding:14px 16px;border:1px solid #eadfce;border-radius:12px;text-decoration:none;color:inherit;text-align:left}
+.tg-venue:hover{border-color:#c0392b}
+.tg-venue small{color:#8a7b6a}
+.tg-banner{position:sticky;top:0;z-index:2000;background:#fff3cd;color:#664d03;text-align:center;font-size:13px;padding:8px 12px}

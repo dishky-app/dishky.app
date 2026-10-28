@@ -1,0 +1,434 @@
+/**
+ * KitchenSchedules.js  —  Dishky Admin Panel
+ * Kitchen shift schedules page
+ */
+
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
+
+import { exportToExcel } from "../../utils/excelUtils";
+import api from "../../api";
+import { CustomDatePicker } from "../../components/CustomDatePicker";
+import { DateRangeGroup, PillGroup, MultiPillGroup } from "../../components/FilterBar";
+import { resolveDateRange, todayStr } from "../../utils/dateRangeUtils";
+import { fmtDate } from "../../utils/dateUtils";
+
+import closeIcon from "../../icon/close-icon.png";
+import { useToast } from "../../useToast";
+import { allowTextInput } from "../../App";
+import { EmptyRow } from "../../App";
+import CustomDropdown from "../../components/CustomDropdown";
+import Button3D from "../../components/Button3D";
+import useAnimatedModal from "../../hooks/useAnimatedModal";
+import CollapseChevron from "../../components/CollapseChevron";
+import CollapseSection from "../../components/CollapseSection";
+import useInfiniteScroll from "../../components/useInfiniteScroll";
+import InfiniteScrollLoader, { InfiniteScrollOverlay } from "../../components/InfiniteScrollLoader";
+import { sortArray } from "../../App";
+
+import "./KitchenSchedules.css";
+
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+/* Period presets: [key, label]. "all" resolves to a wide-open range
+   (rather than empty strings) because this page's filter uses
+   d >= fromDate && d <= toDate directly. */
+const PERIOD_PRESETS = [
+  ["all", "All"],
+  ["today", "Today"],
+  ["week", "This Week"],
+  ["month", "This Month"],
+  ["lastMonth", "Last Month"],
+];
+const resolveKitchenSchedulesRange = (key) => {
+  if (key === "all") return ["2000-01-01", "2099-12-31"];
+  return resolveDateRange(key);
+};
+
+const EMPTY_FORM = { work: "", staff: "", date: "", department: "", status: "", lastRate: "" };
+
+export default function KitchenSchedules({ adminData, setAdminData }) {
+  // ── Hooks
+
+  const { toast } = useToast();
+  const location = useLocation();
+
+  const [statusFilters, setStatusFilters] = useState(() =>
+    location.state?.status ? new Set([location.state.status]) : new Set()
+  );
+  const toggleSet = (setter, val) =>
+    setter(prev => { const next = new Set(prev); next.has(val) ? next.delete(val) : next.add(val); return next; });
+  const [searchText, setSearchText] = useState("");
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
+  const today = todayStr();
+  const [fromDate, setFromDate] = useState(today);
+  const [toDate, setToDate] = useState(today);
+  const [activePreset, setActivePreset] = useState("today");
+  const [show, setShow] = useState(false);
+  const scheduleModal = useAnimatedModal("kitchenSchedules-add");
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formErrors, setFormErrors] = useState({});
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  const handleSort = (key) => {
+    setSortConfig((prev) =>
+      prev.key === key
+        ? { key, direction: prev.direction === "asc" ? "desc" : "asc" }
+        : { key, direction: "asc" }
+    );
+  };
+
+  const list = adminData.kitchenSchedules || [];
+
+  const filteredList = useMemo(() => {
+    const base = list.filter(item => {
+      const matchStatus = statusFilters.size === 0 || statusFilters.has(item.status || "");
+      const q = searchText.toLowerCase();
+      const matchSearch = !q || (item.work || "").toLowerCase().includes(q) || (item.staff || "").toLowerCase().includes(q);
+      const d = item.date || "";
+      const matchDate = d >= fromDate && d <= toDate;
+      return matchStatus && matchSearch && matchDate;
+    });
+    return sortArray(base, sortConfig);
+  }, [list, statusFilters, searchText, fromDate, toDate, sortConfig]);
+
+  const { displayLimit, sentinelRef, containerRef, hasMore, isLoadingMore } =
+    useInfiniteScroll(filteredList.length, 20);
+
+  // ── Handlers
+
+  const applyPreset = (key) => {
+    const [f, t] = resolveKitchenSchedulesRange(key);
+    setFromDate(f);
+    setToDate(t);
+    setActivePreset(key);
+  };
+
+  const add = async () => {
+    const errs = {};
+    if (!form.work.trim()) errs.work = true;
+    if (!form.staff) errs.staff = true;
+    if (!form.date) errs.date = true;
+    if (!form.department) errs.department = true;
+    if (!form.status) errs.status = true;
+    if (!form.lastRate && form.lastRate !== 0 && form.lastRate !== "0") errs.lastRate = true;
+    if (Object.keys(errs).length) { setFormErrors(errs); return; }
+    const newId = list.length > 0 ? Math.max(...list.map(i => i.id)) + 1 : 1;
+    const newItem = { id: newId, ...form };
+    try {
+      await api.post("/kitchenSchedules", newItem);
+      setAdminData(prev => ({ ...prev, kitchenSchedules: [...(prev.kitchenSchedules || []), newItem] }));
+      setForm(EMPTY_FORM);
+      setFormErrors({});
+      scheduleModal.close(() => setShow(false));
+      toast.success("Schedule added successfully.");
+    } catch (err) { toast.error("Failed to add schedule. Please try again."); }
+  };
+
+  // ── Helpers
+
+  const cancel = () => { setForm(EMPTY_FORM); setFormErrors({}); scheduleModal.close(() => setShow(false)); };
+
+  const moveExpiredSchedules = async () => {
+    const expired = list.filter(item => item.date < today);
+    if (!expired.length) return;
+
+    const activity = adminData?.kitchenActivity || [];
+    const deletedIds = [];
+
+    // correct
+    for (const item of expired) {
+      try {
+        await api.delete(`/kitchenSchedules/${item.id}`);
+        deletedIds.push(item.id);
+      } catch (err) {
+        toast.error(`Failed to delete schedule ${item.id}.`);
+        deletedIds.push(item.id);
+      }
+    }
+
+    for (const item of expired) {
+      try {
+        await api.post("/kitchenActivity", item);
+      } catch (err) {
+        toast.error("Failed to archive schedule.");
+      }
+    }
+
+    // Remove expired from local state regardless of API delete outcome
+    setAdminData(prev => ({
+      ...prev,
+      kitchenSchedules: (prev.kitchenSchedules || []).filter(i => !deletedIds.includes(i.id)),
+      kitchenActivity: [...activity, ...expired]
+    }));
+  };
+
+  // ── Effects
+
+  useEffect(() => { moveExpiredSchedules(); }, []);
+
+  const markCompleted = async (item) => {
+    if (item.status === "Completed") return;
+    const updated = { ...item, status: "Completed", completedAt: new Date().toISOString() };
+    try {
+      await api.put(`/kitchenSchedules/${item.id}`, updated);
+    } catch (err) {
+      toast.error("Failed to update schedule status.");
+    }
+    try {
+      await api.post("/kitchenActivity", updated);
+    } catch (err) {
+      toast.error("Failed to write to activity log.");
+    }
+    setAdminData(prev => ({
+      ...prev,
+      kitchenSchedules: (prev.kitchenSchedules || []).map(s => s.id === item.id ? updated : s),
+      kitchenActivity: [...(prev.kitchenActivity || []), updated],
+    }));
+  };
+
+  const handleExport = () => {
+    if (!filteredList.length) { toast.warning("No schedule data to export"); return; }
+    const rows = filteredList.map(item => ({
+      Work: item.work || "—",
+      Staff: item.staff || "—",
+      Date: fmtDate(item.date),
+      Department: item.department || "—",
+      Status: item.status || "—",
+      "Response (Days)": item.lastRate !== "" && item.lastRate != null ? `${item.lastRate} days` : "—",
+    }));
+    exportToExcel({ rows, sheetName: "Kitchen Schedules", fileName: `kitchen_schedules_${fromDate}_to_${toDate}.xlsx` });
+  };
+
+  return (
+    <div className="inner-page">
+      <div className="header">
+        <div className="header-title-row">
+          <div className="header-collapse-col">
+            <button
+              type="button"
+              className="header-collapse-btn"
+              onClick={() => setHeaderCollapsed(prev => !prev)}
+              data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={headerCollapsed ? "Expand header" : "Collapse header"}
+              aria-expanded={!headerCollapsed}
+            >
+              <CollapseChevron collapsed={headerCollapsed} />
+            </button>
+          </div>
+          <div className="header-title-col">
+            <div className="header-title-with-count">
+              <h2 className="title">Kitchen Schedules</h2>
+              <span className="result-count">{filteredList.length} schedule(s)</span>
+            </div>
+          </div>
+        </div>
+        <div className="header-btn-container">
+          <Button3D onClick={handleExport}>Export</Button3D>
+          <Button3D onClick={() => { setShow(true); scheduleModal.open(); }}>+ Add Schedule</Button3D>
+        </div>
+      </div>
+
+      <CollapseSection collapsed={headerCollapsed}>
+        <div className="filter-bar">
+          <div className="filter-groups">
+            <input className="search-input" placeholder=" Search work / staff…" value={searchText} onChange={e => setSearchText(allowTextInput(searchText, e.target.value, 100, 5))} />
+            <DateRangeGroup
+              from={fromDate}
+              to={toDate}
+              onChangeFrom={setFromDate}
+              onChangeTo={setToDate}
+              preset={activePreset}
+              onChangePreset={setActivePreset}
+              presets={PERIOD_PRESETS}
+              fromLabel="from"
+              toLabel="to"
+              pickerFromLabel="From"
+              pickerToLabel="To"
+              showPresets={false}
+              pickerLabels
+            />
+
+            <PillGroup
+              label="period"
+              options={PERIOD_PRESETS}
+              value={activePreset}
+              onChange={applyPreset}
+              toggle={false}
+            />
+
+            <MultiPillGroup
+              label="status"
+              options={["Scheduled", "Completed", "Pending"].map(s => [s, s])}
+              value={statusFilters}
+              onToggle={(key) => toggleSet(setStatusFilters, key)}
+            />
+          </div>
+        </div>
+      </CollapseSection>
+
+      <div className="table-wrapper" ref={containerRef}>
+        <table >
+          <thead>
+            <tr>
+              <th onClick={() => handleSort("work")} className={sortConfig.key === "work" ? "sorted" : ""}>
+                <span className="th-content sort-th">
+                  <span>Work</span>
+                  <span className="sort-arrow">
+                    {sortConfig.key === "work" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+                  </span>
+                </span>
+              </th>
+              <th onClick={() => handleSort("staff")} className={sortConfig.key === "staff" ? "sorted" : ""}>
+                <span className="th-content sort-th">
+                  <span>Staff</span>
+                  <span className="sort-arrow">
+                    {sortConfig.key === "staff" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+                  </span>
+                </span>
+              </th>
+              <th onClick={() => handleSort("date")} className={sortConfig.key === "date" ? "sorted" : ""}>
+                <span className="th-content sort-th">
+                  <span>Date</span>
+                  <span className="sort-arrow">
+                    {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+                  </span>
+                </span>
+              </th>
+              <th onClick={() => handleSort("department")} className={sortConfig.key === "department" ? "sorted" : ""}>
+                <span className="th-content sort-th">
+                  <span>Department</span>
+                  <span className="sort-arrow">
+                    {sortConfig.key === "department" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+                  </span>
+                </span>
+              </th>
+              <th onClick={() => handleSort("status")} className={sortConfig.key === "status" ? "sorted" : ""}>
+                <span className="th-content sort-th">
+                  <span>Status</span>
+                  <span className="sort-arrow">
+                    {sortConfig.key === "status" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+                  </span>
+                </span>
+              </th>
+              <th onClick={() => handleSort("lastRate")} className={sortConfig.key === "lastRate" ? "sorted" : ""}>
+                <span className="th-content sort-th">
+                  <span>Response</span>
+                  <span className="sort-arrow">
+                    {sortConfig.key === "lastRate" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+                  </span>
+                </span>
+              </th>
+              <th style={{ width: 60, textAlign: "center" }}>Done</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredList.length === 0 ? (
+              <EmptyRow colSpan={7} message="No schedules found" />
+            ) : (
+              filteredList.slice(0, displayLimit).map(i => (
+                <tr key={i.id}>
+                  <td>{i.work}</td>
+                  <td>{i.staff}</td>
+                  <td>{fmtDate(i.date)}</td>
+                  <td>{i.department || "—"}</td>
+                  <td>{i.status ? <span className={`status status-${i.status.toLowerCase().replace(/\s+/g, "-")}`}>{i.status}</span> : "—"}</td>
+                  <td>{i.lastRate ? `${i.lastRate} days` : "—"}</td>
+                  <td style={{ textAlign: "center" }}>
+                    {i.status === "Completed"
+                      ? <span style={{ color: "#2e7d32", fontSize: 18 }}>✔</span>
+                      : <button
+                        onClick={() => markCompleted(i)}
+                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Mark as Completed"
+                        style={{ background: "none", border: "1.5px solid #2e7d32", borderRadius: "50%", width: 28, height: 28, cursor: "pointer", color: "#2e7d32", fontSize: 14, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+                      >✓</button>
+                    }
+                  </td>
+                </tr>
+              ))
+            )}
+            <InfiniteScrollLoader
+              sentinelRef={sentinelRef}
+              hasMore={hasMore}
+              colSpan={7}
+            />
+          </tbody>
+        </table>
+        <InfiniteScrollOverlay isLoading={isLoadingMore} />
+      </div>
+
+      {scheduleModal.shouldRender && (
+        <div className={`modal-overlay ${scheduleModal.overlayClass}`}>
+          <form className={`admin-modal ${scheduleModal.modalClass}`} onSubmit={e => { e.preventDefault(); add(); }}>
+            <div className="admin-modal-header">
+              <h3>Add Schedule</h3>
+              <Button3D variant="cancel" iconOnly onClick={cancel}><img alt="" src={closeIcon} /></Button3D>
+            </div>
+            <div className="admin-modal-body">
+              <div className={`admin-form-group${formErrors.department ? " mat-select-error" : ""}`}>
+                <CustomDropdown
+                  label="Department"
+                  value={form.department}
+                  onChange={(val) => { setForm({ ...form, department: val }); setFormErrors(p => ({ ...p, department: false })); }}
+                  options={["Pest Control", "Maintenance", "Laundry"]}
+                  placeholder="Select Department"
+                />
+              </div>
+              <div className="admin-form-group">
+                <div className="mat">
+                  <input
+                    className={`mat-input${formErrors.work ? " mat-error" : ""}`}
+                    placeholder=" "
+                    value={form.work}
+                    onChange={e => { setForm({ ...form, work: allowTextInput(form.work, e.target.value, 100, 5) }); setFormErrors(p => ({ ...p, work: false })); }}
+                  />
+                  <label className={`mat-label${formErrors.work ? " mat-label-error" : ""}`}>Work<span className="rf-req">*</span></label>
+                  <span className={`mat-bar${formErrors.work ? " mat-bar-error" : ""}`} />
+                </div>
+              </div>
+              <div className={`admin-form-group${formErrors.staff ? " mat-select-error" : ""}`}>
+                <CustomDropdown
+                  label="Staff"
+                  value={form.staff}
+                  onChange={(val) => { setForm({ ...form, staff: val }); setFormErrors(p => ({ ...p, staff: false })); }}
+                  options={adminData.staff?.map(s => s.name) || []}
+                  placeholder="Select Staff"
+                />
+              </div>
+              <div className="admin-form-group">
+                <label className={`mat-label${formErrors.date ? " mat-label-error" : ""}`} style={{ position: "static", transform: "none", fontSize: 13, display: "block", marginBottom: 4 }}>Date<span className="rf-req">*</span></label>
+                <CustomDatePicker
+                  value={form.date}
+                  onChange={(v) => { setForm({ ...form, date: v }); setFormErrors(p => ({ ...p, date: false })); }}
+                  placeholder="Select date"
+                  hasError={!!formErrors.date}
+                />
+              </div>
+              <div className={`admin-form-group${formErrors.status ? " mat-select-error" : ""}`}>
+                <CustomDropdown
+                  label="Status"
+                  value={form.status}
+                  onChange={(val) => { setForm({ ...form, status: val }); setFormErrors(p => ({ ...p, status: false })); }}
+                  options={["Scheduled", "Completed", "Pending"]}
+                  placeholder="Select Status"
+                />
+              </div>
+              <div className={`admin-form-group${formErrors.lastRate ? " mat-select-error" : ""}`}>
+                <CustomDropdown
+                  label="Response (Days)"
+                  value={form.lastRate}
+                  onChange={(val) => { setForm({ ...form, lastRate: val }); setFormErrors(p => ({ ...p, lastRate: false })); }}
+                  options={[0, 1, 2, 3].map(d => ({ value: String(d), label: `${d} Days` }))}
+                  placeholder="Select Days"
+                />
+              </div>
+            </div>
+            <div className="admin-modal-footer">
+              <Button3D variant="cancel" onClick={cancel}>Cancel</Button3D>
+              <Button3D type="submit">Save Schedule</Button3D>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,9 @@
+{
+  "name": "dishky-print-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Connects a venue's receipt printer to the Dishky dashboard",
+  "main": "bridge.js",
+  "scripts": { "start": "node bridge.js" },
+  "dependencies": { "socket.io-client": "^4.8.3" }
+}

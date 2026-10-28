@@ -1,0 +1,22 @@
+/* ══════════════════════════════════════════════════════════════
+   ModalTransition.css
+   Base rules for every overlay rendered through ModalTransition.js.
+   Kept deliberately minimal — each call site's own overlay/panel
+   class (e.g. .rf-modal-overlay, .ep-sheet, .udp-popup) still
+   supplies backdrop color, centering vs. bottom-sheet alignment,
+   panel background, border-radius, width, etc. This file only
+   guarantees the two shared classes never collide with layout.
+   ══════════════════════════════════════════════════════════════ */
+
+.modal-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+.modal-transition-panel {
+  /* Motion's transform (scale) needs a transform-origin that reads as
+     "grows from the middle" regardless of what layout the call site's
+     own class applies to the panel. */
+  transform-origin: center center;
+}

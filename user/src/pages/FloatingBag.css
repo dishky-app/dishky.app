@@ -1,0 +1,415 @@
+/* ===== FLOATING BUTTON ===== */
+.floating-btn {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  padding: 12px 18px;
+  border-radius: 26px;
+  border: none;
+  font-weight: 600;
+  z-index: 120;
+  cursor: pointer;
+  width: 70px;
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+/* Positioning pinned to the id specifically (not the shared .floating-btn
+   class) so it can never be overridden by another same-named class
+   elsewhere in the app regardless of CSS import order — an id selector
+   always wins over a class selector on specificity, no !important
+   arms race needed. This is what actually keeps the button fixed to
+   the viewport (and thus visible) at every screen width. */
+#floating-bag-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 18px;
+  max-width: calc(100vw - 32px);
+}
+
+/* ===== SHAKE ANIMATION ===== */
+/* ===== PREMIUM CART VIBRATION ===== */
+@keyframes cartVibrate {
+  0% {
+    transform: translateX(0) scale(1);
+  }
+
+  15% {
+    transform: translateX(-2px) rotate(-1deg) scale(1.03);
+  }
+
+  30% {
+    transform: translateX(2px) rotate(1deg);
+  }
+
+  45% {
+    transform: translateX(-1px) rotate(-0.5deg);
+  }
+
+  60% {
+    transform: translateX(1px) rotate(0.5deg);
+  }
+
+  75% {
+    transform: translateX(0) rotate(0deg) scale(1.02);
+  }
+
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+.floating-btn.shake {
+  animation:
+    cartVibrate 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+    cartGlow 0.38s ease;
+}
+
+@keyframes cartGlow {
+  0% {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  40% {
+    box-shadow: 0 12px 32px var(--floating-btn-shadow-color);
+  }
+
+  100% {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* ===== SHEET (BOTTOM RIGHT) ===== */
+.bag-sheet {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 380px;
+  max-height: 80vh;
+  background: var(--bg-theme);
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  animation: slideUp 0.35s cubic-bezier(.22, 1, .36, 1);
+  z-index: 300;
+  box-shadow: var(--shadow-card-normal);
+  border: 1px solid var(--text-tertiary);
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+/* ===== HEADER ===== */
+.bag-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--text-tertiary);
+  flex-shrink: 0;
+  padding: 0 0 10px 0;
+}
+
+.bag-title-row h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+/* ===== ITEMS ===== */
+.bag-items {
+  flex: 1;
+  min-height: 0;
+  /* ✅ critical: lets flex child shrink below content size so scroll works */
+  overflow-y: auto;
+  /* ✅ clips images that poke out horizontally too */
+}
+
+.bag-item-row {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 6px;
+  padding: 10px 0;
+  animation: slideInRight 0.35s cubic-bezier(.22, 1, .36, 1);
+  border-bottom: 1px solid var(--text-tertiary);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.fly-img {
+  overflow: visible;
+}
+
+.bag-item-row img {
+  grid-column: 1;
+  grid-row: 1;
+  width: 46px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: 8px;
+  align-self: center;
+}
+
+/* hidden during flight */
+.bag-item-row img.pending-img {
+  object-fit: contain;
+  opacity: 0;
+}
+
+/* revealed after flight */
+.bag-item-row img.visible-img {
+  opacity: 1;
+  animation: imageReveal 0.25s ease forwards;
+}
+
+@keyframes imageReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.bag-item-info {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+
+.bag-item-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.bag-item-price {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bag-item-price-offer {
+  color: var(--color-red);
+  font-weight: 700;
+}
+
+.bag-item-price-original {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+/* ===== QTY ===== */
+.bag-qty {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 92px;
+  padding: 6px;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-list);
+
+  z-index: 999;
+}
+
+.bag-qty button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.bag-item-total {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 16px;
+  font-weight: 600;
+  width: auto;
+  text-align: end;
+  align-self: center;
+}
+
+/* ===== SUMMARY ===== */
+.bag-summary {
+  flex-shrink: 0;
+  padding: 10px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 2px dashed var(--text-tertiary);
+}
+
+.floating-total-price {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--color-green);
+}
+
+.continue-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.continue-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: hsl(0deg 0% 0% / 0.25);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.continue-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.continue-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(to left,
+      var(--edge-color-dark) 0%,
+      var(--edge-color-light) 8%,
+      var(--edge-color-light) 92%,
+      var(--edge-color-dark) 100%);
+}
+
+.continue-btn .front {
+  display: block;
+  position: relative;
+  padding: 12px 27px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--bg-main);
+  background: var(--color-red);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.continue-btn:hover .front {
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.continue-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.continue-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+.bag-sheet.closing {
+  animation: slideDown 0.3s cubic-bezier(.22, 1, .36, 1) forwards;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (max-width: 576px) {
+  .bag-sheet {
+    width: calc(100% - 32px);
+    max-width: 480px;
+    bottom: 16px;
+    box-sizing: border-box;
+    padding: 12px;
+  }
+}
+
+/* Below 600px the fixed MobileFooterNav (64px + safe-area) takes over
+   the bottom of the screen — matches #floating-bag-btn's mobile
+   offset in App.css so the sheet sits above the tab bar instead of
+   being covered by it. */
+@media (max-width: 600px) {
+  .bag-sheet {
+    bottom: calc(64px + env(safe-area-inset-bottom, 0) + 18px);
+    max-height: calc(80vh - 64px - env(safe-area-inset-bottom, 0));
+  }
+
+  .bag-item-row {
+    column-gap: 8px;
+    row-gap: 4px;
+  }
+
+  .bag-item-price {
+    gap: 4px;
+  }
+
+  .bag-item-price-original {
+    font-size: 10px;
+  }
+
+  .bag-qty {
+    gap: 2px;
+    justify-content: start;
+    width: fit-content;
+  }
+}

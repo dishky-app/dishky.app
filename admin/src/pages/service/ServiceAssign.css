@@ -1,0 +1,179 @@
+
+
+/* ── Progress badge ── */
+.service-assign-progress-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #faf5ff;
+  border: 1.5px solid #e9d5ff;
+  border-radius: 10px;
+  padding: 4px 12px;
+  min-width: 60px;
+}
+
+.service-assign-progress-num {
+  font-size: 15px;
+  font-weight: 700;
+  color: #7c3aed;
+  line-height: 1.2;
+}
+
+.service-assign-progress-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  color: #c4b5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Section row ── */
+.service-assign-section-row td {
+  padding: 10px 12px 6px !important;
+  font-size: 12px !important;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #e9e9e9 !important;
+  border-radius: 0 !important;
+}
+
+.service-assign-section-icon {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+/* ── Task dot ── */
+.service-assign-task-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d1d5db;
+  margin-right: 8px;
+  vertical-align: middle;
+  transition: background 0.2s;
+}
+
+.service-assign-task-dot.dot-filled {
+  background: #8b5cf6;
+  box-shadow: 0 0 0 2px #ede9fe;
+}
+
+/* ── Time cell ── */
+.service-assign-time {
+  color: #888;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── List layout ── */
+.service-assign-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.service-assign-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.service-assign-list-section-hdr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #fff;
+  border-radius: 12px;
+  border-left: 4px solid #8b5cf6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.service-assign-list-count {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.service-assign-list-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.service-assign-list-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1.5px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.service-assign-list-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.service-assign-list-card.card-assigned {
+  border-color: #ede9fe;
+  background: #faf5ff;
+}
+
+.service-assign-list-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.service-assign-list-task-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.service-assign-list-time {
+  font-size: 11px;
+  color: #888;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+}
+
+@media (max-width: 578px) {
+  .service-assign-progress-badge {
+    min-width: 46px;
+    padding: 3px 8px;
+  }
+
+  .service-assign-progress-num {
+    font-size: 13px;
+  }
+}

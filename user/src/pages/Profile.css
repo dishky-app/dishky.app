@@ -1,0 +1,209 @@
+/* ===== PROFILE PAGE ===== */
+.profile-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 0 16px 24px;
+  box-sizing: border-box;
+}
+
+/* Hero banner — avatar/name/mobile grouped as one visually distinct
+   block (rounded card on a soft tinted background) instead of sitting
+   bare against the page background, so the page reads top-to-bottom
+   as: identity → account links → logout, each its own clear section. */
+.profile-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 20px 24px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  background: linear-gradient(180deg,
+      color-mix(in srgb, var(--color-red) 8%, var(--bg-main)) 0%,
+      var(--bg-main) 100%);
+  box-shadow: var(--shadow-list);
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 27px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg,
+      var(--color-red),
+      color-mix(in srgb, var(--color-red) 70%, black));
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-red) 35%, transparent);
+  margin-bottom: 4px;
+}
+
+.profile-name {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+  text-align: center;
+}
+
+.profile-mobile {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary, #888);
+}
+
+/* Section — groups a label with its content block so each part of the
+   page is clearly named rather than a bare list of rows. */
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.profile-section-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #888);
+  padding-left: 4px;
+}
+
+.profile-links {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-main);
+  box-shadow: var(--shadow-list);
+}
+
+.profile-link-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 15px 16px;
+  border: none;
+  border-bottom: 1px solid var(--text-tertiary, rgba(0, 0, 0, 0.06));
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background-color 150ms ease;
+}
+
+.profile-link-row:last-child {
+  border-bottom: none;
+}
+
+.profile-link-row:active {
+  background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+}
+
+/* Icon chip — a small rounded square behind each row's emoji, so the
+   icon reads as a deliberate, structured element rather than raw
+   floating emoji text next to the label. */
+.profile-link-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  line-height: 1;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--color-red) 10%, transparent);
+}
+
+.profile-link-icon img {
+  width: 24px;
+  height: 24px;
+  filter: var(--img-theme-filter);
+}
+
+.profile-link-icon--favourites {
+  background: color-mix(in srgb, var(--color-red) 12%, transparent);
+}
+
+.profile-link-icon--subscriptions {
+  background: color-mix(in srgb, var(--color-red) 14%, transparent);
+}
+
+.profile-link-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-link-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.profile-link-sub {
+  font-size: 11.5px;
+  color: var(--text-secondary, #888);
+}
+
+.profile-logout-btn {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 4px;
+}
+
+/* Floating profile bubble positioning lives in ProfileButton.css
+   (next to the component that renders it) — this used to also be
+   defined here with different values, which fought with that file
+   for which bottom/z-index actually won depending on CSS import
+   order. Removed; see ProfileButton.css for the real definition. */
+
+.profile-nav-button {
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.profile-forward-btn {
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+
+.profile-forward-btn::after {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 20%;
+  width: 12px;
+  height: 12px;
+  border-right: 3px solid var(--text-tertiary);
+  border-top: 3px solid var(--text-tertiary);
+  transform: translateY(-100%) rotate(45deg);
+}

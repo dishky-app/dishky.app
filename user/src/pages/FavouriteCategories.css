@@ -1,0 +1,30 @@
+/* ─── FAVOURITE CATEGORIES ─── */
+/* NOTE: .empty-favourites base styles are in FoodList.css (shared).
+   This file adds category-list-specific overrides only. */
+
+/* .food-header's base sticky/transparent rule lives in FoodList.css,
+   which this page doesn't import — added directly here so the header
+   here isn't a dead ringer that plainly scrolls away. */
+.food-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.food-header.header-scrolled {
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 0 var(--border-lighter, rgba(0,0,0,0.06));
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+@media screen and (max-width: 992px) {
+}
+
+@media screen and (max-width: 578px) {
+}

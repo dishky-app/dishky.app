@@ -1,0 +1,325 @@
+
+
+/* ── ROW ── */
+.evt-pre-row {
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.evt-pre-row td {
+  padding: 11px 12px;
+  font-size: 13px;
+  border: none;
+  border-top: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.evt-pre-row td:first-child {
+  border-left: 1px solid #f5f5f5;
+  border-radius: 12px 0 0 12px;
+}
+
+.evt-pre-row td:last-child {
+  border-right: 1px solid #f5f5f5;
+  border-radius: 0 12px 12px 0;
+}
+
+.evt-pre-row:hover {
+  background: #fafafa;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.evt-pre-name {
+  font-weight: 600;
+}
+
+.evt-pre-id-small {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.evt-pre-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.evt-pre-email {
+  font-size: 11px;
+  color: #888;
+}
+
+/* ── SLOT BADGES ── */
+.evt-pre-slot-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.evt-pre-slot-badge.slot-bf {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.evt-pre-slot-badge.slot-br {
+  background: #ecfccb;
+  color: #3f6212;
+}
+
+.evt-pre-slot-badge.slot-lu {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.evt-pre-slot-badge.slot-ht {
+  background: #fce7f3;
+  color: #9d174d;
+}
+
+.evt-pre-slot-badge.slot-di {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.evt-pre-slot-badge.slot-any {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* ── DISCOUNT BADGE ── */
+.evt-pre-discount-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  background: #d1fae5;
+  color: #065f46;
+  vertical-align: middle;
+}
+
+/* ── INLINE STATUS BUTTONS ── */
+.evt-pre-inline-status {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* ── CALL TOOLTIP ── */
+.evt-pre-call-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.evt-pre-call-tooltip {
+  min-width: 200px;
+  background: #fff;
+  color: #111;
+  border-radius: 10px;
+  padding: 10px 12px;
+  z-index: 99999;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border: 1px solid #e5e7eb;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: preCallTipFade 0.15s ease;
+}
+
+/* Downward-pointing arrow — tooltip appears above the button, centered */
+.evt-pre-call-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #e5e7eb;
+}
+
+.evt-pre-call-tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #fff;
+  z-index: 1;
+}
+
+@keyframes preCallTipFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.evt-pre-call-tooltip-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #222;
+  margin-bottom: 6px;
+}
+
+.evt-pre-call-tooltip-row {
+  font-size: 12px;
+  color: #555;
+  padding: 3px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.evt-pre-call-tooltip-row:last-child {
+  border-bottom: none;
+}
+
+@keyframes preResFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
+}
+
+@keyframes preModalBgFade {
+  from {
+    opacity: 0
+  }
+
+  to {
+    opacity: 1
+  }
+}
+
+@keyframes preModalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(16px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
+}
+
+/* Modal rows / groups */
+.evt-pre-modal-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Modal stepper */
+.evt-pre-modal-stepper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9fafb;
+  height: 40px;
+  transition: border-color 0.2s;
+}
+
+.evt-pre-modal-stepper.error {
+  border-color: #e74c3c;
+  background: #fff5f5;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.08);
+}
+
+.evt-pre-modal-stepper button {
+  width: 38px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.evt-pre-modal-stepper button:hover {
+  background: #f0f0f0;
+}
+
+.evt-pre-modal-stepper span {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.evt-pre-modal-slot-time {
+  font-size: 9px;
+  opacity: .65;
+  font-weight: 400;
+}
+
+/* Helper labels */
+.evt-pre-req {
+  color: #e74c3c;
+}
+
+.evt-pre-opt {
+  font-size: 9px;
+  color: #aaa;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 3px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+
+  .evt-pre-modal-row {
+    flex-direction: column;
+  }
+}
+/* ═══════════════════════════════════════════
+   RESPONSIVE ADDENDUM — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .evt-pre-row td {
+    font-size: 12px;
+    padding: 9px 8px;
+  }
+}
+
+@media (max-width: 578px) {
+
+  .evt-pre-slot-badge,
+  .evt-pre-discount-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+}

@@ -1,0 +1,9 @@
+.pg-card{margin:20px 0;padding:18px 22px;border:1px solid var(--border-light,rgba(0,0,0,.1));border-radius:20px;background:var(--bg-surface,#fff);box-shadow:0 2px 12px rgba(17,24,39,.05)}
+.pg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.pg-title{font-size:16px;margin:0 0 4px}
+.pg-sub{margin:0;font-size:13px;opacity:.75}
+.pg-link{border:1px solid #2563eb;background:#eff6ff;color:#1d4ed8;padding:8px 18px;border-radius:999px;text-decoration:none;cursor:pointer;font-weight:600;white-space:nowrap;transition:background .15s ease,color .15s ease}
+.pg-link:hover{background:#2563eb;color:#fff}
+.pg-form{display:flex;flex-direction:column;gap:14px;margin-top:14px;max-width:460px}
+.pg-hint{margin:0;font-size:12px;opacity:.75;overflow-wrap:anywhere}
+.pg-actions{display:flex;justify-content:flex-end}

@@ -1,0 +1,1074 @@
+.food-item {
+  display: flex;
+  width: 100%;
+  overflow-x: hidden;
+  height: 100vh;
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+.left-panel {
+  width: 60%;
+  padding: 0;
+  position: relative;
+  background: var(--bg-primary);
+}
+
+.image-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 0 80px;
+}
+
+.food-item-image {
+  width: 220px;
+  height: 220px;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.food-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.food-item-name {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1 1;
+}
+
+.image-header-right {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.size-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hot-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.size-selector-container {
+  display: flex;
+  gap: 5px;
+}
+
+.hot-selector-container {
+  display: flex;
+  gap: 5px;
+}
+
+.size-selector-item {
+  position: relative;
+  width: 60px;
+  height: auto;
+  overflow: visible;
+  padding: 5px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: var(--bg-main);
+  border: var(--light-border);
+  transition: all 0.1s ease;
+}
+
+.size-selector-item::after {
+  content: "";
+  position: absolute;
+  top: -11px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  background: var(--color-green);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0);
+  z-index: 3;
+}
+
+.size-selector-item::before {
+  content: "";
+  position: absolute;
+  transform: scale(0);
+  transform-origin: center;
+  border-radius: inherit;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 0;
+}
+
+.size-tick {
+  position: absolute;
+  top: -9px;
+  right: 10px;
+  width: 4px;
+  height: 10px;
+  border-right: 2px solid var(--bg-main);
+  border-bottom: 2px solid var(--bg-main);
+  transform: rotate(45deg) scale(0);
+  transform-origin: center;
+  opacity: 0;
+  z-index: 4;
+}
+
+.size-selector-item.active {
+  box-shadow: var(--hot-selector-shadow);
+  transform: scale(1.05);
+}
+
+.size-selector-item.active::before {
+  transform: scale(1);
+}
+
+.size-selector-item.active::after {
+  opacity: 1;
+  transform: scale(1);
+  animation: tick-badge-pop 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.size-selector-item.active .size-tick {
+  opacity: 1;
+  animation: tick-draw 320ms ease-out 140ms forwards;
+}
+
+@keyframes tick-badge-pop {
+  0% {
+    transform: scale(0);
+  }
+
+  70% {
+    transform: scale(1.18);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes tick-draw {
+  0% {
+    transform: rotate(45deg) scale(0);
+  }
+
+  100% {
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+
+.size-selector-item-name,
+.size-selector-item-description {
+  position: relative;
+  z-index: 1;
+}
+
+.size-selector-item-name {
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.size-selector-item-description {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.hot-selector-icon {
+  background-color: var(--bg-main);
+  min-width: 60px;
+  min-height: 50px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 200ms ease-in;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.hot-selector-icon img {
+  width: 28px;
+}
+
+.hot-selector-icon div {
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.hot-selector-icon.active {
+  box-shadow: var(--hot-selector-shadow);
+  transform: scale(1.05);
+}
+
+/* ── Wishlist 3-D button ── */
+.wishlist-btn {
+  position: relative;
+  width: 34px;
+  height: 36px;
+  border-radius: 10px;
+  /* visible face */
+  background: var(--bg-main);
+  /* 3-D edge: bottom shadow acts as the "side" of the button */
+  box-shadow:
+    0 4px 0 0 var(--border-dark),
+    0 5px 6px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  /* heart is a subtle outline colour so it's always visible */
+  color: #c0c0c0;
+  font-size: 22px;
+  margin-right: 0;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    color 0.2s ease;
+  user-select: none;
+}
+
+/* push-down on click */
+.wishlist-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 0 var(--border-dark),
+    0 2px 3px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes wishlist-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.4);
+  }
+
+  70% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.ingredient-section {
+  margin-top: 16px;
+  padding: 0 18px 0 36px;
+
+}
+
+.ingredients {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.ingredient-list {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 370px);
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  scrollbar-color: transparent;
+}
+
+.ingredient-item {
+  background-color: var(--bg-main);
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-list);
+  cursor: pointer;
+}
+
+.ingredient-item-price-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-left: auto;
+}
+
+.ingredient-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ingredient-item.disabled button {
+  pointer-events: none;
+}
+
+.ingredient-item.selected {
+  border: 1px solid var(--color-red);
+  background: var(--color-pale-red);
+}
+
+.ingredient-item::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 6px;
+}
+
+.ingredient-item-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.ingredient-item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ingredient-item-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ingredient-item-price {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.right-panel {
+  position: relative;
+  box-shadow: var(--shadow-left);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40%;
+  z-index: 99;
+  box-sizing: border-box;
+
+  padding: 0 !important;
+}
+
+.top {
+  padding: 20px 20px 0 20px;
+  /* Was height: 100vh — .top is a flex child of .right-panel, which is
+     itself already constrained to .food-item's 100vh, so a *second*
+     100vh here made .top alone as tall as the full viewport regardless
+     of how much space .right-panel actually had left after .bottom.
+     That's what let .top run underneath/overlap .bottom instead of
+     stopping above it. flex: 1 1 auto lets .top take exactly the
+     space .right-panel has left once .bottom (a normal, non-flexed
+     child) is laid out, and min-height: 0 is required alongside it so
+     a flex item is actually allowed to shrink below its content size
+     instead of overflowing its container — without it, overflow-y:
+     scroll below would never kick in and .top would still push past
+     .bottom. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: scroll;
+}
+
+.ingredients-calculation {
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 14px;
+}
+
+.ingredient-item-calculation {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 32px 1fr auto auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-bottom);
+  cursor: pointer;
+  margin-bottom: 4px;
+
+  background: var(--color-pale-red);
+}
+
+/* BG zoom-out animation */
+.ingredient-item-calculation.blink::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: radial-gradient(circle at center,
+      rgba(246, 72, 72, 0.25) 0%,
+      rgba(246, 72, 72, 0.18) 35%,
+      rgba(246, 72, 72, 0.08) 55%,
+      rgba(246, 72, 72, 0.0) 70%);
+
+  transform: scale(0);
+  opacity: 0;
+
+  animation: bgZoomOut 800ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+/* Keyframes */
+@keyframes bgZoomOut {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.ingredient-item-calculation.blink {
+  animation: ingredientBlink 0.6s ease-out;
+  border-radius: 8px;
+}
+
+.ingredient-item-calculation.out-of-stock {
+  opacity: 0.6;
+}
+
+.ingredient-item-calculation.out-of-stock s {
+  color: var(--text-light);
+}
+
+.ingredient-item-image-calculation {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.ingredient-item-image-calculation img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ingredient-item-name-calculation {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ingredient-item-quantity-calculation,
+.ingredient-item-price-calculation {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.bottom {
+  padding: 20px 30px 12px;
+  border-radius: 20px 20px 0 0;
+  border-top: 1px solid var(--border-dark);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: transparent;
+}.price-section {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.food-item-total-amount {
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--color-green);
+  transition: all 0.3s ease-in-out;
+}
+
+.food-item-total-amount .dish-price-offer-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--color-red);
+  color: var(--bg-main);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.food-item-total-amount.price-pulse {
+  animation: pricePulse 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pricePulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+
+  35% {
+    transform: scale(1.06);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.quantity-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-label,
+.qty-label {
+  font-size: 18px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Stepper controls (ingredient list + quantity panel) ── */
+.stepper-ctrl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  gap: 6px;
+}
+
+.stepper-val {
+  min-width: 32px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-primary);
+  padding: 2px 4px;
+  border-radius: 8px;
+}
+
+.stepper-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  /* 3D edge */
+  box-shadow:
+    0 4px 0 0 var(--border-dark),
+    0 5px 5px rgba(0, 0, 0, 0.15);
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.stepper-btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow:
+    0 1px 0 0 var(--border-dark),
+    0 2px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  background-color: var(--border-lightest);
+}.confirm-overlay:empty {
+  display: none;
+  pointer-events: none;
+}
+
+/* ===== Animation ===== */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== Overlay ===== */
+/* Open/close animation is handled by ModalTransition.js — this class
+   only supplies the backdrop's own layout (dimmed, centered flex),
+   not position/inset (ModalTransition's own .modal-transition-overlay
+   class supplies those). */
+.user-overlay {
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== user-modal ===== */
+.user-modal {
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  background: var(--bg-main);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* user-modal body */
+.user-modal-body {
+  padding: 18px 22px 20px;
+}
+
+.user-modal h3 {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-modal label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 10px 0 4px;
+  color: var(--text-secondary);
+}
+
+.user-modal input,
+.user-modal textarea {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-dark);
+  font-size: 14px;
+  resize: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.user-modal textarea {
+  min-height: 80px;
+}
+
+.user-modal input:focus,
+.user-modal textarea:focus {
+  outline: none;
+  border-color: var(--color-red);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.ingredients-calculation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.add-to-bag-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-to-bag-row .btn-3d {
+  flex: 1;
+}
+
+.notes-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+  filter: blur(2px);
+  transition:
+    max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.35s ease,
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.3s ease;
+}
+
+.notes-wrapper.open {
+  max-height: 200px;
+  /* safe buffer */
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.notes-box {
+  width: 100%;
+  margin: 12px 0 16px;
+  padding: 12px;
+  border-radius: 12px;
+  border: var(--light-border);
+  font-size: 13px;
+  resize: none;
+  min-height: 80px;
+  background: var(--bg-main);
+  box-sizing: border-box;
+  font-family: inherit;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.notes-box:focus {
+  outline: none;
+  border: 1px solid var(--color-red);
+  background: var(--bg-main);
+}
+
+.wishlist-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.wishlist-btn .shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: hsl(0deg 0% 0% / 0.22);
+  will-change: transform;
+  transform: translateY(2px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+}
+
+.wishlist-btn:hover .shadow {
+  transform: translateY(4px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.wishlist-btn:active .shadow {
+  transform: translateY(1px);
+  transition: transform 34ms;
+}
+
+/* edge — inactive (neutral grey) */
+.wishlist-btn .edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(to left,
+      hsl(0, 0%, 42%) 0%,
+      hsl(0, 0%, 52%) 8%,
+      hsl(0, 0%, 52%) 92%,
+      hsl(0, 0%, 42%) 100%);
+}
+
+/* front — inactive */
+.wishlist-btn .front {
+  display: block;
+  position: relative;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-main);
+  will-change: transform;
+  transform: translateY(-4px);
+  transition: transform 600ms cubic-bezier(.3, .7, .4, 1);
+  padding: 0;
+  height: 35px;
+  width: 34px;
+  text-align: center;
+  align-content: center;
+  font-size: 26px;
+}
+
+.wishlist-btn:hover {
+  filter: brightness(108%);
+}
+
+.wishlist-btn:hover .front {
+  color: var(--color-red);
+  transform: translateY(-6px);
+  transition: transform 250ms cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.wishlist-btn:active .front {
+  transform: translateY(-2px);
+  transition: transform 34ms;
+}
+
+.wishlist-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* edge — active (red 3D edge) */
+.wishlist-btn.active .edge {
+  background: linear-gradient(to left,
+      #991b1b 0%,
+      #dc2626 8%,
+      #dc2626 92%,
+      #991b1b 100%);
+}
+
+/* front — active */
+.wishlist-btn.active .front {
+  color: #fff;
+  background: var(--color-red);
+  animation: wishlist-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 992px) {
+  .food-item {
+    grid-template-columns: 1fr;
+  }
+
+  .image-header {
+    padding: 0;
+  }
+
+  .right-panel,
+  .bottom {
+    padding: var(--mobile-page-padding);
+  }
+
+  .top {
+    padding: 16px 16px 0 16px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .image-header {
+    gap: 0;
+    flex-direction: column;
+  }
+
+  .food-item {
+    flex-direction: column;
+    width: stretch;
+  }
+
+  .left-panel,
+  .right-panel {
+    width: 100%;
+  }
+
+  .ingredient-item {
+    padding: 5px 10px;
+  }
+
+  .ingredient-section {
+    padding: var(--medium-page-padding);
+  }
+
+  .bottom {
+    padding: 8px 12px;
+    border-radius: 20px 20px 0 0;
+    border-top: 1px solid #c5c5c5;
+  }
+
+  .ingredient-list {
+    max-height: calc(100vh - 493px);
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .ingredient-item-price-container {
+    flex-direction: column;
+    gap: 0px;
+  }
+
+  .ingredient-item-price {
+    font-size: 10px;
+  }
+
+  .stepper-ctrl {
+    padding: 2px;
+  }
+
+  .ingredient-item .stepper-val {
+    padding: 0;
+    font-size: 12px;
+  }
+
+  .ingredient-item .stepper-btn {
+    width: 20px;
+    height: 20px;
+  }
+
+  .food-item {
+    height: stretch;
+  }
+
+  .left-panel {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .ingredient-section {
+    padding: 0 var(--mobile-page-padding);
+  }
+
+  .image-header {
+    flex-direction: column;
+  }
+
+  .image-header-right {
+    gap: 10px;
+  }
+
+  .ingredient-list {
+    padding: 0;
+    gap: 6px;
+    height: 360px;
+  }
+
+  .right-panel {
+    width: 100%;
+  }
+
+  .top {
+    padding: var(--mobile-page-padding);
+    height: auto;
+    /* .bottom is position:fixed (pulled out of flow) once it becomes
+       the price/qty/add-to-bag bar at this width, so .top no longer
+       has a sibling pushing it up — without this it renders its last
+       ingredient rows straight through where .bottom now floats.
+       Sized for .bottom's worst case (notes textarea open, up to
+       200px via .notes-wrapper.open's max-height) plus the 64px
+       footer nav it sits above, so the reservation holds even when
+       .bottom is at its tallest. */
+    padding-bottom: calc(320px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .ingredient-item-calculation {
+    padding: 6px;
+  }
+
+  .bottom {
+    padding: 10px var(--mobile-page-padding);
+    border-radius: 10px 10px 0 0;
+    border-top: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    gap: 10px;
+    box-sizing: border-box;
+    background-color: var(--bg-main);
+    z-index: 100;
+  }
+
+  .add-to-bag-row {
+    gap: 8px;
+  }
+
+  .ingredient-item {
+    gap: 4px;
+    padding: 2px;
+  }
+}
+
+@media screen and (max-height: 500px) {
+
+  .right-panel {
+    padding: var(--mobile-page-padding);
+  }
+
+  .food-item-image {
+    height: 110px;
+
+  }
+
+  .image-header-right {
+    gap: 0;
+  }
+
+  .ingredient-list {
+    max-height: calc(100vh - 290px);
+    gap: 2px;
+  }
+
+  .ingredient-item {
+    padding: 4px;
+  }
+
+  .ingredient-item-image {
+    width: 30px;
+    height: 30px;
+  }
+
+  .ingredient-item-calculation {
+    padding: 4px;
+  }
+
+  .bottom {
+    padding: 10px;
+  }
+
+  .quantity-section {
+    margin: 0;
+  }
+}

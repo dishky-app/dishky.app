@@ -1,0 +1,130 @@
+/* AttenderAuth.css — login / sign-up / forgot-password for attenders.
+   Re-uses the Welcome page's background, logos and tabs (Welcome.css);
+   only the card itself and the small extras live here. */
+
+.att-auth-container {
+  padding: 24px 12px 32px;
+  min-height: 100vh;
+  gap: 4px;
+}
+
+.att-card {
+  position: relative;
+  width: min(92vw, 380px);
+  margin-top: 10px;
+  padding: 16px 22px 20px;
+  background: #fff;
+  color: #333;
+  border-radius: 20px;
+  box-shadow: rgba(100, 135, 137, 0.3) 0 8px 12px;
+}
+
+.att-card .mat-input {
+  color: #333 !important;
+}
+
+.att-card-heading {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-red);
+}
+
+.att-tabs {
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.att-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.att-form .mat {
+  width: 100%;
+}
+
+.att-form .btn-3d {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.att-sub-heading {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+}
+
+.att-help {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #666;
+}
+
+.att-password-wrap {
+  position: relative;
+}
+
+.att-password-wrap .mat-input {
+  padding-right: 52px;
+}
+
+.att-password-toggle {
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+  padding: 2px 4px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-red);
+  cursor: pointer;
+}
+
+.att-link {
+  align-self: flex-end;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-red);
+  cursor: pointer;
+}
+
+.att-link-center {
+  align-self: center;
+}
+
+.att-form-error {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #b42318;
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+}
+
+.att-back-home {
+  margin-top: 14px;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+.att-back-home:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}

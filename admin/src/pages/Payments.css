@@ -1,0 +1,93 @@
+/**
+ * Payments.css — Dishky Admin Panel
+ * Styles for Payments.js (list) and PaymentDetails.js. Namespaced
+ * `pay-` per this codebase's per-feature class-prefix convention
+ * (ae-, pm-, rf-, co-, evt-, memo-…).
+ */
+
+.pay-subtitle {
+  color: #666;
+  font-size: 13px;
+  margin: 2px 0 0;
+}
+
+/* ── KPI row (same shape as .evt-kpi-row in events/EvtCommon.css) ── */
+.pay-kpi-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.pay-kpi {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: inset 5px 5px 10px #bbb, inset -5px -5px 10px #fff;
+  flex: 1;
+  min-width: 80px;
+  border-top: 3px solid transparent;
+}
+
+.pay-kpi-val {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pay-kpi-label {
+  font-size: 12px;
+  color: #666;
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+/* ── Status badges ── */
+.pay-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pay-status-pending { background: #fef3c7; color: #92400e; }
+.pay-status-paid { background: #d1fae5; color: #065f46; }
+.pay-status-failed { background: #fee2e2; color: #dc2626; }
+
+/* ── Payment Details page ── */
+.pay-details-qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+}
+
+.pay-details-qr-img {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  padding: 10px;
+  background: #fff;
+}
+
+.pay-details-mono {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.pay-details-failure-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+}
+
+.pay-header-actions { margin-left: auto; display: flex; align-items: center; }

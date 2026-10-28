@@ -1,0 +1,378 @@
+
+
+/* TWO-COLUMN GRID */
+.ucat-form-grid {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+  height: calc(100vh - 135px);
+}
+
+.ucat-col {
+  background: transparent;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-dark) transparent;
+}
+
+.ucat-col::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ucat-col::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 4px;
+}
+
+/* CARD */
+.ucat-card {
+  background: var(--bg-very-light);
+  padding: 14px 16px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1.5px solid var(--border-lightest);
+  transition: border-color 0.2s;
+  overflow: visible;
+}
+
+.ucat-req {
+  color: var(--color-red, var(--color-red));
+}
+
+.ucat-opt {
+  color: var(--text-placeholder);
+  font-weight: 400;
+}
+
+/* NOTES TEXTAREA */
+.ucat-notes {
+  border-radius: 12px;
+  border: 1.5px solid var(--text-tertiary);
+  background-color: transparent;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text-primary);
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ucat-notes:focus {
+  border-color: var(--color-red);
+  box-shadow: 0 0 0 3px var(--shadow-red-sm);
+}
+
+/* ITEMS LIST */
+.ucat-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ucat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.ucat-item:last-child {
+  border-bottom: none;
+}
+
+.ucat-item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.ucat-item-size {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.ucat-item-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.ucat-item-delete {
+  outline: none;
+  border: none;
+  border-radius: 999px;
+  background: var(--bg-surface);
+  color: var(--color-red);
+  font-size: 14px;
+  box-shadow: 6px 6px 12px var(--text-secondary), -6px -6px 12px #cfcfcf;
+}
+
+/* BILL */
+.ucat-bill {
+  border-top: 1.5px solid var(--text-tertiary);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ucat-bill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-lighter);
+}
+
+.ucat-bill-total {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  border-top: 1px solid var(--text-tertiary);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+/* EMPTY */
+.ucat-empty {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--text-secondary);
+  border: 1px dashed var(--text-tertiary);
+  border-radius: 14px;
+}
+
+.ucat-empty p {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ucat-empty span {
+  font-size: 12px;
+}
+
+@keyframes ucatBounce {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.12);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 1024px) {
+}
+
+@media (max-width: 768px) {
+  .ucat-form-grid {
+    flex-direction: column;
+    height: auto;
+    gap: 16px;
+  }
+
+  .ucat-col {
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: visible;
+  }
+}
+
+@media (max-width: 578px) {
+
+  .ucat-form-grid {
+    gap: 10px;
+  }
+}
+
+/* Address grid */
+.ucat-addr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Decoration grid */
+.ucat-deco-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.ucat-deco-btn {
+  position: relative;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-lightest);
+  background: var(--bg-very-light);
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--text-placeholder);
+}
+
+.ucat-deco-btn:hover {
+  border-color: var(--color-red);
+  transform: translateY(-2px);
+  scale: 1 !important;
+}
+
+.ucat-deco-btn.active {
+  border-color: var(--color-red);
+  background: var(--color-red);
+  color: var(--bg-main);
+}
+
+.ucat-deco-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ucat-deco-price {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-red);
+}
+
+.ucat-deco-desc {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.ucat-deco-btn.active .ucat-deco-label,
+.ucat-deco-btn.active .ucat-deco-price,
+.ucat-deco-btn.active .ucat-deco-desc {
+  color: var(--bg-main);
+}
+
+/* Check cards */
+.ucat-check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.ucat-check-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border-lightest);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-lighter);
+  transition: all 0.15s;
+  background: var(--bg-very-light);
+}
+
+.ucat-check-card.active {
+  border-color: var(--color-red);
+  background: var(--color-red);
+}
+
+.ucat-addon-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ucat-addon-price {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.ucat-check-card.active .ucat-check-card-title .ucat-addon-label,
+.ucat-check-card.active .ucat-check-card-title .ucat-addon-price {
+  color: var(--bg-main) !important;
+}
+
+/* Responsive */
+@media (max-width: 578px) {
+
+  .ucat-addr-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ucat-deco-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ucat-check-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ucat-col,
+  .ucat-addr-grid {
+    gap: 4px;
+  }
+
+  .ucat-card {
+    padding: 0;
+    gap: 4px;
+  }
+}
+
+:root {
+  --m-accent: var(--color-red, var(--color-red));
+  --m-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --m-spring: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Inline hint next to the Time label */
+.ucat-slot-hint-inline {
+  font-size: 11px;
+  color: var(--color-blue);
+  font-weight: 500;
+  margin-left: 8px;
+  background: var(--color-blue-light);
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+
+/* Field error */
+.ucat-field-error {
+  display: block;
+  font-size: 11px;
+  color: var(--color-red, var(--color-red));
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* Restored: .loading is applied by CateringForm.js on its submit button
+   (className={`btn-3d red${loading ? " loading" : ""}`}). The rule was
+   originally scoped to .ucat-submit-btn, a class no longer rendered by
+   the component - kept here verbatim rather than removed, since .loading
+   itself is still live. */
+.ucat-submit-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}

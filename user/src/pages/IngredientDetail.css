@@ -1,0 +1,221 @@
+.ingredient-detail {
+  font-family: "Geom", system-ui, sans-serif;
+  display: flex;
+  height: 100vh;
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+.left {
+  width: 50%;
+  padding: 36px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ingredient-back-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 42px;
+  left: 42px;
+}
+
+.ingredient-back-button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border-left: 3px solid var(--text-primary);
+  border-bottom: 3px solid var(--text-primary);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.ingredient-detail-image {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.ingredient-detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.right {
+  width: 50%;
+  padding: 0;
+  background: var(--bg-primary);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.ingredient-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ingredient-cost {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-green);
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(22, 163, 74, 0.08);
+}
+
+.description-section,
+.description-section p {
+  margin: 0;
+}
+
+.benefits-section,
+.history-section {
+  margin: 0;
+  padding-top: 20px;
+}
+
+.benefits-section h3,
+.history-section h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.description-section p,
+.history-section p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.ingredient-nutrition {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px auto;
+  font-size: 12px;
+  width: fit-content;
+  gap: 20px;
+}
+
+.ingredient-nutrition-item {
+  text-align: center;
+  width: 70px;
+  height: auto;
+  padding: 12px 10px;
+  color: var(--text-secondary);
+  background: var(--color-pale-red);
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-content: center;
+  border-radius: 20px;
+  gap: 5px;
+}
+
+.ingredient-nutrition-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 15px;
+  margin: 0 auto 6px auto;
+}
+
+.ingredient-nutrition-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--img-theme-filter);
+}
+
+@media (max-width: 1200px) {
+  .ingredient-back-button {
+    top: 42px;
+    left: 42px;
+  }
+}
+
+@media (max-width: 992px) {
+
+  .left,
+  .right {
+    width: 100%;
+  }
+
+  .ingredient-nutrition {
+    gap: 8px;
+  }
+
+  .ingredient-nutrition-item {
+    width: 50px;
+  }
+
+  .ingredient-back-button {
+    top: 36px;
+    left: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ingredient-detail {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .ingredient-back-button {
+    top: 24px;
+    left: 24px;
+    position: absolute;
+  }
+
+  .right {
+    width: 100%;
+    overflow: visible;
+    box-sizing: border-box;
+    box-shadow: none;
+  }
+
+  .left {
+    padding: var(--medium-page-padding);
+  }
+
+  .ingredient-detail-image {
+    width: min(80%, 60vh);
+    border-radius: 16px;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 576px) {
+
+  .left {
+    padding: var(--mobile-page-padding);
+  }
+
+  .ingredient-nutrition {
+    gap: 20px;
+  }
+
+  .ingredient-nutrition-item {
+    width: 70px;
+  }
+}

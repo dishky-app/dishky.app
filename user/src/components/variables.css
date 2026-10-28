@@ -1,0 +1,350 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   variables.css — Design Tokens: Light & Dark Themes
+   Import this first in every component that uses theme variables.
+   All other CSS files depend on this file.
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── GLOBAL RESET ─── */
+*,
+:root,
+html,
+body {
+  touch-action: manipulation;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ─── LIGHT THEME (DEFAULT) ─── */
+:root {
+  /* BACKGROUNDS */
+  --bg-theme: linear-gradient(180deg, rgba(255, 236, 224, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 1) 100%);
+  --bg-main: #ffffff;
+  --bg-surface: #f2f2f2;
+  --bg-image: url("../src/assets/bg-image1.png");
+  --bg-very-light: #f9f9f9;
+  --bg-light: #f0f0f0;
+  --bg-lighter: #e8e8e8;
+  --bg-hover: #ffc800;
+  --bg-input: #f9f9f9;
+  --bg-neu: #e8e8e8;
+  --bg-dish-placeholder-start: #f8f9fa;
+  --bg-dish-placeholder-end: #ebebeb;
+
+  /* TEXT COLORS */
+  --text-primary: #000000;
+  --text-secondary: #3a3a3a;
+  --text-tertiary: #999999;
+  --text-muted: #888888;
+  --text-placeholder: #aaaaaa;
+  --text-light: #666666;
+  --text-lighter: #555555;
+  --text-very-light: #444444;
+  --text-disabled: #cccccc;
+
+  /* BORDERS */
+  --border-light: rgba(0, 0, 0, 0.18);
+  --border-lighter: #e8e8e8;
+  --border-lightest: #f0f0f0;
+  --border-dark: #dddddd;
+  --border-error: #ff4444;
+  --border-muted: #d1d5db;
+  --border-neu: #e8e8e8;
+  --border-input-warm: #c4b5a0;
+  --border-input-warm-focus: #b89a7a;
+  --light-border: 1px solid rgba(17, 17, 17, 0.18);
+
+  /* SHADOWS */
+  --shadow-primary: rgba(17, 17, 26, 0.16) 0px 3px 12px, rgba(17, 17, 26, 0.10) 0px 6px 24px;
+  --shadow-image: 0 18px 40px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --shadow-list: 0 3px 12px rgba(0, 0, 0, 0.16);
+  --shadow-left: 0 6px 20px rgba(0, 0, 0, 0.14);
+  --shadow-bottom: 0 3px 8px rgba(0, 0, 0, 0.16);
+  --shadow-card-normal: 0 10px 28px rgba(0, 0, 0, 0.13);
+  --shadow-card-hover: 0 18px 44px rgba(0, 0, 0, 0.20);
+  --shadow-popup: 0 12px 40px rgba(0, 0, 0, 0.14);
+  --shadow-dropdown: 0 20px 60px rgba(0, 0, 0, 0.18);
+  --shadow-card-red: 0 12px 30px rgba(243, 55, 22, 0.36), 0 6px 16px rgba(243, 55, 22, 0.24);
+  --shadow-card-red-hover: 0 20px 50px rgba(243, 55, 22, 0.50), 0 10px 24px rgba(243, 55, 22, 0.36);
+  --shadow: 0 3px 10px rgba(64, 255, 0, 0);
+  --thankyou-shadow: 0 10px 30px rgba(130, 130, 130, 0.22), 0 2px 10px rgba(100, 100, 100, 0.14);
+  --floating-btn-shadow-color: rgba(243, 55, 22, 0.40);
+  --card-shadow:
+    rgba(0, 0, 0, 0.09) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px,
+    rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px,
+    rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  --shadow-form-focus: rgba(0, 0, 0, 0.05);
+  --shadow-card-subtle: rgba(0, 0, 0, 0.06);
+  --shadow-card-xs: rgba(0, 0, 0, 0.07);
+  --shadow-input-warm-focus: rgba(184, 154, 122, 0.18);
+  --shadow-neu-dark: #c0c0c0;
+  --shadow-neu-mid: #c5c5c5;
+  --shadow-neu-light: #cfcfcf;
+  --shadow-neu-warm-dark: #c7c7c7;
+  --shadow-neu-warm-light: #e2dcdc;
+
+  /* RED GLOW SHADOWS */
+  --shadow-red-xs: rgba(231, 76, 60, 0.08);
+  --shadow-red-sm: rgba(231, 76, 60, 0.10);
+  --shadow-red-md: rgba(231, 76, 60, 0.20);
+  --shadow-red-lg: rgba(231, 76, 60, 0.30);
+  --shadow-red-xl: rgba(231, 76, 60, 0.35);
+  --shadow-red-2xl: rgba(231, 76, 60, 0.40);
+
+  /* ACCENT COLORS */
+  --color-red: #f33716;
+  --color-red-secondary: rgb(230, 55, 25);
+  --color-pale-red: #ffe8e3;
+  --color-green: #10a845;
+  --color-pale-green: #b8ffc0;
+  --color-pale-yellow: #fffbeb;
+  --color-error-bg: #fff0f0;
+  --color-error-dark: #cc0000;
+  --color-blue: #1a73e8;
+  --color-blue-light: #e8f0fe;
+  --color-blue-hover: #f0f4ff;
+  --color-blue-active: #4361ee;
+  --color-amber: #f59e0b;
+  --color-amber-text: #ca8a04;
+  --color-amber-dark: #78350f;
+  --color-amber-pale: #fde68a;
+  --color-amber-bg: #fffbea;
+  --color-rose-dark: #9d174d;
+  --color-accent: #7c3aed;
+
+  /* GREEN SEMANTIC */
+  --color-green-dark: #16a34a;
+  --color-green-text: #065f46;
+  --color-green-pale: #d1fae5;
+  --color-green-pale-alt: #f0fdf4;
+  --color-green-pale-2: #dcfce7;
+  --color-green-pale-border: #bbf7d0;
+
+  /* WARM GRADIENT */
+  --color-warm-gradient-start: #f6d365;
+  --color-warm-gradient-end: #fda085;
+  --color-warm-shadow: rgba(253, 160, 133, 0.4);
+
+  /* OVERLAY */
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.13);
+
+  /* ON-RED SURFACE */
+  --color-on-red-muted: rgba(255, 255, 255, 0.7);
+  --color-on-red-faint: rgba(255, 255, 255, 0.2);
+  --color-on-red-mid: rgba(255, 255, 255, 0.4);
+  --color-on-red-hint: rgba(255, 255, 255, 0.15);
+  --color-on-red-hint-2: rgba(255, 255, 255, 0.8);
+
+  /* HERO ORBS */
+  --color-orb-purple: rgba(124, 58, 237, 0.5);
+  --color-orb-pink: rgba(236, 72, 153, 0.4);
+  --color-orb-purple-border: rgba(124, 58, 237, 0.2);
+
+  /* CONFETTI */
+  --color-confetti-1: #f59e0b;
+  --color-confetti-2: #ee5253;
+  --color-confetti-3: #6c5ce7;
+  --color-confetti-4: #00b894;
+  --color-confetti-5: #fd79a8;
+  --color-confetti-6: #fdcb6e;
+  --color-confetti-7: #74b9ff;
+  --color-confetti-8: #a29bfe;
+
+  /* UI ELEMENTS */
+  --btn-color: #d2d2d2;
+  --btn-default: #f0f0f0;
+  --btn-hover: #f0f0f0;
+  --btn-disabled: #cccccc;
+  --foodlist-arrow: rgba(0, 0, 0, 0.30);
+  --hot-selector-shadow: rgba(80, 80, 80, 0.4) 0px 0px 10px 0px;
+  --fav-ingredient-color: #FFF5EC;
+  --fav-nutrition-color: #E6F2FF;
+  --nutrition-icon-filter: brightness(0) saturate(100%);
+  --filter: none;
+  --invert-filter: brightness(0) invert(1);
+  --img-theme-filter: brightness(0) saturate(100%);
+  --opp-img-theme-filter: brightness(0) invert(1);
+  --home-btn-filter: brightness(0) saturate(100%) invert(24%) sepia(97%) saturate(7462%) hue-rotate(6deg) brightness(98%) contrast(107%);
+
+  /* 3D BUTTON EDGE GRADIENTS */
+  --edge-color-dark: hsl(6deg 100% 16%);
+  --edge-color-light: hsl(6deg 100% 32%);
+  --edge-color-green-dark: hsl(134deg 100% 16%);
+  --edge-color-green-light: hsl(134deg 100% 32%);
+
+  /* FLOATING BUTTON */
+  --floating-btn-shadow: 0 10px 26px var(--color-red);
+
+  /* SPACING */
+  --mobile-page-padding: 10px;
+  --medium-page-padding: 24px;
+}
+
+/* ─── DARK THEME ─── */
+[data-theme="dark"] {
+  /* BACKGROUNDS */
+  --bg-theme: linear-gradient(0deg, rgb(24, 24, 24) 0%, rgb(37, 37, 37) 50%, rgb(61, 61, 61) 100%);
+  --bg-main: #080808;
+  --bg-surface: #111111;
+  --bg-image: none;
+  --bg-very-light: #1a1a1a;
+  --bg-light: #2a2a2a;
+  --bg-lighter: #0f0f0f;
+  --bg-hover: #1a5c1f;
+  --bg-input: #1a1a1a;
+  --bg-neu: #1e1e1e;
+  --bg-dish-placeholder-start: #1e1e1e;
+  --bg-dish-placeholder-end: #272727;
+
+  /* TEXT COLORS */
+  --text-primary: #ffffff;
+  --text-secondary: #c0c0c0;
+  --text-tertiary: #666666;
+  --text-muted: #888888;
+  --text-placeholder: #999999;
+  --text-light: #aaaaaa;
+  --text-lighter: #999999;
+  --text-very-light: #888888;
+  --text-disabled: #444444;
+
+  /* BORDERS */
+  --border-light: rgba(255, 255, 255, 0.18);
+  --border-lighter: #333333;
+  --border-lightest: #444444;
+  --border-dark: #555555;
+  --border-error: #cc4444;
+  --border-muted: #3a3a3a;
+  --border-neu: #1e1e1e;
+  --border-input-warm: #5a4a3a;
+  --border-input-warm-focus: #8a6a4a;
+  --light-border: 1px solid rgba(255, 255, 255, 0.24);
+
+  /* SHADOWS */
+  --shadow-primary: rgba(230, 230, 230, 0.12) 0px 3px 12px, rgba(255, 255, 255, 0.06) 0px 6px 24px;
+  --shadow-image: 0 18px 40px rgba(255, 255, 255, 0.0);
+  --shadow-list: 0 3px 12px rgba(255, 255, 255, 0.10);
+  --shadow-left: 0 6px 20px rgba(255, 255, 255, 0.10);
+  --shadow-bottom: 0 3px 10px rgba(255, 255, 255, 0.12);
+  --shadow-card-normal: 0 12px 32px rgba(14, 14, 14, 0.7);
+  --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.85);
+  --shadow-popup: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-dropdown: 0 20px 60px rgba(0, 0, 0, 0.6);
+  --shadow-card-red: 0 14px 36px rgba(255, 58, 24, 0.45), 0 8px 20px rgba(255, 58, 24, 0.32);
+  --shadow-card-red-hover: 0 22px 56px rgba(255, 58, 24, 0.60), 0 12px 28px rgba(255, 58, 24, 0.42);
+  --shadow: rgba(255, 255, 195, 0.25) 2px 2px 6px;
+  --thankyou-shadow: 0 12px 24px rgba(200, 200, 200, 0.40), 0 2px 6px rgba(180, 180, 180, 0.22);
+  --floating-btn-shadow-color: rgba(255, 58, 24, 0.40);
+  --card-shadow:
+    rgba(0, 0, 0, 0.09) 0px 2px 1px,
+    rgba(126, 126, 126, 0.09) 0px 4px 2px,
+    rgba(126, 126, 126, 0.09) 0px 8px 4px,
+    rgba(126, 126, 126, 0.09) 0px 16px 8px,
+    rgba(126, 126, 126, 0.09) 0px 32px 16px;
+  --shadow-form-focus: rgba(255, 255, 255, 0.04);
+  --shadow-card-subtle: rgba(0, 0, 0, 0.3);
+  --shadow-card-xs: rgba(0, 0, 0, 0.25);
+  --shadow-input-warm-focus: rgba(138, 106, 74, 0.18);
+  --shadow-neu-dark: #111111;
+  --shadow-neu-mid: #141414;
+  --shadow-neu-light: #282828;
+  --shadow-neu-warm-dark: #161616;
+  --shadow-neu-warm-light: #2a2a2a;
+
+  /* RED GLOW SHADOWS */
+  --shadow-red-xs: rgba(255, 58, 24, 0.10);
+  --shadow-red-sm: rgba(255, 58, 24, 0.14);
+  --shadow-red-md: rgba(255, 58, 24, 0.24);
+  --shadow-red-lg: rgba(255, 58, 24, 0.36);
+  --shadow-red-xl: rgba(255, 58, 24, 0.44);
+  --shadow-red-2xl: rgba(255, 58, 24, 0.52);
+
+  /* ACCENT COLORS */
+  --color-red: #ff3a18;
+  --color-red-secondary: #ff5c42;
+  --color-pale-red: #2e0e08;
+  --color-green: #00f050;
+  --color-pale-green: #082014;
+  --color-pale-yellow: #1a1600;
+  --color-error-bg: #3d1515;
+  --color-error-dark: #ff4444;
+  --color-blue: #4db8ff;
+  --color-blue-light: #1a3a52;
+  --color-blue-hover: #2a4a62;
+  --color-blue-active: #6ab8ff;
+  --color-amber: #fbbf24;
+  --color-amber-text: #fcd34d;
+  --color-amber-dark: #fde68a;
+  --color-amber-pale: #3d2a00;
+  --color-amber-bg: #1c1500;
+  --color-rose-dark: #f472b6;
+  --color-accent: #9f6ef5;
+
+  /* GREEN SEMANTIC */
+  --color-green-dark: #22c55e;
+  --color-green-text: #4ade80;
+  --color-green-pale: #052e16;
+  --color-green-pale-alt: #071c0e;
+  --color-green-pale-2: #052e16;
+  --color-green-pale-border: #166534;
+
+  /* WARM GRADIENT (decorative — unchanged) */
+  --color-warm-gradient-start: #f6d365;
+  --color-warm-gradient-end: #fda085;
+  --color-warm-shadow: rgba(253, 160, 133, 0.25);
+
+  /* OVERLAY */
+  --color-overlay: rgba(0, 0, 0, 0.75);
+  --color-overlay-light: rgba(0, 0, 0, 0.25);
+
+  /* ON-RED SURFACE (unchanged — always on red bg) */
+  --color-on-red-muted: rgba(255, 255, 255, 0.7);
+  --color-on-red-faint: rgba(255, 255, 255, 0.2);
+  --color-on-red-mid: rgba(255, 255, 255, 0.4);
+  --color-on-red-hint: rgba(255, 255, 255, 0.15);
+  --color-on-red-hint-2: rgba(255, 255, 255, 0.8);
+
+  /* HERO ORBS (decorative — unchanged) */
+  --color-orb-purple: rgba(124, 58, 237, 0.5);
+  --color-orb-pink: rgba(236, 72, 153, 0.4);
+  --color-orb-purple-border: rgba(124, 58, 237, 0.3);
+
+  /* CONFETTI (decorative — unchanged) */
+  --color-confetti-1: #f59e0b;
+  --color-confetti-2: #ee5253;
+  --color-confetti-3: #6c5ce7;
+  --color-confetti-4: #00b894;
+  --color-confetti-5: #fd79a8;
+  --color-confetti-6: #fdcb6e;
+  --color-confetti-7: #74b9ff;
+  --color-confetti-8: #a29bfe;
+
+  /* UI ELEMENTS */
+  --btn-color: rgb(45, 45, 45);
+  --btn-default: #2a2a2a;
+  --btn-hover: #3a3a3a;
+  --btn-disabled: #1a1a1a;
+  --foodlist-arrow: rgba(255, 255, 255, 0.35);
+  --hot-selector-shadow: rgba(255, 255, 255, 0.35) 0px 0px 14px 0px;
+  --fav-ingredient-color: #1C1510;
+  --fav-nutrition-color: #101820;
+  --nutrition-icon-filter: brightness(0) invert(1);
+  --filter: brightness(0) invert(1);
+  --invert-filter: brightness(0) saturate(100%);
+  --img-theme-filter: brightness(0) invert(1);
+  --opp-img-theme-filter: brightness(0) saturate(100%);
+  --home-btn-filter: brightness(0) saturate(100%) invert(44%) sepia(85%) saturate(1200%) hue-rotate(346deg) brightness(105%) contrast(110%);
+
+  /* 3D BUTTON EDGE GRADIENTS (unchanged) */
+  --edge-color-dark: hsl(6deg 100% 16%);
+  --edge-color-light: hsl(6deg 100% 32%);
+  --edge-color-green-dark: hsl(134deg 100% 16%);
+  --edge-color-green-light: hsl(134deg 100% 32%);
+
+  /* FLOATING BUTTON */
+  --floating-btn-shadow: 0 4px 20px var(--color-red);
+}

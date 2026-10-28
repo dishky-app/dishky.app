@@ -1,0 +1,389 @@
+/* ═══════════════════════════════════════════════════════
+   TableManagement.css  —  Dishky Admin  —  TableManagement page
+   Depends on Common.css + ModalCSS.css
+═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap');
+
+:root {
+  --ink: #0f0f0f;
+  --ink-2: #3a3a3a;
+  --ink-3: #6b6b6b;
+  --ink-4: #a3a3a3;
+  --surface: #ffffff;
+  --surface-2: #f5f4f1;
+  --surface-3: #eceae5;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-med: rgba(0, 0, 0, 0.14);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(0, 0, 0, 0.06);
+  --font: 'DM Sans', system-ui, sans-serif;
+  --t: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* EXPORT BUTTON */
+.table-mgmt-btn {
+  height: 38px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: var(--t);
+  white-space: nowrap;
+}
+
+.table-mgmt-btn:hover {
+  background: var(--ink-2);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* GRID WRAPPER */
+.table-mgmt-grid-wrapper {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px;
+  background: var(--surface-2);
+  border-radius: var(--radius-lg);
+  box-sizing: border-box;
+}
+
+/* GRID */
+.table-mgmt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px;
+  /* CollapseSection wraps this in a `display: flex` container
+     (.collapse-section-inner, shared by ~38 pages for things like
+     filter bars). As a flex item, this grid would otherwise default to
+     its content's intrinsic width instead of filling the row — which
+     made `repeat(auto-fill, ...)` compute against a near-zero track
+     and collapse the whole grid to a single column. flex: 1 1 100%
+     makes it claim the full row width like block content normally
+     would, and min-width: 0 lets it actually shrink below that
+     content's intrinsic width when the window is narrow. */
+  flex: 1 1 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+/* TABLE CARD */
+.table-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 16px 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: var(--t);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+
+.table-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--color-blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.table-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-med);
+}
+
+.table-card:hover::after {
+  transform: scaleX(1);
+}
+
+/* NEWLY ADDED TABLE — brief highlight so the freshly created
+   table is easy to spot in the grid right after creation. */
+@keyframes newTablePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(54, 43, 214, 0.45), var(--shadow-sm);
+    border-color: var(--color-blue);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(43, 54, 214, 0), var(--shadow-md);
+    border-color: var(--color-blue);
+  }
+
+  100% {
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border);
+  }
+}
+
+.table-card--new {
+  animation: newTablePulse 1.8s ease-out 1;
+}
+
+.table-card--new::after {
+  transform: scaleX(1);
+}
+
+.table-card-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.table-card-num {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink-4);
+  line-height: 1;
+}
+
+/* ACTION ICONS */
+.table-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.table-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--t);
+  padding: 0;
+}
+
+.table-icon-btn:hover {
+  background: var(--surface-3);
+  border-color: var(--border-med);
+  transform: scale(1.08);
+}
+
+.table-icon-btn img {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  opacity: 0.65;
+  transition: opacity 0.14s;
+}
+
+.table-icon-btn:hover img {
+  opacity: 1;
+}
+
+/* ADD TABLE CARD */
+.table-card-add {
+  cursor: pointer;
+  border: 2px dashed var(--color-red);
+  background: var(--surface-2);
+  box-shadow: none;
+}
+
+.table-card-add:hover {
+  border-color: var(--ink-3);
+  background: var(--surface-3);
+  transform: translateY(-3px);
+}
+
+.table-card-add:hover::after {
+  transform: scaleX(0);
+}
+
+.table-card-add-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+  transition: var(--t);
+}
+
+.table-card-add:hover .table-card-add-icon {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* EMPTY STATE */
+.table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  gap: 6px;
+}
+
+.table-empty-icon {
+  font-size: 36px;
+  margin-bottom: 6px;
+}
+
+.table-empty p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin: 0;
+}
+
+.table-empty span {
+  font-size: 13px;
+  color: var(--ink-4);
+}
+
+/* QR MODAL */
+.qr-modal {
+  background: var(--surface);
+  width: 380px;
+  max-width: 95vw;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  animation: slideUp 0.2s cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* QR MODAL HEADER */
+.qr-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.qr-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.qr-modal-branch {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted, #8a8a8a);
+  letter-spacing: 0.01em;
+}
+
+/* QR MODAL BODY */
+.qr-modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qr-preview {
+  position: relative;
+  display: inline-block;
+  padding: 12px;
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.qr-url-label {
+  font-size: 12px;
+  color: var(--ink-4);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-align: center;
+  word-break: break-all;
+  padding: 0 4px;
+}
+
+/* LOGO CENTER OVERLAY */
+.qr-logo-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 36px;
+  height: 36px;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 7px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+/* QR icon in card */
+.qr-icon {
+  width: 15px;
+  height: 15px;
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1080 / 992 / 768 / 578 / 480
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .table-mgmt-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 578px) {
+  .table-mgmt-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-mgmt-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .table-mgmt-btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,650 @@
+/* =========================
+   ROOT
+========================= */
+
+.food-list {
+  padding: 36px;
+  font-family: "Geom", system-ui, sans-serif;
+  box-sizing: border-box;
+  height: stretch;
+}
+
+.food-list>* {
+  box-sizing: border-box !important;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.food-header {
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  gap: 0 !important;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.food-header.header-scrolled {
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 0 var(--border-lighter, rgba(0, 0, 0, 0.06));
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.food-list-title {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1 1;
+}
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+.food-reel {
+  height: calc(100vh - 116px);
+  display: flex;
+  align-items: center;
+  contain: layout;
+  overflow: visible;
+  touch-action: pan-y;
+}
+
+/* =========================
+   LEFT – DETAILS
+========================= */
+
+.food-details {
+  position: relative;
+  z-index: 10;
+  padding: 12px;
+  width: 30%;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* Above 768px only .food-details-container (below) should scroll on
+     overflow — .food-details itself stays a fixed-height frame so its
+     header/footer chrome never scrolls along with the content. Mobile
+     (<=768px) overrides this back to visible/auto further down, where
+     .food-details is meant to grow and scroll as a whole instead. */
+  overflow: hidden;
+}
+
+.food-details-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+/* Dish name block — grid layout so the veg badge, name, best-seller
+   ribbon, and wishlist button each get a defined slot instead of
+   fighting for space in one flex row:
+     [veg]  [dish name···········]  [wishlist]
+     [ · ]  [best-seller ribbon··]  [   ·    ]
+   Column 1 (veg icon) and column 3 (wishlist) are fixed-width so the
+   name column flexibly fills whatever's left and wraps cleanly. The
+   ribbon sits on its own row directly under the name, left-aligned
+   with it (not the veg icon), rather than fighting for horizontal
+   space next to a potentially long dish name. */
+.dish-name-div {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  row-gap: 6px;
+  align-items: center;
+}
+
+.food-list-veg-badge {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.dish-name {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  align-self: center;
+}
+
+.food-list-wishlist {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.food-list-best-seller-badge {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.dish-price {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-red);
+  margin: 10px 0 14px;
+}
+
+/* ── Offer tag — struck original price + "% OFF" pill, shown inline
+   next to the discounted price whenever a dish has an active offer.
+   Shared by both FoodList (swipeable reel) and FoodListExpanded,
+   since both import this stylesheet. ── */
+.dish-price-original {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  vertical-align: middle;
+}
+
+.dish-price-offer-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--color-red);
+  color: var(--bg-main);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.dish-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  width: 100%;
+}
+
+.btn-section {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  margin-top: 26px;
+}
+
+.btn-section>* {
+  flex: 1 1;
+}
+
+.show-more-btn {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline-offset: 4px;
+  transition: filter 250ms;
+  user-select: none;
+  touch-action: manipulation;
+  flex-shrink: 0;
+  width: 50%;
+}
+
+.show-more-btn.back {
+  color: var(--text-primary);
+}
+
+/* =========================
+   RIGHT – IMAGE CONVEYOR
+========================= */
+
+.food-images {
+  position: relative;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  z-index: 0;
+}
+
+/* MAIN IMAGE */
+.image-main {
+  width: 70%;
+  max-width: 360px;
+  z-index: 3;
+}
+
+.food-details * {
+  will-change: transform, opacity, filter;
+}.image-main {
+  will-change: transform;
+}
+
+.image-main {
+  position: relative;
+}
+
+.food-images {
+  position: relative;
+  height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dish-image {
+  position: absolute;
+  width: 70%;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+  max-width: 500px;
+  will-change: transform, filter;
+  pointer-events: none;
+  transform-origin: center center;
+  opacity: 1 !important;
+  filter: drop-shadow(0px 40px 28px var(--floating-btn-shadow-color)) drop-shadow(0px 20px 12px rgba(0, 0, 0, 0.35));
+}
+
+/* =========================
+   CAROUSEL CONTROLS
+========================= */
+
+.carousel-controls {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.food-details>* {
+  will-change: transform, opacity;
+}
+
+/* =========================
+   DISH SHADOW
+========================= */
+
+.dish-image-wrapper {
+  position: absolute;
+  width: 70%;
+  max-width: 500px;
+  aspect-ratio: 1/1;
+  pointer-events: none;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.dish-image-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: -6%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 12%;
+  border-radius: 100%;
+  filter: blur(10px);
+  z-index: -1;
+}
+
+.dish-image-wrapper:nth-child(2):after {
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.72) 0%, rgba(43, 43, 43, 0.38) 50%, transparent 75%);
+}
+
+.food-list {
+  padding: 36px;
+  font-family: "Geom", system-ui, sans-serif;
+}
+
+.food-header {
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bg-main) 55%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  gap: 12px;
+  width: fit-content;
+  width: 100%;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.food-list-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Forward and Backward navigation buttons */
+.image-nav-btn {
+  top: 50%;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.forward-btn,
+.backward-btn {
+  cursor: pointer;
+  position: relative;
+  text-align: center;
+}
+
+.backward-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  width: 30px;
+  height: 30px;
+  border-left: 3px solid var(--foodlist-arrow);
+  border-bottom: 3px solid var(--foodlist-arrow);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.forward-btn::after {
+  content: "";
+  position: absolute;
+  top: 70%;
+  left: 20%;
+  width: 30px;
+  height: 30px;
+  border-right: 3px solid var(--foodlist-arrow);
+  border-top: 3px solid var(--foodlist-arrow);
+  transform: translateY(-100%) rotate(45deg);
+}
+
+.dish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dish-price {
+  color: var(--color-red);
+  font-weight: 600;
+  font-size: 36px;
+  margin: 6px 0;
+  letter-spacing: 2px;
+}
+
+.description-section {
+  margin-top: 30px;
+}
+
+.dish-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.dish-nutrition {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px auto;
+  font-size: 12px;
+  width: fit-content;
+  gap: 20px;
+}
+
+.dish-nutrition-item {
+  text-align: center;
+  width: 70px;
+  height: auto;
+  padding: 12px 10px;
+  color: var(--text-secondary);
+  background-color: var(--color-pale-green);
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-content: center;
+  border-radius: 20px;
+  gap: 5px;
+}
+
+.dish-nutrition-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 15px;
+  margin: 0 auto 6px auto;
+}
+
+.dish-nutrition-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dish-card-wrapper {
+  position: relative;
+}.image-nav-btn,
+.carousel-controls {
+  pointer-events: auto;
+  z-index: 20;
+}
+
+@media screen and (max-width: 992px) {
+  .food-list {
+    padding: var(--medium-page-padding);
+  }
+
+  .btn-section {
+    gap: 12px;
+  }
+}
+
+@media screen and (max-width: 578px) {
+  .carousel-controls {
+    top: 230px;
+  }
+
+  /* Pinned above .mobile-footer-nav (64px tall) instead of the
+     viewport bottom, the same way FoodItem's .bottom bar is pinned —
+     otherwise this sits underneath/behind the footer nav instead of
+     clear of it. Also lifted onto its own themed strip (background +
+     top border/shadow, like .mobile-footer-nav) spanning the full
+     width so it reads as a separate fixed bar rather than floating
+     buttons that other content can drift behind.
+     Targets .food-details (the scroll container) rather than
+     .food-details-container (the inner animated block) since
+     .btn-section now sits outside .food-details-container as a
+     static sibling — it no longer remounts/animates on dish change,
+     but still needs to be pulled out of the mobile scroll flow here. */
+  .food-details .btn-section {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(-10px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    margin: 0;
+    gap: 8px;
+    box-sizing: border-box;
+    padding: 8px 0px;
+    background: var(--bg-main);
+    z-index: 60;
+  }
+
+  /* Content no longer needs to reserve space above the old
+     bottom:10px floating buttons; instead pad the scroll area so the
+     dish info never sits underneath the now-fixed bar. Moved from
+     .food-details-container to .food-details itself, since
+     .btn-section (and therefore the space it needs reserved) is now
+     a sibling of .food-details-container, not a child of it.
+     Merged with the width/padding reset that used to be a separate
+     .food-details block further down — kept as one rule so the later
+     block can't zero out padding-bottom via the padding shorthand. */
+  .food-details {
+    width: 100%;
+    padding: 0;
+    padding-bottom: 76px;
+    overflow-y: auto;
+  }
+
+  .food-list {
+    padding: var(--mobile-page-padding);
+  }
+
+  .food-reel {
+    flex-direction: column-reverse;
+    height: stretch;
+  }
+
+  .food-images {
+    width: 100%;
+  }
+
+  .dish-image {
+    left: 22%;
+  }
+
+  .dish-image-wrapper:nth-child(2):after {
+    background: none;
+  }
+
+  .carousel-controls {
+    top: 25%;
+  }
+
+  .food-details-container {
+    justify-content: start;
+  }
+
+  .btn-section {
+    gap: 10px;
+  }.show-more-btn {
+    width: 50%;
+    margin: 0;
+  }
+
+  .dish-price-original {
+    font-size: 13px;
+    margin-left: 6px;
+  }
+
+  .dish-price-offer-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    margin-left: 6px;
+  }
+
+  .dish-nutrition-item {
+    text-align: center;
+    width: 70px;
+    height: auto;
+    padding: 5px;
+    color: var(--text-secondary);
+    background-color: var(--color-pale-green);
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    justify-content: center;
+    border-radius: 20px;
+    gap: 0 !important;
+  }
+
+  .food-details-expanded {
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+}
+
+/* Veg badge + Best Seller ribbon sizing — override the absolute
+   positioning .veg-icon-badge/.best-seller-badge use elsewhere (grid
+   card corners); here they're grid-placed inline with the dish name
+   (see .dish-name-div above). */
+.food-list-veg-badge {
+  position: static;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.food-list-best-seller-badge {
+  position: static;
+  height: auto;
+  justify-self: start;
+}
+
+.food-list-wishlist {
+  position: static;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   FAV-EMPTY — shared "nothing here" state used by
+   FavouriteCategories, FavouriteDishList,
+   FavouriteDishDetail, and OffersGrid. Centered both
+   horizontally and vertically in whatever container
+   it sits in: spans the full width when it's a grid
+   item (food-category-container), and fills the
+   available height when it's a lone block child
+   (.fav-empty-page modifier).
+============================================= */
+.fav-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 70px 20px;
+  gap: 6px;
+  width: 100%;
+}
+
+.fav-empty-page {
+  min-height: 50vh;
+}
+
+.fav-empty-icon {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-red) 14%, var(--bg-main)), color-mix(in srgb, var(--color-red-secondary) 8%, var(--bg-main)));
+}
+
+.fav-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.fav-empty-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 320px;
+}

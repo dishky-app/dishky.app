@@ -55,7 +55,7 @@ const HOP_BY_HOP = new Set([
 // which we already correctly account for on the way back out.
 const REQUEST_ONLY_STRIP = new Set(["accept-encoding"]);
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Temporary debug escape hatch: hit /api/__debug or /api/__debug/nested
   // directly in the browser to see exactly what Vercel's runtime provides
   // as req.url for this function at different path depths, without

@@ -67,7 +67,7 @@ const HOP_BY_HOP = new Set([
 // which we already correctly account for on the way back out.
 const REQUEST_ONLY_STRIP = new Set(["accept-encoding"]);
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   if (!BACKEND_ORIGIN) {
     res.statusCode = 500;
     res.setHeader("content-type", "application/json");

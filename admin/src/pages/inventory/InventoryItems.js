@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, errText, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Toolbar, errText, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
 
 const TYPES = ["ingredient", "raw_material", "packaging", "beverage", "cleaning", "other"];
 const label = (t) => t.replace("_", " ");
@@ -66,23 +66,23 @@ function ItemForm({ item, units, suppliers, categories, onClose, onSaved }) {
 
   return (
     <Modal title={editing ? `Edit ${item.name}` : "New inventory item"} onClose={onClose} wide
-      footer={<><button type="button" className="inv-btn" onClick={onClose}>Cancel</button><button type="submit" form="inv-item-form" className="inv-btn inv-btn-primary" disabled={busy}>{busy ? "Saving…" : "Save item"}</button></>}>
+      footer={<><Btn type="button" kind="plain" onClick={onClose}>Cancel</Btn><Btn type="submit" form="inv-item-form" kind="primary" disabled={busy}>{busy ? "Saving…" : "Save item"}</Btn></>}>
       <form id="inv-item-form" onSubmit={submit} noValidate>
         <div className="inv-grid">
           <Field label="Item name" required error={errors.name} full><input className={`inv-input${errors.name ? " inv-invalid" : ""}`} value={f.name} onChange={set("name")} maxLength={200} /></Field>
           <Field label="SKU" hint={editing ? "Cannot be changed" : "Leave blank to auto-generate"}><input className="inv-input" value={f.sku} disabled={editing} onChange={set("sku")} maxLength={40} /></Field>
           <Field label="Barcode"><input className="inv-input" value={f.barcode} onChange={set("barcode")} maxLength={64} /></Field>
-          <Field label="Item type"><select className="inv-select" value={f.itemType} onChange={set("itemType")}>{TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}</select></Field>
-          <Field label="Category"><select className="inv-select" value={f.categoryId} onChange={set("categoryId")}><option value="">—</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
+          <Field label="Item type"><Select value={f.itemType} onChange={set("itemType")}>{TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}</Select></Field>
+          <Field label="Category"><Select value={f.categoryId} onChange={set("categoryId")}><option value="">—</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select></Field>
           <Field label="Brand"><input className="inv-input" value={f.brand} onChange={set("brand")} /></Field>
-          <Field label="Preferred supplier"><select className="inv-select" value={f.preferredSupplierId} onChange={set("preferredSupplierId")}><option value="">—</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></Field>
+          <Field label="Preferred supplier"><Select value={f.preferredSupplierId} onChange={set("preferredSupplierId")}><option value="">—</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>
           <Field label="Description" full><textarea className="inv-textarea" value={f.description} onChange={set("description")} /></Field>
 
           <div className="inv-section inv-full">Units</div>
           <Field label="Base (stock) unit" required error={errors.baseUnit} hint={editing ? "Locked once the item has stock history" : "Stock is counted in this unit"}>
-            <select className="inv-select" value={f.baseUnit} onChange={set("baseUnit")}>{unitCodes.map((u) => <option key={u} value={u}>{u}</option>)}</select>
+            <Select value={f.baseUnit} onChange={set("baseUnit")}>{unitCodes.map((u) => <option key={u} value={u}>{u}</option>)}</Select>
           </Field>
-          <Field label="Purchase unit" hint="Unit you buy in"><select className="inv-select" value={f.purchaseUnit} onChange={set("purchaseUnit")}><option value="">Same as base</option>{[...unitCodes, ...packagingUnits.filter((u) => !unitCodes.includes(u))].map((u) => <option key={u} value={u}>{u}</option>)}</select></Field>
+          <Field label="Purchase unit" hint="Unit you buy in"><Select value={f.purchaseUnit} onChange={set("purchaseUnit")}><option value="">Same as base</option>{[...unitCodes, ...packagingUnits.filter((u) => !unitCodes.includes(u))].map((u) => <option key={u} value={u}>{u}</option>)}</Select></Field>
           <div className="inv-full">
             <div className="inv-hint" style={{ marginBottom: 6 }}>Packaging conversions — only for units whose size depends on the product (carton, bag, case…). 1 unit = N base units.</div>
             {f.conversions.map((c, i) => (
@@ -90,12 +90,12 @@ function ItemForm({ item, units, suppliers, categories, onClose, onSaved }) {
                 <div className="inv-row">
                   <Field label={i === 0 ? "Unit" : ""}><input className="inv-input" aria-label="Packaging unit" placeholder="e.g. carton" value={c.unit} onChange={(e) => setConv(i, "unit", e.target.value)} /></Field>
                   <Field label={i === 0 ? `Base units (${f.baseUnit}) per 1` : ""}><input className="inv-input" aria-label="Base units per packaging unit" inputMode="decimal" value={c.factor} onChange={(e) => setConv(i, "factor", e.target.value)} /></Field>
-                  <button type="button" className="inv-btn inv-btn-sm" aria-label="Remove conversion" onClick={() => delConv(i)}>Remove</button>
+                  <Btn type="button" kind="plain" sm aria-label="Remove conversion" onClick={() => delConv(i)}>Remove</Btn>
                 </div>
                 {errors[`conv${i}`] && <div className="inv-err">{errors[`conv${i}`]}</div>}
               </div>
             ))}
-            <button type="button" className="inv-btn inv-btn-sm" onClick={addConv}>+ Add packaging conversion</button>
+            <Btn type="button" kind="plain" sm onClick={addConv}>+ Add packaging conversion</Btn>
           </div>
 
           <div className="inv-section inv-full">Stock levels (in {f.baseUnit})</div>
@@ -107,10 +107,10 @@ function ItemForm({ item, units, suppliers, categories, onClose, onSaved }) {
 
           <div className="inv-section inv-full">Tracking &amp; tax</div>
           <div className="inv-full" style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
-            <label className="inv-check"><input type="checkbox" checked={f.trackBatches} onChange={flag("trackBatches")} /> Track batches</label>
-            <label className="inv-check"><input type="checkbox" checked={f.trackExpiry} onChange={flag("trackExpiry")} /> Track expiry</label>
-            <label className="inv-check"><input type="checkbox" checked={f.requiresInspection} onChange={flag("requiresInspection")} /> Needs quality inspection</label>
-            <label className="inv-check"><input type="checkbox" checked={f.allowNegativeStock} onChange={flag("allowNegativeStock")} /> Allow negative stock</label>
+            <label className="checkbox-item inv-check"><input type="checkbox" checked={f.trackBatches} onChange={flag("trackBatches")} /> Track batches</label>
+            <label className="checkbox-item inv-check"><input type="checkbox" checked={f.trackExpiry} onChange={flag("trackExpiry")} /> Track expiry</label>
+            <label className="checkbox-item inv-check"><input type="checkbox" checked={f.requiresInspection} onChange={flag("requiresInspection")} /> Needs quality inspection</label>
+            <label className="checkbox-item inv-check"><input type="checkbox" checked={f.allowNegativeStock} onChange={flag("allowNegativeStock")} /> Allow negative stock</label>
           </div>
           <Field label="GST rate (%)" error={errors.gstRate}><input className={`inv-input${errors.gstRate ? " inv-invalid" : ""}`} inputMode="decimal" value={f.gstRate} onChange={set("gstRate")} /></Field>
           <Field label="HSN code"><input className="inv-input" value={f.hsn} onChange={set("hsn")} maxLength={12} /></Field>
@@ -150,24 +150,23 @@ export default function InventoryItems() {
     { key: "status", label: "Status", render: (i) => <Badge tone={i.status === "active" ? "green" : "grey"}>{i.status}</Badge> },
     ...(canWrite ? [{ key: "act", label: "", render: (i) => (
       <span style={{ display: "flex", gap: 6 }}>
-        <button type="button" className="inv-btn inv-btn-sm" onClick={() => setEditing(i)}>Edit</button>
-        <button type="button" className="inv-btn inv-btn-sm" onClick={() => toggle(i)}>{i.status === "active" ? "Deactivate" : "Activate"}</button>
+        <Btn type="button" kind="plain" sm onClick={() => setEditing(i)}>Edit</Btn>
+        <Btn type="button" kind="plain" sm onClick={() => toggle(i)}>{i.status === "active" ? "Deactivate" : "Activate"}</Btn>
       </span>) }] : []),
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Inventory items" crumb="Masters">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={() => setEditing({})}>+ New item</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Inventory items" count={`${list.total} item(s)`}>
+        {canWrite && <Btn type="button" kind="primary" onClick={() => setEditing({})}>+ New item</Btn>}
       </PageHead>
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <input className="inv-input inv-search" placeholder="Search name, SKU, barcode, brand" aria-label="Search items" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select className="inv-select" aria-label="Filter by type" value={itemType} onChange={(e) => setItemType(e.target.value)}><option value="">All types</option>{TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}</select>
-          <select className="inv-select" aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
-        </div>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No items yet. Add ingredients, packaging and supplies to start tracking stock." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+      <div className="inv-stack">
+        <Toolbar>
+          <SearchBox placeholder=" Search name, SKU, barcode, brand" aria-label="Search items" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Filter by type" value={itemType} onChange={(e) => setItemType(e.target.value)}><option value="">All types</option>{TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}</Select>
+          <Select aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></Select>
+        </Toolbar>
+        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No items yet. Add ingredients, packaging and supplies to start tracking stock." more={list} />
       </div>
       {editing && <ItemForm item={editing.id ? editing : null} units={unitSet} suppliers={suppliers} categories={categories} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); list.reload(); }} />}
     </div>

@@ -1,7 +1,7 @@
 /** SupplierScorecards.js — delivery, fill, quality and invoice-accuracy scores per supplier. */
 import React, { useEffect, useState } from "react";
 import api from "../../api";
-import { Badge, DataTable, PageHead, errText, money } from "./InvUi";
+import { Badge, Btn, DataTable, PageHead, errText, money } from "./InvUi";
 
 const TONE = { A: "green", B: "green", C: "amber", D: "red", unrated: "grey" };
 const pct = (v) => (v === null || v === undefined ? "—" : `${v}%`);
@@ -27,10 +27,10 @@ export default function SupplierScorecards() {
     { key: "disputedInvoices", label: "Disputed", num: true },
   ];
   return (
-    <div className="inv-page">
-      <PageHead title="Supplier scorecards" crumb="Automation"><button type="button" className="inv-btn" onClick={load}>Refresh</button></PageHead>
+    <div className="inner-page inv-page">
+      <PageHead title="Supplier scorecards"><Btn type="button" kind="plain" onClick={load}>Refresh</Btn></PageHead>
       {state.meta && <div className="inv-banner">{state.meta.note}</div>}
-      <div className="inv-card"><DataTable columns={columns} rows={state.rows} loading={state.loading} error={state.error} onRetry={load} rowKey={(r) => r.supplierId} empty="No suppliers yet." /></div>
+      <div className="inv-stack"><DataTable columns={columns} rows={state.rows} loading={state.loading} error={state.error} onRetry={load} rowKey={(r) => r.supplierId} empty="No suppliers yet." /></div>
     </div>
   );
 }

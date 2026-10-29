@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, errText, money, useDebounced, usePagedList } from "./InvUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Toolbar, errText, money, useDebounced, usePagedList } from "./InvUi";
 
 const TONE = { active: "green", inactive: "grey", blocked: "red" };
 const TYPES = ["manufacturer", "wholesaler", "distributor", "retailer", "farmer", "service", "other"];
@@ -67,14 +67,14 @@ function SupplierForm({ supplier, onClose, onSaved }) {
   return (
     <Modal title={editing ? `Edit ${supplier.name}` : "New supplier"} onClose={onClose} wide
       footer={<>
-        <button type="button" className="inv-btn" onClick={onClose}>Cancel</button>
-        <button type="submit" form="inv-supplier-form" className="inv-btn inv-btn-primary" disabled={busy}>{busy ? "Saving…" : "Save supplier"}</button>
+        <Btn type="button" kind="plain" onClick={onClose}>Cancel</Btn>
+        <Btn type="submit" form="inv-supplier-form" kind="primary" disabled={busy}>{busy ? "Saving…" : "Save supplier"}</Btn>
       </>}>
       <form id="inv-supplier-form" onSubmit={submit} noValidate>
         <div className="inv-grid">
           <Field label="Supplier name" required error={errors.name} full><input className={`inv-input${errors.name ? " inv-invalid" : ""}`} value={f.name} onChange={set("name")} maxLength={200} /></Field>
           <Field label="Supplier code" hint={editing ? "Cannot be changed" : "Leave blank to auto-generate"}><input className="inv-input" value={f.code} onChange={set("code")} disabled={editing} maxLength={20} /></Field>
-          <Field label="Type"><select className="inv-select" value={f.type} onChange={set("type")}>{TYPES.map((t) => <option key={t} value={t}>{t}</option>)}</select></Field>
+          <Field label="Type"><Select value={f.type} onChange={set("type")}>{TYPES.map((t) => <option key={t} value={t}>{t}</option>)}</Select></Field>
           <Field label="Contact person"><input className="inv-input" value={f.contactPerson} onChange={set("contactPerson")} /></Field>
           <Field label="Phone"><input className="inv-input" inputMode="tel" value={f.phone} onChange={set("phone")} /></Field>
           <Field label="WhatsApp number"><input className="inv-input" inputMode="tel" value={f.whatsapp} onChange={set("whatsapp")} /></Field>
@@ -95,13 +95,13 @@ function SupplierForm({ supplier, onClose, onSaved }) {
           <Field label="Account number" error={errors.accountNumber} hint="Stored encrypted. Shown only to people who can edit suppliers.">
             <div className="inv-row">
               <input className={`inv-input${errors.accountNumber ? " inv-invalid" : ""}`} type={showNo ? "text" : "password"} inputMode="numeric" autoComplete="off" value={f.bank.accountNumber} onChange={setBank("accountNumber")} maxLength={24} />
-              <button type="button" className="inv-btn inv-btn-sm" onClick={() => setShowNo((v) => !v)}>{showNo ? "Hide" : "Show"}</button>
+              <Btn type="button" kind="plain" sm onClick={() => setShowNo((v) => !v)}>{showNo ? "Hide" : "Show"}</Btn>
             </div>
           </Field>
           <Field label="Bank name"><input className="inv-input" value={f.bank.bankName} onChange={setBank("bankName")} /></Field>
           <Field label="Branch"><input className="inv-input" value={f.bank.branch} onChange={setBank("branch")} /></Field>
           <Field label="IFSC code" error={errors.ifsc}><input className={`inv-input${errors.ifsc ? " inv-invalid" : ""}`} value={f.bank.ifsc} onChange={setBank("ifsc")} maxLength={11} /></Field>
-          <Field label="Account type"><select className="inv-select" value={f.bank.accountType} onChange={setBank("accountType")}><option value="">—</option><option value="savings">Savings</option><option value="current">Current</option><option value="cc">Cash credit</option><option value="other">Other</option></select></Field>
+          <Field label="Account type"><Select value={f.bank.accountType} onChange={setBank("accountType")}><option value="">—</option><option value="savings">Savings</option><option value="current">Current</option><option value="cc">Cash credit</option><option value="other">Other</option></Select></Field>
           <Field label="UPI ID" full><input className="inv-input" value={f.bank.upi} onChange={setBank("upi")} placeholder="name@bank" /></Field>
           <Field label="Internal notes" full><textarea className="inv-textarea" value={f.notes} onChange={set("notes")} /></Field>
         </div>
@@ -143,27 +143,26 @@ export default function Suppliers() {
     { key: "status", label: "Status", render: (s) => <Badge tone={TONE[s.status]}>{s.status}</Badge> },
     ...(canWrite ? [{ key: "act", label: "", render: (s) => (
       <span style={{ display: "flex", gap: 6 }}>
-        <button type="button" className="inv-btn inv-btn-sm" onClick={() => setEditing(s)}>Edit</button>
-        {s.status !== "active" && <button type="button" className="inv-btn inv-btn-sm" onClick={() => setSupplierStatus(s, "active")}>Activate</button>}
-        {s.status === "active" && <button type="button" className="inv-btn inv-btn-sm" onClick={() => setSupplierStatus(s, "inactive")}>Deactivate</button>}
-        {s.status !== "blocked" && <button type="button" className="inv-btn inv-btn-sm inv-btn-danger" onClick={() => setSupplierStatus(s, "blocked")}>Block</button>}
+        <Btn type="button" kind="plain" sm onClick={() => setEditing(s)}>Edit</Btn>
+        {s.status !== "active" && <Btn type="button" kind="plain" sm onClick={() => setSupplierStatus(s, "active")}>Activate</Btn>}
+        {s.status === "active" && <Btn type="button" kind="plain" sm onClick={() => setSupplierStatus(s, "inactive")}>Deactivate</Btn>}
+        {s.status !== "blocked" && <Btn type="button" kind="danger" sm onClick={() => setSupplierStatus(s, "blocked")}>Block</Btn>}
       </span>) }] : []),
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Suppliers" crumb="Masters">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={() => setEditing({})}>+ New supplier</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Suppliers" count={`${list.total} supplier(s)`}>
+        {canWrite && <Btn type="button" kind="primary" onClick={() => setEditing({})}>+ New supplier</Btn>}
       </PageHead>
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <input className="inv-input inv-search" placeholder="Search name, code, phone, GSTIN" aria-label="Search suppliers" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select className="inv-select" aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)}>
+      <div className="inv-stack">
+        <Toolbar>
+          <SearchBox placeholder=" Search name, code, phone, GSTIN" aria-label="Search suppliers" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="blocked">Blocked</option>
-          </select>
-        </div>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No suppliers yet. Add your first supplier to start purchasing." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+          </Select>
+        </Toolbar>
+        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No suppliers yet. Add your first supplier to start purchasing." more={list} />
       </div>
       {editing && <SupplierForm supplier={editing.id ? editing : null} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); list.reload(); }} />}
     </div>

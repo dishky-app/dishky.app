@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, Field, PageHead, errText } from "./InvUi";
+import { Badge, Btn, Field, PageHead, errText } from "./InvUi";
 
 export default function AutomationSettings() {
   const { hasModulePermission } = useAuth();
@@ -28,11 +28,11 @@ export default function AutomationSettings() {
     } catch (e) { toast.error(errText(e)); } finally { setBusy(false); }
   };
   return (
-    <div className="inv-page">
-      <PageHead title="Automation settings" crumb="Settings" />
+    <div className="inner-page inv-page">
+      <PageHead title="Automation settings" />
       {error && <div className="inv-banner" role="alert">{error}</div>}
       {f && (
-        <form className="inv-card" style={{ padding: 16 }} onSubmit={save} noValidate>
+        <form className="details-container inv-form" onSubmit={save} noValidate>
           <div className="inv-grid">
             <Field label="Expiry alert window (days)" hint="Batches expiring within this many days are flagged"><input className="inv-input" inputMode="numeric" value={f.expiryAlertDays} onChange={set("expiryAlertDays")} disabled={!canWrite} /></Field>
             <Field label="Invoice due-soon window (days)"><input className="inv-input" inputMode="numeric" value={f.dueSoonDays} onChange={set("dueSoonDays")} disabled={!canWrite} /></Field>
@@ -44,8 +44,8 @@ export default function AutomationSettings() {
               <input className="inv-input" value={f.whatsappPurchaseTemplate} onChange={set("whatsappPurchaseTemplate")} maxLength={100} disabled={!canWrite} />
             </Field>
           </div>
-          <div style={{ marginTop: 12 }}>WhatsApp sending: {f.whatsappConfigured ? <Badge tone="green">ready</Badge> : <Badge tone="amber">not ready — needs the server API key and a template name</Badge>}</div>
-          {canWrite && <div style={{ marginTop: 14 }}><button type="submit" className="inv-btn inv-btn-primary" disabled={busy || JSON.stringify(f) === JSON.stringify(loaded)}>{busy ? "Saving…" : "Save"}</button></div>}
+          <div className="inv-formstatus">WhatsApp sending: {f.whatsappConfigured ? <Badge tone="green">ready</Badge> : <Badge tone="amber">not ready — needs the server API key and a template name</Badge>}</div>
+          {canWrite && <div className="inv-formfoot"><Btn type="submit" kind="primary" disabled={busy || JSON.stringify(f) === JSON.stringify(loaded)}>{busy ? "Saving…" : "Save"}</Btn></div>}
         </form>
       )}
     </div>

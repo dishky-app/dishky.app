@@ -3,7 +3,7 @@
  * Totals shown here come from the server; the editor never calculates money that gets saved.
  */
 import React, { useState } from "react";
-import { Badge, Field, Modal, qty } from "./InvUi";
+import { Badge, Btn, Field, Modal, Select, qty } from "./InvUi";
 
 const TONES = {
   draft: "grey", pending_approval: "amber", changes_requested: "amber", approved: "green", rejected: "red", cancelled: "grey",
@@ -50,19 +50,19 @@ export function LineEditor({ items, value, onChange, price = false, disabled = f
               return (
                 <tr key={idx}>
                   <td style={{ minWidth: 180 }}>
-                    <select className="inv-select" aria-label="Item" disabled={disabled} value={l.itemId}
+                    <Select aria-label="Item" disabled={disabled} value={l.itemId}
                       onChange={(e) => { const n = byId.get(e.target.value); set(idx, { itemId: e.target.value, unit: n?.purchaseUnit || n?.baseUnit, gstRate: n?.gstRate ?? "" }); }}>
                       {items.filter((i) => i.id === l.itemId || !value.some((v) => v.itemId === i.id)).map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
-                    </select>
+                    </Select>
                   </td>
                   <td className="inv-num"><input className="inv-input inv-w80" aria-label="Quantity" inputMode="decimal" disabled={disabled} value={l.qty} onChange={(e) => set(idx, { qty: e.target.value })} /></td>
-                  <td><select className="inv-select inv-w90" aria-label="Unit" disabled={disabled} value={l.unit} onChange={(e) => set(idx, { unit: e.target.value })}>{unitsFor(item).map((u) => <option key={u} value={u}>{u}</option>)}</select></td>
+                  <td><Select className="inv-w90" aria-label="Unit" disabled={disabled} value={l.unit} onChange={(e) => set(idx, { unit: e.target.value })}>{unitsFor(item).map((u) => <option key={u} value={u}>{u}</option>)}</Select></td>
                   {price && <>
                     <td className="inv-num"><input className="inv-input inv-w90" aria-label="Unit price" inputMode="decimal" disabled={disabled} value={l.unitPrice} onChange={(e) => set(idx, { unitPrice: e.target.value })} /></td>
                     <td className="inv-num"><input className="inv-input inv-w60" aria-label="Discount percent" inputMode="decimal" disabled={disabled} value={l.discountPct} onChange={(e) => set(idx, { discountPct: e.target.value })} /></td>
                     <td className="inv-num"><input className="inv-input inv-w60" aria-label="GST percent" inputMode="decimal" disabled={disabled} value={l.gstRate} onChange={(e) => set(idx, { gstRate: e.target.value })} /></td>
                   </>}
-                  <td>{!disabled && <button type="button" className="inv-btn inv-btn-sm inv-btn-danger" aria-label="Remove line" onClick={() => onChange(value.filter((_, i) => i !== idx))}>Remove</button>}</td>
+                  <td>{!disabled && <Btn type="button" kind="danger" sm aria-label="Remove line" onClick={() => onChange(value.filter((_, i) => i !== idx))}>Remove</Btn>}</td>
                 </tr>
               );
             })}
@@ -70,7 +70,7 @@ export function LineEditor({ items, value, onChange, price = false, disabled = f
         </table>
         {value.length === 0 && <div className="inv-empty">No lines yet. Add an item.</div>}
       </div>
-      {!disabled && <div><button type="button" className="inv-btn inv-btn-sm" onClick={add} disabled={value.length >= items.length}>+ Add line</button></div>}
+      {!disabled && <div><Btn type="button" kind="plain" sm onClick={add} disabled={value.length >= items.length}>+ Add line</Btn></div>}
     </div>
   );
 }
@@ -103,7 +103,7 @@ export function ReasonDialog({ title, label = "Reason", required = true, confirm
   };
   return (
     <Modal title={title} onClose={onClose}
-      footer={<><button type="button" className="inv-btn" onClick={onClose}>Back</button><button type="submit" form="purch-reason" className={`inv-btn ${danger ? "inv-btn-danger" : "inv-btn-primary"}`} disabled={busy}>{confirmLabel}</button></>}>
+      footer={<><Btn type="button" kind="plain" onClick={onClose}>Back</Btn><Btn type="submit" form="purch-reason" kind={danger ? "danger" : "primary"} disabled={busy}>{confirmLabel}</Btn></>}>
       <form id="purch-reason" onSubmit={submit}>
         <Field label={label} required={required} error={err} full>
           <textarea className="inv-textarea" autoFocus maxLength={500} value={text} onChange={(e) => { setText(e.target.value); setErr(""); }} />

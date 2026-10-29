@@ -5,11 +5,11 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, PageHead, errText, money, qty } from "./InvUi";
+import { Badge, Btn, DataTable, PageHead, errText, money, qty } from "./InvUi";
 
 export default function ReorderPlanning() {
   const { hasModulePermission } = useAuth();
-  const { venueId, venueParam, currentVenue } = useVenue();
+  const { venueId, venueParam } = useVenue();
   const { toast } = useToast();
   const nav = useNavigate();
   const canWrite = hasModulePermission("purchaseRequests", "write");
@@ -58,13 +58,12 @@ export default function ReorderPlanning() {
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Reorder planning" crumb="Procurement">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" disabled={busy || picked.length === 0} onClick={create}>Create draft requests ({picked.length})</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Reorder planning">
+        {canWrite && <Btn type="button" kind="primary" disabled={busy || picked.length === 0} onClick={create}>Create draft requests ({picked.length})</Btn>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
       {meta && <div className="inv-banner">{meta.note} Average daily use is taken from the last {meta.lookbackDays} days of consumption. Suggested quantities are rounded up to whole packs.</div>}
-      <div className="inv-card">
+      <div className="inv-stack">
         <DataTable columns={columns} rows={rows} loading={loading} error={error} onRetry={load} rowKey={(r) => r.itemId} empty="Nothing needs reordering. Items appear here when stock plus open orders falls to the reorder level." />
       </div>
     </div>

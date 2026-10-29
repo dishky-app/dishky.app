@@ -99,6 +99,7 @@ export default function Button3D({
   tooltipPlacement = "top",
   onClick,
   children,
+  ...rest // aria-*, form, autoFocus … passed straight to the <button>
 }) {
   const baseClass = VARIANT_CLASS[variant] ?? VARIANT_CLASS.save;
   const frontClass = iconOnly ? "front close-padding" : "front";
@@ -111,6 +112,7 @@ export default function Button3D({
       style={style}
       disabled={disabled}
       onClick={onClick}
+      {...rest}
       {...(title
         ? { "data-bs-toggle": "tooltip", "data-bs-placement": tooltipPlacement, "data-bs-title": title }
         : {})}

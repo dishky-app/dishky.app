@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
 import { History, KeyVals, LineEditor, ReasonDialog, StatusBadge, linesPayload, statusLabel } from "./PurchUi";
 
 const STATUSES = ["draft", "pending_approval", "approved", "rejected", "sent", "partially_received", "received", "closed", "cancelled"];
@@ -12,7 +12,7 @@ const VIA = [["whatsapp", "WhatsApp"], ["email", "Email"], ["phone", "Phone"], [
 
 export default function PurchaseOrders() {
   const { hasModulePermission } = useAuth();
-  const { venueId, currentVenue } = useVenue();
+  const { venueId } = useVenue();
   const { toast } = useToast();
   const canWrite = hasModulePermission("purchaseOrders", "write");
   const canApprove = hasModulePermission("purchaseApprovals", "write");
@@ -62,7 +62,7 @@ export default function PurchaseOrders() {
   };
 
   const columns = [
-    { key: "poNo", label: "PO no.", render: (r) => <button type="button" className="inv-link" onClick={() => open(r.id)}>{r.poNo}{r.version > 1 ? ` (v${r.version})` : ""}</button> },
+    { key: "poNo", label: "PO no.", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.poNo}{r.version > 1 ? ` (v${r.version})` : ""}</span> },
     { key: "supplierName", label: "Supplier" },
     { key: "orderDate", label: "Ordered", render: (r) => dateShort(r.orderDate) },
     { key: "expectedDate", label: "Expected", render: (r) => <>{dateShort(r.expectedDate)} {r.overdue && <Badge tone="red">overdue</Badge>}</> },
@@ -71,29 +71,27 @@ export default function PurchaseOrders() {
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Purchase orders" crumb="Procurement">
-        {canWrite && manualOk && <button type="button" className="inv-btn inv-btn-primary" onClick={() => setForm({ supplierId: "", expectedDate: "", paymentTerms: "", deliveryTerms: "", deliveryAddress: "", notes: "", freight: "", otherCharges: "", lines: [] })}>+ Manual order</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Purchase orders" count={`${list.total} order(s)`}>
+        {canWrite && manualOk && <Btn type="button" kind="primary" onClick={() => setForm({ supplierId: "", expectedDate: "", paymentTerms: "", deliveryTerms: "", deliveryAddress: "", notes: "", freight: "", otherCharges: "", lines: [] })}>+ Manual order</Btn>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <input className="inv-input inv-search" placeholder="Search PO no. or supplier" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select className="inv-select" aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</select>
-          <select className="inv-select" aria-label="Supplier" value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">All suppliers</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
-          <label className="inv-check"><input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} />Overdue only</label>
-        </div>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No purchase orders yet. Create one from an approved request or an awarded RFQ." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+      <div className="inv-stack">
+        <Toolbar>
+          <SearchBox placeholder=" Search PO no. or supplier" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
+          <Select aria-label="Supplier" value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">All suppliers</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select>
+          <label className="checkbox-item inv-check"><input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} />Overdue only</label>
+        </Toolbar>
+        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No purchase orders yet. Create one from an approved request or an awarded RFQ." more={list} />
       </div>
 
       {form && (
         <Modal wide title={form.id ? "Edit draft order" : "New manual order"} onClose={() => setForm(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setForm(null)}>Cancel</button><button type="submit" form="po-form" className="inv-btn inv-btn-primary" disabled={busy}>Save draft</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setForm(null)}>Cancel</Btn><Btn type="submit" form="po-form" kind="primary" disabled={busy}>Save draft</Btn></>}>
           <form id="po-form" onSubmit={save}>
             <div className="inv-grid">
-              {!form.id && <Field label="Supplier" required><select className="inv-select" value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}><option value="">Choose supplier</option>{suppliers.filter((s) => s.status === "active").map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></Field>}
-              <Field label="Expected delivery"><input type="date" className="inv-input" value={form.expectedDate} onChange={(e) => setForm({ ...form, expectedDate: e.target.value })} /></Field>
+              {!form.id && <Field label="Supplier" required><Select value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}><option value="">Choose supplier</option>{suppliers.filter((s) => s.status === "active").map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>}
+              <Field label="Expected delivery"><DateInput value={form.expectedDate} onChange={(e) => setForm({ ...form, expectedDate: e.target.value })} /></Field>
               <Field label="Payment terms"><input className="inv-input" maxLength={200} value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></Field>
               <Field label="Delivery terms"><input className="inv-input" maxLength={200} value={form.deliveryTerms} onChange={(e) => setForm({ ...form, deliveryTerms: e.target.value })} /></Field>
               <Field label="Delivery address" full><input className="inv-input" maxLength={500} value={form.deliveryAddress} onChange={(e) => setForm({ ...form, deliveryAddress: e.target.value })} /></Field>
@@ -113,17 +111,17 @@ export default function PurchaseOrders() {
       {detail && !form && (
         <Modal wide title={`${detail.poNo}${detail.version > 1 ? ` — version ${detail.version}` : ""}`} onClose={() => setDetail(null)}
           footer={<div className="inv-btnrow">
-            <button type="button" className="inv-btn" onClick={() => window.print()}>Print</button>
+            <Btn type="button" kind="plain" onClick={() => window.print()}>Print</Btn>
             {detail.status === "draft" && canWrite && <>
-              <button type="button" className="inv-btn" onClick={() => edit(detail)}>Edit</button>
-              <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act(detail, "submit", {}, "Submitted")}>Submit</button></>}
+              <Btn type="button" kind="plain" onClick={() => edit(detail)}>Edit</Btn>
+              <Btn type="button" kind="primary" disabled={busy} onClick={() => act(detail, "submit", {}, "Submitted")}>Submit</Btn></>}
             {detail.status === "pending_approval" && canApprove && <>
-              <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act(detail, "approve", {}, "Approved")}>Approve</button>
-              <button type="button" className="inv-btn inv-btn-danger" onClick={() => setAsk({ title: "Reject order", path: "reject", label: "Reason for rejection", danger: true })}>Reject</button></>}
-            {detail.status === "approved" && canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={() => setSendDlg({ via: "whatsapp" })}>Mark as sent</button>}
-            {["approved", "sent"].includes(detail.status) && canWrite && <button type="button" className="inv-btn" onClick={() => setAsk({ title: "Revise order", path: "revise", label: "Why is it being revised?", confirmLabel: "Revise" })}>Revise</button>}
-            {["sent", "partially_received", "received"].includes(detail.status) && canWrite && <button type="button" className="inv-btn" onClick={() => setAsk({ title: "Close order (short-close)", path: "close", label: "Why is the remaining quantity no longer expected?" })}>Close order</button>}
-            {["draft", "pending_approval", "rejected", "approved", "sent"].includes(detail.status) && canWrite && !detail.lines.some((l) => l.received > 0) && <button type="button" className="inv-btn inv-btn-danger" onClick={() => setAsk({ title: "Cancel order", path: "cancel", label: "Reason for cancelling", danger: true })}>Cancel order</button>}
+              <Btn type="button" kind="primary" disabled={busy} onClick={() => act(detail, "approve", {}, "Approved")}>Approve</Btn>
+              <Btn type="button" kind="danger" onClick={() => setAsk({ title: "Reject order", path: "reject", label: "Reason for rejection", danger: true })}>Reject</Btn></>}
+            {detail.status === "approved" && canWrite && <Btn type="button" kind="primary" onClick={() => setSendDlg({ via: "whatsapp" })}>Mark as sent</Btn>}
+            {["approved", "sent"].includes(detail.status) && canWrite && <Btn type="button" kind="plain" onClick={() => setAsk({ title: "Revise order", path: "revise", label: "Why is it being revised?", confirmLabel: "Revise" })}>Revise</Btn>}
+            {["sent", "partially_received", "received"].includes(detail.status) && canWrite && <Btn type="button" kind="plain" onClick={() => setAsk({ title: "Close order (short-close)", path: "close", label: "Why is the remaining quantity no longer expected?" })}>Close order</Btn>}
+            {["draft", "pending_approval", "rejected", "approved", "sent"].includes(detail.status) && canWrite && !detail.lines.some((l) => l.received > 0) && <Btn type="button" kind="danger" onClick={() => setAsk({ title: "Cancel order", path: "cancel", label: "Reason for cancelling", danger: true })}>Cancel order</Btn>}
           </div>}>
           <KeyVals rows={[["Status", <StatusBadge key="s" status={detail.status} />], ["Supplier", `${detail.supplierName}${detail.supplierGstin ? ` · GSTIN ${detail.supplierGstin}` : ""}`], ["Buyer", detail.buyerName], ["Ordered", dateShort(detail.orderDate)], ["Expected", dateShort(detail.expectedDate)], ["Payment terms", detail.paymentTerms], ["Delivery terms", detail.deliveryTerms], ["Deliver to", detail.deliveryAddress], ["Sent", detail.sentAt ? `${dateShort(detail.sentAt)} via ${statusLabel(detail.sentVia)}` : undefined], ["Notes", detail.notes]]} />
           <div className="inv-tablewrap"><table className="inv-table">
@@ -151,9 +149,9 @@ export default function PurchaseOrders() {
       {ask && <ReasonDialog {...ask} busy={busy} onClose={() => setAsk(null)} onSubmit={(t) => act(detail, ask.path, { reason: t, comment: t }, "Done")} />}
       {sendDlg && (
         <Modal title="Record that the order was sent" onClose={() => setSendDlg(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setSendDlg(null)}>Back</button><button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act(detail, "send", { via: sendDlg.via }, "Marked as sent")}>Mark as sent</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setSendDlg(null)}>Back</Btn><Btn type="button" kind="primary" disabled={busy} onClick={() => act(detail, "send", { via: sendDlg.via }, "Marked as sent")}>Mark as sent</Btn></>}>
           <div className="inv-hint">Dishky does not send the order for you. Send it yourself (print it, or share it by WhatsApp or email), then record how.</div>
-          <Field label="Sent via"><select className="inv-select" value={sendDlg.via} onChange={(e) => setSendDlg({ via: e.target.value })}>{VIA.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></Field>
+          <Field label="Sent via"><Select value={sendDlg.via} onChange={(e) => setSendDlg({ via: e.target.value })}>{VIA.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select></Field>
         </Modal>
       )}
     </div>

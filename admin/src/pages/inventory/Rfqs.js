@@ -5,7 +5,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
 import { History, KeyVals, LineEditor, ReasonDialog, StatusBadge, linesPayload, statusLabel } from "./PurchUi";
 
 const OPEN = ["sent", "responses_received", "evaluation"];
@@ -13,7 +13,7 @@ const STATUSES = ["draft", "sent", "responses_received", "evaluation", "awarded"
 
 export default function Rfqs() {
   const { hasModulePermission } = useAuth();
-  const { venueId, currentVenue } = useVenue();
+  const { venueId } = useVenue();
   const { toast } = useToast();
   const nav = useNavigate();
   const canWrite = hasModulePermission("purchaseRfq", "write");
@@ -81,7 +81,7 @@ export default function Rfqs() {
   const compare = async () => { try { setCmp((await api.get(`/purchase/rfqs/${detail.id}/comparison`)).data); } catch (e) { toast.error(errText(e)); } };
 
   const columns = [
-    { key: "rfqNo", label: "RFQ no.", render: (r) => <button type="button" className="inv-link" onClick={() => open(r.id)}>{r.rfqNo}</button> },
+    { key: "rfqNo", label: "RFQ no.", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.rfqNo}</span> },
     { key: "suppliers", label: "Suppliers", render: (r) => r.suppliers.map((s) => s.name).join(", ") || "—" },
     { key: "deadline", label: "Reply by", render: (r) => dateShort(r.deadline) },
     { key: "quotationCount", label: "Quotations", num: true },
@@ -91,29 +91,27 @@ export default function Rfqs() {
   const awardedQuo = detail?.quotations?.find((q) => q.id === detail.awardedQuotationId);
 
   return (
-    <div className="inv-page">
-      <PageHead title="RFQs & quotations" crumb="Procurement">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={() => setForm({ supplierIds: [], deadline: "", requiredDate: "", paymentTerms: "", deliveryTerms: "", notes: "", lines: [] })}>+ New RFQ</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="RFQs & quotations" count={`${list.total} RFQ(s)`}>
+        {canWrite && <Btn type="button" kind="primary" onClick={() => setForm({ supplierIds: [], deadline: "", requiredDate: "", paymentTerms: "", deliveryTerms: "", notes: "", lines: [] })}>+ New RFQ</Btn>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <input className="inv-input inv-search" placeholder="Search RFQ no." aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select className="inv-select" aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</select>
-        </div>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No RFQs yet. Convert an approved purchase request, or start one here." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+      <div className="inv-stack">
+        <Toolbar>
+          <SearchBox placeholder=" Search RFQ no." aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
+        </Toolbar>
+        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No RFQs yet. Convert an approved purchase request, or start one here." more={list} />
       </div>
 
       {form && (
         <Modal wide title="New RFQ" onClose={() => setForm(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setForm(null)}>Cancel</button><button type="submit" form="rfq-form" className="inv-btn inv-btn-primary" disabled={busy}>Save draft</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setForm(null)}>Cancel</Btn><Btn type="submit" form="rfq-form" kind="primary" disabled={busy}>Save draft</Btn></>}>
           <form id="rfq-form" onSubmit={create}>
             <div className="inv-section">Suppliers to invite</div>
-            <div className="inv-btnrow">{suppliers.map((s) => (<label key={s.id} className="inv-check"><input type="checkbox" checked={form.supplierIds.includes(s.id)} onChange={(e) => setForm({ ...form, supplierIds: e.target.checked ? [...form.supplierIds, s.id] : form.supplierIds.filter((x) => x !== s.id) })} />{s.name}</label>))}</div>
+            <div className="inv-btnrow">{suppliers.map((s) => (<label key={s.id} className="checkbox-item inv-check"><input type="checkbox" checked={form.supplierIds.includes(s.id)} onChange={(e) => setForm({ ...form, supplierIds: e.target.checked ? [...form.supplierIds, s.id] : form.supplierIds.filter((x) => x !== s.id) })} />{s.name}</label>))}</div>
             <div className="inv-grid">
-              <Field label="Reply by"><input type="date" className="inv-input" value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} /></Field>
-              <Field label="Needed by"><input type="date" className="inv-input" value={form.requiredDate} onChange={(e) => setForm({ ...form, requiredDate: e.target.value })} /></Field>
+              <Field label="Reply by"><DateInput value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} /></Field>
+              <Field label="Needed by"><DateInput value={form.requiredDate} onChange={(e) => setForm({ ...form, requiredDate: e.target.value })} /></Field>
               <Field label="Payment terms"><input className="inv-input" maxLength={200} value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></Field>
               <Field label="Delivery terms"><input className="inv-input" maxLength={200} value={form.deliveryTerms} onChange={(e) => setForm({ ...form, deliveryTerms: e.target.value })} /></Field>
             </div>
@@ -127,19 +125,19 @@ export default function Rfqs() {
       {detail && !form && !quote && !cmp && (
         <Modal wide title={detail.rfqNo} onClose={() => setDetail(null)}
           footer={<div className="inv-btnrow">
-            {detail.status === "draft" && canWrite && <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act("send", {}, "Marked as sent")}>Mark as sent</button>}
-            {OPEN.includes(detail.status) && canWrite && detail.quotations.length > 0 && <button type="button" className="inv-btn" onClick={compare}>Compare quotations</button>}
-            {OPEN.includes(detail.status) && canWrite && detail.status !== "evaluation" && <button type="button" className="inv-btn" disabled={busy} onClick={() => act("evaluate", {}, "Evaluation started")}>Start evaluation</button>}
-            {detail.status === "awarded" && canPo && awardedQuo && <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={async () => { const r = await run(() => api.post("/purchase/orders", { source: "quotation", quotationId: awardedQuo.id }), "Purchase order created as a draft"); if (r) nav("/purchase/orders"); }}>Create purchase order</button>}
-            {detail.status === "awarded" && canWrite && <button type="button" className="inv-btn" disabled={busy} onClick={() => act("close", {}, "Closed")}>Close RFQ</button>}
-            {["draft", ...OPEN].includes(detail.status) && canWrite && <button type="button" className="inv-btn inv-btn-danger" onClick={() => setAsk({ kind: "rfq", title: "Cancel RFQ", path: "cancel", label: "Reason for cancelling", danger: true })}>Cancel RFQ</button>}
+            {detail.status === "draft" && canWrite && <Btn type="button" kind="primary" disabled={busy} onClick={() => act("send", {}, "Marked as sent")}>Mark as sent</Btn>}
+            {OPEN.includes(detail.status) && canWrite && detail.quotations.length > 0 && <Btn type="button" kind="plain" onClick={compare}>Compare quotations</Btn>}
+            {OPEN.includes(detail.status) && canWrite && detail.status !== "evaluation" && <Btn type="button" kind="plain" disabled={busy} onClick={() => act("evaluate", {}, "Evaluation started")}>Start evaluation</Btn>}
+            {detail.status === "awarded" && canPo && awardedQuo && <Btn type="button" kind="primary" disabled={busy} onClick={async () => { const r = await run(() => api.post("/purchase/orders", { source: "quotation", quotationId: awardedQuo.id }), "Purchase order created as a draft"); if (r) nav("/purchase/orders"); }}>Create purchase order</Btn>}
+            {detail.status === "awarded" && canWrite && <Btn type="button" kind="plain" disabled={busy} onClick={() => act("close", {}, "Closed")}>Close RFQ</Btn>}
+            {["draft", ...OPEN].includes(detail.status) && canWrite && <Btn type="button" kind="danger" onClick={() => setAsk({ kind: "rfq", title: "Cancel RFQ", path: "cancel", label: "Reason for cancelling", danger: true })}>Cancel RFQ</Btn>}
           </div>}>
           <KeyVals rows={[["Status", <StatusBadge key="s" status={detail.status} />], ["Reply by", dateShort(detail.deadline)], ["Needed by", dateShort(detail.requiredDate)], ["Payment terms", detail.paymentTerms], ["Delivery terms", detail.deliveryTerms], ["Selection reason", detail.selectionReason], ["Notes", detail.notes]]} />
           <div className="inv-section">Items requested</div>
           <ul className="inv-history">{detail.lines.map((l) => <li key={l.itemId}>{l.itemName} — {qty(l.qty)} {l.unit}</li>)}</ul>
           <div className="inv-section">Suppliers</div>
           <div className="inv-tablewrap"><table className="inv-table"><tbody>
-            {detail.suppliers.map((s) => (<tr key={s.supplierId}><td>{s.name}</td><td><Badge tone={s.status === "responded" ? "green" : "grey"}>{s.status}</Badge></td><td className="inv-num">{OPEN.includes(detail.status) && canWrite && <button type="button" className="inv-btn inv-btn-sm" onClick={() => startQuote(s.supplierId)}>Record quotation</button>}</td></tr>))}
+            {detail.suppliers.map((s) => (<tr key={s.supplierId}><td>{s.name}</td><td><Badge tone={s.status === "responded" ? "green" : "grey"}>{s.status}</Badge></td><td className="inv-num">{OPEN.includes(detail.status) && canWrite && <Btn type="button" kind="plain" sm onClick={() => startQuote(s.supplierId)}>Record quotation</Btn>}</td></tr>))}
           </tbody></table></div>
           {detail.quotations.length > 0 && <>
             <div className="inv-section">Quotations</div>
@@ -147,9 +145,9 @@ export default function Rfqs() {
               <thead><tr><th>Quote</th><th>Supplier</th><th>Valid until</th><th className="inv-num">Total</th><th>Status</th><th /></tr></thead>
               <tbody>{detail.quotations.map((q) => (<tr key={q.id}><td>{q.quoNo}</td><td>{q.supplierName}</td><td>{dateShort(q.validUntil)} {q.expired && <Badge tone="red">expired</Badge>}</td><td className="inv-num">{money(q.totals.grandTotal)}</td><td><StatusBadge status={q.status} /></td>
                 <td>{OPEN.includes(detail.status) && canWrite && ["received", "shortlisted"].includes(q.status) && <span className="inv-btnrow">
-                  {q.status === "received" && <button type="button" className="inv-btn inv-btn-sm" onClick={() => quoAct(q, "shortlist", "")}>Shortlist</button>}
-                  <button type="button" className="inv-btn inv-btn-sm" onClick={() => setAsk({ kind: "quo", q, title: "Request a revised quotation", path: "request-revision", label: "What should the supplier change?" })}>Ask to revise</button>
-                  <button type="button" className="inv-btn inv-btn-sm inv-btn-danger" onClick={() => setAsk({ kind: "quo", q, title: "Reject quotation", path: "reject", label: "Reason", danger: true })}>Reject</button></span>}</td></tr>))}</tbody>
+                  {q.status === "received" && <Btn type="button" kind="plain" sm onClick={() => quoAct(q, "shortlist", "")}>Shortlist</Btn>}
+                  <Btn type="button" kind="plain" sm onClick={() => setAsk({ kind: "quo", q, title: "Request a revised quotation", path: "request-revision", label: "What should the supplier change?" })}>Ask to revise</Btn>
+                  <Btn type="button" kind="danger" sm onClick={() => setAsk({ kind: "quo", q, title: "Reject quotation", path: "reject", label: "Reason", danger: true })}>Reject</Btn></span>}</td></tr>))}</tbody>
             </table></div></>}
           <History entries={detail.history} />
         </Modal>
@@ -157,12 +155,12 @@ export default function Rfqs() {
 
       {quote && (
         <Modal wide title="Record supplier quotation" onClose={() => setQuote(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setQuote(null)}>Back</button><button type="submit" form="quo-form" className="inv-btn inv-btn-primary" disabled={busy}>Save quotation</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setQuote(null)}>Back</Btn><Btn type="submit" form="quo-form" kind="primary" disabled={busy}>Save quotation</Btn></>}>
           <form id="quo-form" onSubmit={submitQuote}>
             <div className="inv-grid">
               <Field label="Supplier"><input className="inv-input" disabled value={detail.suppliers.find((s) => s.supplierId === quote.supplierId)?.name || ""} /></Field>
               <Field label="Supplier's quotation no."><input className="inv-input" maxLength={80} value={quote.supplierRef} onChange={(e) => setQuote({ ...quote, supplierRef: e.target.value })} /></Field>
-              <Field label="Valid until"><input type="date" className="inv-input" value={quote.validUntil} onChange={(e) => setQuote({ ...quote, validUntil: e.target.value })} /></Field>
+              <Field label="Valid until"><DateInput value={quote.validUntil} onChange={(e) => setQuote({ ...quote, validUntil: e.target.value })} /></Field>
               <Field label="Payment terms"><input className="inv-input" maxLength={200} value={quote.paymentTerms} onChange={(e) => setQuote({ ...quote, paymentTerms: e.target.value })} /></Field>
             </div>
             <div className="inv-hint">Prices are per quoted unit. Leave quantity blank to quote the requested quantity. Remove lines the supplier did not quote.</div>
@@ -177,7 +175,7 @@ export default function Rfqs() {
                   <td className="inv-num"><input className="inv-input inv-w60" aria-label="Discount percent" inputMode="decimal" value={l.discountPct} onChange={(e) => set({ discountPct: e.target.value })} /></td>
                   <td className="inv-num"><input className="inv-input inv-w60" aria-label="GST percent" inputMode="decimal" value={l.gstRate} onChange={(e) => set({ gstRate: e.target.value })} /></td>
                   <td className="inv-num"><input className="inv-input inv-w60" aria-label="Lead time days" inputMode="numeric" value={l.leadTimeDays} onChange={(e) => set({ leadTimeDays: e.target.value })} /></td>
-                  <td><button type="button" className="inv-btn inv-btn-sm" onClick={() => setQuote({ ...quote, lines: quote.lines.filter((_, j) => j !== i) })}>Remove</button></td></tr>);
+                  <td><Btn type="button" kind="plain" sm onClick={() => setQuote({ ...quote, lines: quote.lines.filter((_, j) => j !== i) })}>Remove</Btn></td></tr>);
               })}</tbody>
             </table></div>
             <div className="inv-grid">
@@ -191,7 +189,7 @@ export default function Rfqs() {
 
       {cmp && (
         <Modal wide title={`Compare quotations — ${cmp.rfq.rfqNo}`} onClose={() => setCmp(null)}
-          footer={<button type="button" className="inv-btn" onClick={() => setCmp(null)}>Close</button>}>
+          footer={<Btn type="button" kind="plain" onClick={() => setCmp(null)}>Close</Btn>}>
           <div className="inv-banner">{cmp.note}</div>
           <div className="inv-tablewrap"><table className="inv-table inv-cmp">
             <thead><tr><th>Supplier</th><th className="inv-num">Taxable</th><th className="inv-num">GST</th><th className="inv-num">Freight</th><th className="inv-num">Total</th><th>Covers</th><th className="inv-num">Lead days</th><th>Track record</th><th>Valid until</th><th /></tr></thead>
@@ -199,7 +197,7 @@ export default function Rfqs() {
               <tr key={s.quotationId} className={s.supplierId === cmp.lowestFullCoverageSupplierId ? "inv-best" : ""}>
                 <td>{s.supplierName}<div className="inv-muted">{s.quoNo}</div></td><td className="inv-num">{money(s.taxable)}</td><td className="inv-num">{money(s.tax)}</td><td className="inv-num">{money(s.freight)}</td><td className="inv-num inv-strong">{money(s.total)}</td>
                 <td>{s.coverage.covered}/{s.coverage.of} items</td><td className="inv-num">{s.deliveryLeadDays}</td><td>{s.reliability ? `${s.reliability.onTimePct ?? "—"}% on time · ${s.qualityCompliance ?? "—"}% quality (${s.reliability.receipts} receipts)` : <span className="inv-muted">No history</span>}</td><td>{dateShort(s.validUntil)} {s.expired && <Badge tone="red">expired</Badge>}</td>
-                <td>{canWrite && !s.expired && <button type="button" className="inv-btn inv-btn-sm inv-btn-primary" onClick={() => setAsk({ kind: "award", s, title: `Award to ${s.supplierName}`, path: "award", label: "Why is this supplier selected?", confirmLabel: "Award" })}>Award</button>}</td></tr>))}</tbody>
+                <td>{canWrite && !s.expired && <Btn type="button" kind="primary" sm onClick={() => setAsk({ kind: "award", s, title: `Award to ${s.supplierName}`, path: "award", label: "Why is this supplier selected?", confirmLabel: "Award" })}>Award</Btn>}</td></tr>))}</tbody>
           </table></div>
           <div className="inv-section">Price per item</div>
           <div className="inv-tablewrap"><table className="inv-table inv-cmp">

@@ -9,471 +9,471 @@
     },
     {
       "source": "/",
-      "destination": "https://dishky-site.vercel.app/"
+      "destination": "https://dishky-app-website.vercel.app/"
     },
     {
       "source": "/admin",
-      "destination": "https://dishky-site.vercel.app/admin"
+      "destination": "https://dishky-app-website.vercel.app/admin"
     },
     {
       "source": "/admin/:path*",
-      "destination": "https://dishky-site.vercel.app/admin/:path*"
+      "destination": "https://dishky-app-website.vercel.app/admin/:path*"
     },
     {
       "source": "/app",
-      "destination": "https://dishky-site.vercel.app/app"
+      "destination": "https://dishky-app-website.vercel.app/app"
     },
     {
       "source": "/app/:path*",
-      "destination": "https://dishky-site.vercel.app/app/:path*"
+      "destination": "https://dishky-app-website.vercel.app/app/:path*"
     },
     {
       "source": "/www",
-      "destination": "https://dishky-site.vercel.app/www"
+      "destination": "https://dishky-app-website.vercel.app/www"
     },
     {
       "source": "/www/:path*",
-      "destination": "https://dishky-site.vercel.app/www/:path*"
+      "destination": "https://dishky-app-website.vercel.app/www/:path*"
     },
     {
       "source": "/login",
-      "destination": "https://dishky-site.vercel.app/login"
+      "destination": "https://dishky-app-website.vercel.app/login"
     },
     {
       "source": "/login/:path*",
-      "destination": "https://dishky-site.vercel.app/login/:path*"
+      "destination": "https://dishky-app-website.vercel.app/login/:path*"
     },
     {
       "source": "/logout",
-      "destination": "https://dishky-site.vercel.app/logout"
+      "destination": "https://dishky-app-website.vercel.app/logout"
     },
     {
       "source": "/logout/:path*",
-      "destination": "https://dishky-site.vercel.app/logout/:path*"
+      "destination": "https://dishky-app-website.vercel.app/logout/:path*"
     },
     {
       "source": "/signup",
-      "destination": "https://dishky-site.vercel.app/signup"
+      "destination": "https://dishky-app-website.vercel.app/signup"
     },
     {
       "source": "/signup/:path*",
-      "destination": "https://dishky-site.vercel.app/signup/:path*"
+      "destination": "https://dishky-app-website.vercel.app/signup/:path*"
     },
     {
       "source": "/register",
-      "destination": "https://dishky-site.vercel.app/register"
+      "destination": "https://dishky-app-website.vercel.app/register"
     },
     {
       "source": "/register/:path*",
-      "destination": "https://dishky-site.vercel.app/register/:path*"
+      "destination": "https://dishky-app-website.vercel.app/register/:path*"
     },
     {
       "source": "/account",
-      "destination": "https://dishky-site.vercel.app/account"
+      "destination": "https://dishky-app-website.vercel.app/account"
     },
     {
       "source": "/account/:path*",
-      "destination": "https://dishky-site.vercel.app/account/:path*"
+      "destination": "https://dishky-app-website.vercel.app/account/:path*"
     },
     {
       "source": "/billing",
-      "destination": "https://dishky-site.vercel.app/billing"
+      "destination": "https://dishky-app-website.vercel.app/billing"
     },
     {
       "source": "/billing/:path*",
-      "destination": "https://dishky-site.vercel.app/billing/:path*"
+      "destination": "https://dishky-app-website.vercel.app/billing/:path*"
     },
     {
       "source": "/pricing",
-      "destination": "https://dishky-site.vercel.app/pricing"
+      "destination": "https://dishky-app-website.vercel.app/pricing"
     },
     {
       "source": "/pricing/:path*",
-      "destination": "https://dishky-site.vercel.app/pricing/:path*"
+      "destination": "https://dishky-app-website.vercel.app/pricing/:path*"
     },
     {
       "source": "/plans",
-      "destination": "https://dishky-site.vercel.app/plans"
+      "destination": "https://dishky-app-website.vercel.app/plans"
     },
     {
       "source": "/plans/:path*",
-      "destination": "https://dishky-site.vercel.app/plans/:path*"
+      "destination": "https://dishky-app-website.vercel.app/plans/:path*"
     },
     {
       "source": "/features",
-      "destination": "https://dishky-site.vercel.app/features"
+      "destination": "https://dishky-app-website.vercel.app/features"
     },
     {
       "source": "/features/:path*",
-      "destination": "https://dishky-site.vercel.app/features/:path*"
+      "destination": "https://dishky-app-website.vercel.app/features/:path*"
     },
     {
       "source": "/platform",
-      "destination": "https://dishky-site.vercel.app/platform"
+      "destination": "https://dishky-app-website.vercel.app/platform"
     },
     {
       "source": "/platform/:path*",
-      "destination": "https://dishky-site.vercel.app/platform/:path*"
+      "destination": "https://dishky-app-website.vercel.app/platform/:path*"
     },
     {
       "source": "/user-panel",
-      "destination": "https://dishky-site.vercel.app/user-panel"
+      "destination": "https://dishky-app-website.vercel.app/user-panel"
     },
     {
       "source": "/user-panel/:path*",
-      "destination": "https://dishky-site.vercel.app/user-panel/:path*"
+      "destination": "https://dishky-app-website.vercel.app/user-panel/:path*"
     },
     {
       "source": "/admin-panel",
-      "destination": "https://dishky-site.vercel.app/admin-panel"
+      "destination": "https://dishky-app-website.vercel.app/admin-panel"
     },
     {
       "source": "/admin-panel/:path*",
-      "destination": "https://dishky-site.vercel.app/admin-panel/:path*"
+      "destination": "https://dishky-app-website.vercel.app/admin-panel/:path*"
     },
     {
       "source": "/promotions",
-      "destination": "https://dishky-site.vercel.app/promotions"
+      "destination": "https://dishky-app-website.vercel.app/promotions"
     },
     {
       "source": "/promotions/:path*",
-      "destination": "https://dishky-site.vercel.app/promotions/:path*"
+      "destination": "https://dishky-app-website.vercel.app/promotions/:path*"
     },
     {
       "source": "/solutions",
-      "destination": "https://dishky-site.vercel.app/solutions"
+      "destination": "https://dishky-app-website.vercel.app/solutions"
     },
     {
       "source": "/solutions/:path*",
-      "destination": "https://dishky-site.vercel.app/solutions/:path*"
+      "destination": "https://dishky-app-website.vercel.app/solutions/:path*"
     },
     {
       "source": "/branches",
-      "destination": "https://dishky-site.vercel.app/branches"
+      "destination": "https://dishky-app-website.vercel.app/branches"
     },
     {
       "source": "/branches/:path*",
-      "destination": "https://dishky-site.vercel.app/branches/:path*"
+      "destination": "https://dishky-app-website.vercel.app/branches/:path*"
     },
     {
       "source": "/resources",
-      "destination": "https://dishky-site.vercel.app/resources"
+      "destination": "https://dishky-app-website.vercel.app/resources"
     },
     {
       "source": "/resources/:path*",
-      "destination": "https://dishky-site.vercel.app/resources/:path*"
+      "destination": "https://dishky-app-website.vercel.app/resources/:path*"
     },
     {
       "source": "/about",
-      "destination": "https://dishky-site.vercel.app/about"
+      "destination": "https://dishky-app-website.vercel.app/about"
     },
     {
       "source": "/about/:path*",
-      "destination": "https://dishky-site.vercel.app/about/:path*"
+      "destination": "https://dishky-app-website.vercel.app/about/:path*"
     },
     {
       "source": "/contact",
-      "destination": "https://dishky-site.vercel.app/contact"
+      "destination": "https://dishky-app-website.vercel.app/contact"
     },
     {
       "source": "/contact/:path*",
-      "destination": "https://dishky-site.vercel.app/contact/:path*"
+      "destination": "https://dishky-app-website.vercel.app/contact/:path*"
     },
     {
       "source": "/book-demo",
-      "destination": "https://dishky-site.vercel.app/book-demo"
+      "destination": "https://dishky-app-website.vercel.app/book-demo"
     },
     {
       "source": "/book-demo/:path*",
-      "destination": "https://dishky-site.vercel.app/book-demo/:path*"
+      "destination": "https://dishky-app-website.vercel.app/book-demo/:path*"
     },
     {
       "source": "/legal",
-      "destination": "https://dishky-site.vercel.app/legal"
+      "destination": "https://dishky-app-website.vercel.app/legal"
     },
     {
       "source": "/legal/:path*",
-      "destination": "https://dishky-site.vercel.app/legal/:path*"
+      "destination": "https://dishky-app-website.vercel.app/legal/:path*"
     },
     {
       "source": "/privacy",
-      "destination": "https://dishky-site.vercel.app/privacy"
+      "destination": "https://dishky-app-website.vercel.app/privacy"
     },
     {
       "source": "/privacy/:path*",
-      "destination": "https://dishky-site.vercel.app/privacy/:path*"
+      "destination": "https://dishky-app-website.vercel.app/privacy/:path*"
     },
     {
       "source": "/terms",
-      "destination": "https://dishky-site.vercel.app/terms"
+      "destination": "https://dishky-app-website.vercel.app/terms"
     },
     {
       "source": "/terms/:path*",
-      "destination": "https://dishky-site.vercel.app/terms/:path*"
+      "destination": "https://dishky-app-website.vercel.app/terms/:path*"
     },
     {
       "source": "/security",
-      "destination": "https://dishky-site.vercel.app/security"
+      "destination": "https://dishky-app-website.vercel.app/security"
     },
     {
       "source": "/security/:path*",
-      "destination": "https://dishky-site.vercel.app/security/:path*"
+      "destination": "https://dishky-app-website.vercel.app/security/:path*"
     },
     {
       "source": "/cookies",
-      "destination": "https://dishky-site.vercel.app/cookies"
+      "destination": "https://dishky-app-website.vercel.app/cookies"
     },
     {
       "source": "/cookies/:path*",
-      "destination": "https://dishky-site.vercel.app/cookies/:path*"
+      "destination": "https://dishky-app-website.vercel.app/cookies/:path*"
     },
     {
       "source": "/help",
-      "destination": "https://dishky-site.vercel.app/help"
+      "destination": "https://dishky-app-website.vercel.app/help"
     },
     {
       "source": "/help/:path*",
-      "destination": "https://dishky-site.vercel.app/help/:path*"
+      "destination": "https://dishky-app-website.vercel.app/help/:path*"
     },
     {
       "source": "/support",
-      "destination": "https://dishky-site.vercel.app/support"
+      "destination": "https://dishky-app-website.vercel.app/support"
     },
     {
       "source": "/support/:path*",
-      "destination": "https://dishky-site.vercel.app/support/:path*"
+      "destination": "https://dishky-app-website.vercel.app/support/:path*"
     },
     {
       "source": "/docs",
-      "destination": "https://dishky-site.vercel.app/docs"
+      "destination": "https://dishky-app-website.vercel.app/docs"
     },
     {
       "source": "/docs/:path*",
-      "destination": "https://dishky-site.vercel.app/docs/:path*"
+      "destination": "https://dishky-app-website.vercel.app/docs/:path*"
     },
     {
       "source": "/blog",
-      "destination": "https://dishky-site.vercel.app/blog"
+      "destination": "https://dishky-app-website.vercel.app/blog"
     },
     {
       "source": "/blog/:path*",
-      "destination": "https://dishky-site.vercel.app/blog/:path*"
+      "destination": "https://dishky-app-website.vercel.app/blog/:path*"
     },
     {
       "source": "/status",
-      "destination": "https://dishky-site.vercel.app/status"
+      "destination": "https://dishky-app-website.vercel.app/status"
     },
     {
       "source": "/status/:path*",
-      "destination": "https://dishky-site.vercel.app/status/:path*"
+      "destination": "https://dishky-app-website.vercel.app/status/:path*"
     },
     {
       "source": "/demo",
-      "destination": "https://dishky-site.vercel.app/demo"
+      "destination": "https://dishky-app-website.vercel.app/demo"
     },
     {
       "source": "/demo/:path*",
-      "destination": "https://dishky-site.vercel.app/demo/:path*"
+      "destination": "https://dishky-app-website.vercel.app/demo/:path*"
     },
     {
       "source": "/dashboard",
-      "destination": "https://dishky-site.vercel.app/dashboard"
+      "destination": "https://dishky-app-website.vercel.app/dashboard"
     },
     {
       "source": "/dashboard/:path*",
-      "destination": "https://dishky-site.vercel.app/dashboard/:path*"
+      "destination": "https://dishky-app-website.vercel.app/dashboard/:path*"
     },
     {
       "source": "/checkout",
-      "destination": "https://dishky-site.vercel.app/checkout"
+      "destination": "https://dishky-app-website.vercel.app/checkout"
     },
     {
       "source": "/checkout/:path*",
-      "destination": "https://dishky-site.vercel.app/checkout/:path*"
+      "destination": "https://dishky-app-website.vercel.app/checkout/:path*"
     },
     {
       "source": "/sso",
-      "destination": "https://dishky-site.vercel.app/sso"
+      "destination": "https://dishky-app-website.vercel.app/sso"
     },
     {
       "source": "/sso/:path*",
-      "destination": "https://dishky-site.vercel.app/sso/:path*"
+      "destination": "https://dishky-app-website.vercel.app/sso/:path*"
     },
     {
       "source": "/assets",
-      "destination": "https://dishky-site.vercel.app/assets"
+      "destination": "https://dishky-app-website.vercel.app/assets"
     },
     {
       "source": "/assets/:path*",
-      "destination": "https://dishky-site.vercel.app/assets/:path*"
+      "destination": "https://dishky-app-website.vercel.app/assets/:path*"
     },
     {
       "source": "/public",
-      "destination": "https://dishky-site.vercel.app/public"
+      "destination": "https://dishky-app-website.vercel.app/public"
     },
     {
       "source": "/public/:path*",
-      "destination": "https://dishky-site.vercel.app/public/:path*"
+      "destination": "https://dishky-app-website.vercel.app/public/:path*"
     },
     {
       "source": "/brand",
-      "destination": "https://dishky-site.vercel.app/brand"
+      "destination": "https://dishky-app-website.vercel.app/brand"
     },
     {
       "source": "/brand/:path*",
-      "destination": "https://dishky-site.vercel.app/brand/:path*"
+      "destination": "https://dishky-app-website.vercel.app/brand/:path*"
     },
     {
       "source": "/r",
-      "destination": "https://dishky-site.vercel.app/r"
+      "destination": "https://dishky-app-website.vercel.app/r"
     },
     {
       "source": "/r/:path*",
-      "destination": "https://dishky-site.vercel.app/r/:path*"
+      "destination": "https://dishky-app-website.vercel.app/r/:path*"
     },
     {
       "source": "/t",
-      "destination": "https://dishky-site.vercel.app/t"
+      "destination": "https://dishky-app-website.vercel.app/t"
     },
     {
       "source": "/t/:path*",
-      "destination": "https://dishky-site.vercel.app/t/:path*"
+      "destination": "https://dishky-app-website.vercel.app/t/:path*"
     },
     {
       "source": "/s",
-      "destination": "https://dishky-site.vercel.app/s"
+      "destination": "https://dishky-app-website.vercel.app/s"
     },
     {
       "source": "/s/:path*",
-      "destination": "https://dishky-site.vercel.app/s/:path*"
+      "destination": "https://dishky-app-website.vercel.app/s/:path*"
     },
     {
       "source": "/dishky",
-      "destination": "https://dishky-site.vercel.app/dishky"
+      "destination": "https://dishky-app-website.vercel.app/dishky"
     },
     {
       "source": "/dishky/:path*",
-      "destination": "https://dishky-site.vercel.app/dishky/:path*"
+      "destination": "https://dishky-app-website.vercel.app/dishky/:path*"
     },
     {
       "source": "/root",
-      "destination": "https://dishky-site.vercel.app/root"
+      "destination": "https://dishky-app-website.vercel.app/root"
     },
     {
       "source": "/root/:path*",
-      "destination": "https://dishky-site.vercel.app/root/:path*"
+      "destination": "https://dishky-app-website.vercel.app/root/:path*"
     },
     {
       "source": "/null",
-      "destination": "https://dishky-site.vercel.app/null"
+      "destination": "https://dishky-app-website.vercel.app/null"
     },
     {
       "source": "/null/:path*",
-      "destination": "https://dishky-site.vercel.app/null/:path*"
+      "destination": "https://dishky-app-website.vercel.app/null/:path*"
     },
     {
       "source": "/undefined",
-      "destination": "https://dishky-site.vercel.app/undefined"
+      "destination": "https://dishky-app-website.vercel.app/undefined"
     },
     {
       "source": "/undefined/:path*",
-      "destination": "https://dishky-site.vercel.app/undefined/:path*"
+      "destination": "https://dishky-app-website.vercel.app/undefined/:path*"
     },
     {
       "source": "/new",
-      "destination": "https://dishky-site.vercel.app/new"
+      "destination": "https://dishky-app-website.vercel.app/new"
     },
     {
       "source": "/new/:path*",
-      "destination": "https://dishky-site.vercel.app/new/:path*"
+      "destination": "https://dishky-app-website.vercel.app/new/:path*"
     },
     {
       "source": "/settings",
-      "destination": "https://dishky-site.vercel.app/settings"
+      "destination": "https://dishky-app-website.vercel.app/settings"
     },
     {
       "source": "/settings/:path*",
-      "destination": "https://dishky-site.vercel.app/settings/:path*"
+      "destination": "https://dishky-app-website.vercel.app/settings/:path*"
     },
     {
       "source": "/staff",
-      "destination": "https://dishky-site.vercel.app/staff"
+      "destination": "https://dishky-app-website.vercel.app/staff"
     },
     {
       "source": "/staff/:path*",
-      "destination": "https://dishky-site.vercel.app/staff/:path*"
+      "destination": "https://dishky-app-website.vercel.app/staff/:path*"
     },
     {
       "source": "/orders",
-      "destination": "https://dishky-site.vercel.app/orders"
+      "destination": "https://dishky-app-website.vercel.app/orders"
     },
     {
       "source": "/orders/:path*",
-      "destination": "https://dishky-site.vercel.app/orders/:path*"
+      "destination": "https://dishky-app-website.vercel.app/orders/:path*"
     },
     {
       "source": "/menu",
-      "destination": "https://dishky-site.vercel.app/menu"
+      "destination": "https://dishky-app-website.vercel.app/menu"
     },
     {
       "source": "/menu/:path*",
-      "destination": "https://dishky-site.vercel.app/menu/:path*"
+      "destination": "https://dishky-app-website.vercel.app/menu/:path*"
     },
     {
       "source": "/welcome",
-      "destination": "https://dishky-site.vercel.app/welcome"
+      "destination": "https://dishky-app-website.vercel.app/welcome"
     },
     {
       "source": "/welcome/:path*",
-      "destination": "https://dishky-site.vercel.app/welcome/:path*"
+      "destination": "https://dishky-app-website.vercel.app/welcome/:path*"
     },
     {
       "source": "/foodcategory",
-      "destination": "https://dishky-site.vercel.app/foodcategory"
+      "destination": "https://dishky-app-website.vercel.app/foodcategory"
     },
     {
       "source": "/foodcategory/:path*",
-      "destination": "https://dishky-site.vercel.app/foodcategory/:path*"
+      "destination": "https://dishky-app-website.vercel.app/foodcategory/:path*"
     },
     {
       "source": "/events",
-      "destination": "https://dishky-site.vercel.app/events"
+      "destination": "https://dishky-app-website.vercel.app/events"
     },
     {
       "source": "/events/:path*",
-      "destination": "https://dishky-site.vercel.app/events/:path*"
+      "destination": "https://dishky-app-website.vercel.app/events/:path*"
     },
     {
       "source": "/profile",
-      "destination": "https://dishky-site.vercel.app/profile"
+      "destination": "https://dishky-app-website.vercel.app/profile"
     },
     {
       "source": "/profile/:path*",
-      "destination": "https://dishky-site.vercel.app/profile/:path*"
+      "destination": "https://dishky-app-website.vercel.app/profile/:path*"
     },
     {
       "source": "/thankyou",
-      "destination": "https://dishky-site.vercel.app/thankyou"
+      "destination": "https://dishky-app-website.vercel.app/thankyou"
     },
     {
       "source": "/thankyou/:path*",
-      "destination": "https://dishky-site.vercel.app/thankyou/:path*"
+      "destination": "https://dishky-app-website.vercel.app/thankyou/:path*"
     },
     {
       "source": "/assets/:path*",
-      "destination": "https://dishky-site.vercel.app/assets/:path*"
+      "destination": "https://dishky-app-website.vercel.app/assets/:path*"
     },
     {
       "source": "/brand/:path*",
-      "destination": "https://dishky-site.vercel.app/brand/:path*"
+      "destination": "https://dishky-app-website.vercel.app/brand/:path*"
     },
     {
       "source": "/robots.txt",
-      "destination": "https://dishky-site.vercel.app/robots.txt"
+      "destination": "https://dishky-app-website.vercel.app/robots.txt"
     },
     {
       "source": "/sitemap.xml",
-      "destination": "https://dishky-site.vercel.app/sitemap.xml"
+      "destination": "https://dishky-app-website.vercel.app/sitemap.xml"
     },
     {
       "source": "/((?!api/|static/).*)",

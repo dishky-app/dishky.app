@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { DataTable, Field, Modal, PageHead, Pager, dateShort, errText, money, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, useDebounced, usePagedList, useRef_ } from "./InvUi";
 import { History, KeyVals, ReasonDialog, StatusBadge, statusLabel } from "./PurchUi";
 
 const METHODS = [["bank_transfer", "Bank transfer"], ["upi", "UPI"], ["cheque", "Cheque"], ["cash", "Cash"], ["card", "Card"], ["other", "Other"]];
@@ -13,7 +13,7 @@ const newKey = () => `pay-${Date.now()}-${Math.random().toString(36).slice(2, 10
 
 export default function SupplierPayments() {
   const { hasModulePermission } = useAuth();
-  const { venueId, currentVenue } = useVenue();
+  const { venueId } = useVenue();
   const { toast } = useToast();
   const canWrite = hasModulePermission("purchasePayments", "write");
   const canApprove = hasModulePermission("purchaseApprovals", "write");
@@ -63,7 +63,7 @@ export default function SupplierPayments() {
   const advance = detail ? detail.advance : 0;
 
   const columns = [
-    { key: "payNo", label: "Payment", render: (r) => <button type="button" className="inv-link" onClick={() => open(r.id)}>{r.payNo}</button> },
+    { key: "payNo", label: "Payment", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.payNo}</span> },
     { key: "supplierName", label: "Supplier" }, { key: "paymentDate", label: "Date", render: (r) => dateShort(r.paymentDate) },
     { key: "method", label: "Method", render: (r) => statusLabel(r.method) }, { key: "reference", label: "Reference", render: (r) => r.reference || "—" },
     { key: "amount", label: "Amount", num: true, render: (r) => money(r.amount) },
@@ -71,29 +71,27 @@ export default function SupplierPayments() {
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Supplier payments" crumb="Finance">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={openNew}>+ Record payment</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Supplier payments" count={`${list.total} payment(s)`}>
+        {canWrite && <Btn type="button" kind="primary" onClick={openNew}>+ Record payment</Btn>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
       <div className="inv-banner">This screen records payments you have made or are about to make. It does not transfer money.</div>
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <input className="inv-input inv-search" placeholder="Search payment, reference or supplier" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select className="inv-select" aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["pending_approval", "completed", "rejected", "cancelled", "reversed"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</select>
-        </div>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No payments recorded yet." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+      <div className="inv-stack">
+        <Toolbar>
+          <SearchBox placeholder=" Search payment, reference or supplier" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["pending_approval", "completed", "rejected", "cancelled", "reversed"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
+        </Toolbar>
+        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No payments recorded yet." more={list} />
       </div>
 
       {form && (
         <Modal wide title="Record supplier payment" onClose={() => setForm(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setForm(null)}>Cancel</button><button type="submit" form="spay-form" className="inv-btn inv-btn-primary" disabled={busy}>Save payment</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setForm(null)}>Cancel</Btn><Btn type="submit" form="spay-form" kind="primary" disabled={busy}>Save payment</Btn></>}>
           <form id="spay-form" onSubmit={save}>
             <div className="inv-grid">
-              <Field label="Supplier" required><select className="inv-select" value={form.supplierId} onChange={(e) => pickSupplier(e.target.value)}><option value="">Choose supplier</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></Field>
-              <Field label="Payment date"><input type="date" className="inv-input" value={form.paymentDate} onChange={(e) => setForm({ ...form, paymentDate: e.target.value })} /></Field>
-              <Field label="Method"><select className="inv-select" value={form.method} onChange={(e) => setForm({ ...form, method: e.target.value })}>{METHODS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></Field>
+              <Field label="Supplier" required><Select value={form.supplierId} onChange={(e) => pickSupplier(e.target.value)}><option value="">Choose supplier</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>
+              <Field label="Payment date"><DateInput value={form.paymentDate} onChange={(e) => setForm({ ...form, paymentDate: e.target.value })} /></Field>
+              <Field label="Method"><Select value={form.method} onChange={(e) => setForm({ ...form, method: e.target.value })}>{METHODS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select></Field>
               <Field label={`Reference${form.method === "cash" ? "" : " *"}`} hint="UTR, UPI transaction id or cheque number"><input className="inv-input" maxLength={80} value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} /></Field>
             </div>
             {form.supplierId && (form.invoices.length === 0 ? <div className="inv-hint">No approved invoices with a balance for this supplier. You can still record an advance.</div> : (
@@ -101,7 +99,7 @@ export default function SupplierPayments() {
                 <thead><tr><th>Invoice</th><th>Due</th><th className="inv-num">Still payable</th><th className="inv-num">Pay now (₹)</th><th /></tr></thead>
                 <tbody>{form.invoices.map((i) => (<tr key={i.id}><td>{i.docNo} <span className="inv-muted">{i.invoiceNo}</span></td><td>{dateShort(i.dueDate)}</td><td className="inv-num">{money(i.payableNow)}</td>
                   <td className="inv-num"><input className="inv-input inv-w90" aria-label={`Amount for ${i.docNo}`} inputMode="decimal" value={form.pay[i.id] ?? ""} onChange={(e) => setPay(i.id, e.target.value)} /></td>
-                  <td><button type="button" className="inv-btn inv-btn-sm" onClick={() => setPay(i.id, String(i.payableNow))}>Pay in full</button></td></tr>))}</tbody>
+                  <td><Btn type="button" kind="plain" sm onClick={() => setPay(i.id, String(i.payableNow))}>Pay in full</Btn></td></tr>))}</tbody>
               </table></div>))}
             <div className="inv-grid">
               <Field label="Amount paid (₹)" required hint="Anything above the amounts allocated to invoices is kept as an advance."><input className="inv-input" inputMode="decimal" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} /></Field>
@@ -115,11 +113,11 @@ export default function SupplierPayments() {
         <Modal wide title={detail.payNo} onClose={() => setDetail(null)}
           footer={<div className="inv-btnrow">
             {detail.status === "pending_approval" && canApprove && <>
-              <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act("approve", {}, "Approved")}>Approve payment</button>
-              <button type="button" className="inv-btn inv-btn-danger" onClick={() => setAsk({ title: "Reject payment", path: "reject", label: "Reason", danger: true })}>Reject</button></>}
-            {detail.status === "pending_approval" && canWrite && <button type="button" className="inv-btn" onClick={() => setAsk({ title: "Cancel payment", path: "cancel", label: "Reason", danger: true })}>Cancel</button>}
-            {detail.status === "completed" && canWrite && advance > 0 && <button type="button" className="inv-btn" onClick={openAlloc}>Allocate advance ({money(advance)})</button>}
-            {detail.status === "completed" && canApprove && <button type="button" className="inv-btn inv-btn-danger" onClick={() => setAsk({ title: "Reverse payment", path: "reverse", label: "Why is it being reversed? (e.g. cheque bounced)", danger: true })}>Reverse</button>}
+              <Btn type="button" kind="primary" disabled={busy} onClick={() => act("approve", {}, "Approved")}>Approve payment</Btn>
+              <Btn type="button" kind="danger" onClick={() => setAsk({ title: "Reject payment", path: "reject", label: "Reason", danger: true })}>Reject</Btn></>}
+            {detail.status === "pending_approval" && canWrite && <Btn type="button" kind="plain" onClick={() => setAsk({ title: "Cancel payment", path: "cancel", label: "Reason", danger: true })}>Cancel</Btn>}
+            {detail.status === "completed" && canWrite && advance > 0 && <Btn type="button" kind="plain" onClick={openAlloc}>Allocate advance ({money(advance)})</Btn>}
+            {detail.status === "completed" && canApprove && <Btn type="button" kind="danger" onClick={() => setAsk({ title: "Reverse payment", path: "reverse", label: "Why is it being reversed? (e.g. cheque bounced)", danger: true })}>Reverse</Btn>}
           </div>}>
           <KeyVals rows={[["Status", <StatusBadge key="s" status={detail.status} />], ["Supplier", detail.supplierName], ["Date", dateShort(detail.paymentDate)], ["Method", statusLabel(detail.method)], ["Reference", detail.reference], ["Amount", money(detail.amount)], ["Unallocated (advance)", detail.advance > 0 ? money(detail.advance) : undefined], ["Reversal reason", detail.reverseReason], ["Recorded by", detail.createdByName], ["Notes", detail.notes]]} />
           {detail.allocations.length > 0 && <div className="inv-tablewrap"><table className="inv-table"><thead><tr><th>Invoice</th><th className="inv-num">Allocated</th></tr></thead><tbody>{detail.allocations.map((a) => <tr key={a.invoiceId}><td>{a.docNo}</td><td className="inv-num">{money(a.amount)}</td></tr>)}</tbody></table></div>}
@@ -129,11 +127,11 @@ export default function SupplierPayments() {
       {ask && <ReasonDialog {...ask} busy={busy} onClose={() => setAsk(null)} onSubmit={(t) => act(ask.path, { reason: t }, "Done")} />}
       {alloc && (
         <Modal title="Allocate advance to invoices" onClose={() => setAlloc(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setAlloc(null)}>Back</button><button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={async () => {
+          footer={<><Btn type="button" kind="plain" onClick={() => setAlloc(null)}>Back</Btn><Btn type="button" kind="primary" disabled={busy} onClick={async () => {
             const allocations = Object.entries(alloc.pay).filter(([, v]) => Number(v) > 0).map(([invoiceId, v]) => ({ invoiceId, amount: Number(v) }));
             if (!allocations.length) { toast.error("Enter an amount"); return; }
             const r = await run(() => api.post(`/finance/payments/${detail.id}/allocate`, { allocations }), "Allocated"); if (r) { setAlloc(null); setDetail(r.data); }
-          }}>Allocate</button></>}>
+          }}>Allocate</Btn></>}>
           {alloc.invoices.length === 0 ? <div className="inv-muted">No approved invoices with a balance for this supplier.</div> : alloc.invoices.map((i) => (
             <div key={i.id} className="inv-row"><span style={{ flex: 1 }}>{i.docNo} — payable {money(i.payableNow)}</span>
               <input className="inv-input inv-w90" aria-label={`Amount for ${i.docNo}`} inputMode="decimal" value={alloc.pay[i.id] ?? ""} onChange={(e) => setAlloc({ ...alloc, pay: { ...alloc.pay, [i.id]: e.target.value } })} /></div>))}

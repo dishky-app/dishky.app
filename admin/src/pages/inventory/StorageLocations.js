@@ -4,14 +4,14 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, errText } from "./InvUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, Select, errText } from "./InvUi";
 
 const TYPES = ["dry_store", "cold_room", "freezer", "kitchen", "bar", "receiving", "quarantine", "other"];
 const label = (t) => t.replace("_", " ");
 
 export default function StorageLocations() {
   const { hasModulePermission } = useAuth();
-  const { venueParam, venueId, currentVenue } = useVenue();
+  const { venueParam, venueId } = useVenue();
   const { toast } = useToast();
   const canWrite = hasModulePermission("inventoryItems", "write");
   const [rows, setRows] = useState([]);
@@ -50,27 +50,26 @@ export default function StorageLocations() {
     { key: "status", label: "Status", render: (l) => <Badge tone={l.status === "active" ? "green" : "grey"}>{l.status}</Badge> },
     ...(canWrite ? [{ key: "act", label: "", render: (l) => (
       <span style={{ display: "flex", gap: 6 }}>
-        <button type="button" className="inv-btn inv-btn-sm" onClick={() => setForm(l)}>Edit</button>
-        <button type="button" className="inv-btn inv-btn-sm" onClick={() => toggle(l)}>{l.status === "active" ? "Deactivate" : "Activate"}</button>
+        <Btn type="button" kind="plain" sm onClick={() => setForm(l)}>Edit</Btn>
+        <Btn type="button" kind="plain" sm onClick={() => toggle(l)}>{l.status === "active" ? "Deactivate" : "Activate"}</Btn>
       </span>) }] : []),
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Storage locations" crumb="Masters">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={() => setForm({ code: "", name: "", type: "dry_store" })}>+ New location</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Storage locations">
+        {canWrite && <Btn type="button" kind="primary" onClick={() => setForm({ code: "", name: "", type: "dry_store" })}>+ New location</Btn>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
-      <div className="inv-card">
+      <div className="inv-stack">
         <DataTable columns={columns} rows={rows} loading={loading} error={error} onRetry={load} empty="No storage locations yet. Create one (e.g. Dry store, Cold room) before adding stock." />
       </div>
       {form && (
         <Modal title={form.id ? "Edit location" : "New location"} onClose={() => setForm(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setForm(null)}>Cancel</button><button type="submit" form="inv-loc-form" className="inv-btn inv-btn-primary" disabled={busy}>Save</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setForm(null)}>Cancel</Btn><Btn type="submit" form="inv-loc-form" kind="primary" disabled={busy}>Save</Btn></>}>
           <form id="inv-loc-form" onSubmit={save}>
             <div className="inv-grid">
               <Field label="Code" required hint={form.id ? "Cannot be changed" : "Short, unique within the branch"}><input className="inv-input" value={form.code} disabled={!!form.id} maxLength={20} onChange={(e) => setForm({ ...form, code: e.target.value })} /></Field>
-              <Field label="Type"><select className="inv-select" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>{TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}</select></Field>
+              <Field label="Type"><Select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>{TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}</Select></Field>
               <Field label="Name" required full><input className="inv-input" value={form.name} maxLength={120} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
             </div>
           </form>

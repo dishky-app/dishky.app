@@ -3,13 +3,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useVenue } from "../../context/VenueContext";
-import { Badge, DataTable, Field, PageHead, dateShort, errText, money, qty } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, PageHead, Tabs, Toolbar, dateShort, errText, money, qty } from "./InvUi";
 
 const RISK = { stockout_before_delivery: ["red", "Runs out before delivery"], stockout_within_horizon: ["amber", "Runs out in the period"], ok: ["green", "OK"] };
 const CONF = { high: "green", medium: "amber", low: "grey" };
 
 export default function DemandForecast() {
-  const { venueId, venueParam, currentVenue } = useVenue();
+  const { venueId, venueParam } = useVenue();
   const nav = useNavigate();
   const [tab, setTab] = useState("forecast");
   const [fc, setFc] = useState({ rows: [], loading: true, error: "", note: "" });
@@ -53,30 +53,27 @@ export default function DemandForecast() {
   ];
   const cov = us.meta?.coverage;
   return (
-    <div className="inv-page">
-      <PageHead title="Forecast & usage" crumb="Automation">
-        <button type="button" className="inv-btn" onClick={() => nav("/purchase/reorder")}>Reorder planning</button>
+    <div className="inner-page inv-page">
+      <PageHead title="Forecast & usage">
+        <Btn type="button" kind="plain" onClick={() => nav("/purchase/reorder")}>Reorder planning</Btn>
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
-      <div className="inv-tabs" role="tablist">
-        {[["forecast", "Forecast"], ["usage", "Usage & waste"]].map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={tab === k} className="inv-tab" onClick={() => setTab(k)}>{l}</button>)}
-      </div>
+      <Tabs tabs={[["forecast", "Forecast"], ["usage", "Usage & waste"]]} value={tab} onChange={setTab} />
       {tab === "forecast" ? (
         <>
           {fc.note && <div className="inv-banner">{fc.note}</div>}
-          <div className="inv-card"><DataTable columns={fcCols} rows={fc.rows} loading={fc.loading} error={fc.error} onRetry={loadFc} rowKey={(r) => r.itemId} empty="No consumption has been recorded in the look-back period, so there is nothing to forecast yet." /></div>
+          <div className="inv-stack"><DataTable columns={fcCols} rows={fc.rows} loading={fc.loading} error={fc.error} onRetry={loadFc} rowKey={(r) => r.itemId} empty="No consumption has been recorded in the look-back period, so there is nothing to forecast yet." /></div>
         </>
       ) : (
         <>
-          <div className="inv-card inv-toolbar">
-            <Field label="From"><input className="inv-input" type="date" value={range.from} max={range.to} onChange={(e) => setRange((r) => ({ ...r, from: e.target.value }))} /></Field>
-            <Field label="To"><input className="inv-input" type="date" value={range.to} min={range.from} onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))} /></Field>
+          <Toolbar>
+            <DateInput label="From" value={range.from} max={range.to} onChange={(e) => setRange((r) => ({ ...r, from: e.target.value }))} />
+            <DateInput label="To" value={range.to} min={range.from} onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))} />
             {us.meta && <span className="inv-muted">Order cost {money(us.meta.totals.orderCost)} · waste {money(us.meta.totals.wasteCost)}</span>}
-          </div>
+          </Toolbar>
           {cov && cov.unlinkedCount > 0 && (
             <div className="inv-banner">{cov.unlinkedCount} of {cov.ingredients} ingredients are not linked to an inventory item, so their usage is missing here ({cov.unlinked.slice(0, 5).map((u) => u.name).join(", ")}{cov.unlinkedCount > 5 ? "…" : ""}). Link them from Inventory Items.</div>
           )}
-          <div className="inv-card"><DataTable columns={usCols} rows={us.rows} loading={us.loading} error={us.error} onRetry={loadUs} rowKey={(r) => r.itemId} empty="No usage in this period." /></div>
+          <div className="inv-stack"><DataTable columns={usCols} rows={us.rows} loading={us.loading} error={us.error} onRetry={loadUs} rowKey={(r) => r.itemId} empty="No usage in this period." /></div>
           {us.meta && <div className="inv-muted">{us.meta.note}</div>}
         </>
       )}

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, dateTime, errText, money, qty, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, Select, Toolbar, dateTime, errText, money, qty, usePagedList, useRef_ } from "./InvUi";
 
 const TYPES = ["opening", "receipt", "adjustment_in", "adjustment_out", "waste", "consumption", "supplier_return", "transfer_in", "transfer_out", "status_change", "reversal"];
 const TONE = { opening: "blue", receipt: "green", adjustment_in: "green", transfer_in: "green", reversal: "amber", status_change: "grey" };
@@ -50,25 +50,24 @@ export default function StockLedger() {
     { key: "reason", label: "Reason", render: (e) => e.reason || "—" },
     { key: "user", label: "By", render: (e) => e.userName || "—" },
     ...(canReverse ? [{ key: "act", label: "", render: (e) => (
-      !["reversal", "status_change"].includes(e.type) && <button type="button" className="inv-btn inv-btn-sm inv-btn-danger" onClick={() => setRev(e)}>Reverse</button>) }] : []),
+      !["reversal", "status_change"].includes(e.type) && <Btn type="button" kind="danger" sm onClick={() => setRev(e)}>Reverse</Btn>) }] : []),
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Stock ledger" crumb="Inventory" />
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <select className="inv-select" aria-label="Item" value={itemId} onChange={(e) => setItemId(e.target.value)}><option value="">All items</option>{items.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}</select>
-          <select className="inv-select" aria-label="Type" value={type} onChange={(e) => setType(e.target.value)}><option value="">All types</option>{TYPES.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}</select>
-          <input className="inv-input" type="date" aria-label="From date" value={from} onChange={(e) => setFrom(e.target.value)} />
-          <input className="inv-input" type="date" aria-label="To date" value={to} onChange={(e) => setTo(e.target.value)} />
-        </div>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No stock movements match these filters." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+    <div className="inner-page inv-page">
+      <PageHead title="Stock ledger" count={`${list.total} entr(ies)`} />
+      <div className="inv-stack">
+        <Toolbar>
+          <Select aria-label="Item" value={itemId} onChange={(e) => setItemId(e.target.value)}><option value="">All items</option>{items.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}</Select>
+          <Select aria-label="Type" value={type} onChange={(e) => setType(e.target.value)}><option value="">All types</option>{TYPES.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}</Select>
+          <DateInput label="From" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <DateInput label="To" value={to} onChange={(e) => setTo(e.target.value)} />
+        </Toolbar>
+        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No stock movements match these filters." more={list} />
       </div>
       {rev && (
         <Modal title={`Reverse ${rev.txnNo}`} onClose={() => setRev(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setRev(null)}>Cancel</button><button type="submit" form="inv-rev-form" className="inv-btn inv-btn-danger" disabled={busy || !reason.trim()}>{busy ? "Posting…" : "Post reversal"}</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setRev(null)}>Cancel</Btn><Btn type="submit" form="inv-rev-form" kind="danger" disabled={busy || !reason.trim()}>{busy ? "Posting…" : "Post reversal"}</Btn></>}>
           <form id="inv-rev-form" onSubmit={doReverse}>
             <p style={{ margin: 0 }}>This posts an equal and opposite entry. The original stays in the ledger and can only be reversed once.</p>
             <Field label="Reason" required><textarea className="inv-textarea" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} /></Field>

@@ -7,7 +7,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, dateTime, errText, money, qty, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, Select, Toolbar, dateTime, errText, money, qty, usePagedList, useRef_ } from "./InvUi";
 import { History, ReasonDialog, StatusBadge } from "./PurchUi";
 
 function NewAudit({ locations, onClose, onDone }) {
@@ -22,12 +22,12 @@ function NewAudit({ locations, onClose, onDone }) {
     catch (err) { toast.error(errText(err)); } finally { setBusy(false); }
   };
   return (
-    <Modal title="New stock audit" onClose={onClose} footer={<><button type="button" className="inv-btn" onClick={onClose}>Cancel</button><button type="submit" form="aud-new" className="inv-btn inv-btn-primary" disabled={busy}>{busy ? "Opening…" : "Open audit"}</button></>}>
+    <Modal title="New stock audit" onClose={onClose} footer={<><Btn type="button" kind="plain" onClick={onClose}>Cancel</Btn><Btn type="submit" form="aud-new" kind="primary" disabled={busy}>{busy ? "Opening…" : "Open audit"}</Btn></>}>
       <form id="aud-new" onSubmit={submit}>
         <div className="inv-grid">
           <Field label="Title" full><input className="inv-input" maxLength={120} value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} placeholder="e.g. Weekly dry store count" /></Field>
-          <Field label="Storage location" hint="Leave empty to count the whole branch"><select className="inv-select" value={f.locationId} onChange={(e) => setF({ ...f, locationId: e.target.value })}><option value="">All locations</option>{locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select></Field>
-          <Field label="Category"><select className="inv-select" value={f.categoryId} onChange={(e) => setF({ ...f, categoryId: e.target.value })}><option value="">All categories</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
+          <Field label="Storage location" hint="Leave empty to count the whole branch"><Select value={f.locationId} onChange={(e) => setF({ ...f, locationId: e.target.value })}><option value="">All locations</option>{locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</Select></Field>
+          <Field label="Category"><Select value={f.categoryId} onChange={(e) => setF({ ...f, categoryId: e.target.value })}><option value="">All categories</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</Select></Field>
           <Field label="Blind count" full hint="Counters do not see the system quantity until the counts are submitted."><label><input type="checkbox" checked={f.blind} onChange={(e) => setF({ ...f, blind: e.target.checked })} /> Hide system quantities while counting</label></Field>
         </div>
         <div className="inv-muted">The audit takes a snapshot of today's stock. Movements after it opens are not hidden: variances are measured against the snapshot.</div>
@@ -89,11 +89,11 @@ function AuditSheet({ id, onClose, onChanged }) {
   return (
     <Modal wide title={`${a.auditNo}${a.title ? ` — ${a.title}` : ""}`} onClose={onClose}
       footer={<>
-        <button type="button" className="inv-btn" onClick={onClose}>Close</button>
-        {counting && canWrite && <><button type="button" className="inv-btn" disabled={busy || !Object.keys(edits).length} onClick={save}>Save counts</button><button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={submit}>Submit for approval</button></>}
-        {a.status === "pending_approval" && canApprove && <><button type="button" className="inv-btn inv-btn-danger" disabled={busy} onClick={() => setDlg("reject")}>Send back for recount</button><button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act("approve", {}, "Approved")}>Approve</button></>}
-        {a.status === "approved" && canApprove && <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act("post", {}, "Adjustments posted to the stock ledger")}>Post adjustments</button>}
-        {["counting", "pending_approval", "approved"].includes(a.status) && canWrite && <button type="button" className="inv-btn inv-btn-danger" disabled={busy} onClick={() => setDlg("cancel")}>Cancel audit</button>}
+        <Btn type="button" kind="plain" onClick={onClose}>Close</Btn>
+        {counting && canWrite && <><Btn type="button" kind="plain" disabled={busy || !Object.keys(edits).length} onClick={save}>Save counts</Btn><Btn type="button" kind="primary" disabled={busy} onClick={submit}>Submit for approval</Btn></>}
+        {a.status === "pending_approval" && canApprove && <><Btn type="button" kind="danger" disabled={busy} onClick={() => setDlg("reject")}>Send back for recount</Btn><Btn type="button" kind="primary" disabled={busy} onClick={() => act("approve", {}, "Approved")}>Approve</Btn></>}
+        {a.status === "approved" && canApprove && <Btn type="button" kind="primary" disabled={busy} onClick={() => act("post", {}, "Adjustments posted to the stock ledger")}>Post adjustments</Btn>}
+        {["counting", "pending_approval", "approved"].includes(a.status) && canWrite && <Btn type="button" kind="danger" disabled={busy} onClick={() => setDlg("cancel")}>Cancel audit</Btn>}
       </>}>
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
         <StatusBadge status={a.status} /> <span className="inv-muted">{a.counted}/{a.lineCount} counted · opened by {a.createdByName}</span>
@@ -109,7 +109,6 @@ function AuditSheet({ id, onClose, onChanged }) {
 
 export default function StockAudits() {
   const { hasModulePermission } = useAuth();
-  const { currentVenue } = useVenue();
   const canWrite = hasModulePermission("stockAudits", "write");
   const [status, setStatus] = useState("");
   const list = usePagedList("/automation/audits", { status });
@@ -117,7 +116,7 @@ export default function StockAudits() {
   const [creating, setCreating] = useState(false);
   const [open, setOpen] = useState(null);
   const cols = [
-    { key: "auditNo", label: "Audit", render: (r) => <button type="button" className="inv-link" onClick={() => setOpen(r.id)}>{r.auditNo}</button> },
+    { key: "auditNo", label: "Audit", render: (r) => <span className="clickable" onClick={() => setOpen(r.id)}>{r.auditNo}</span> },
     { key: "title", label: "Title" },
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
     { key: "progress", label: "Counted", num: true, render: (r) => `${r.counted}/${r.lineCount}` },
@@ -126,19 +125,17 @@ export default function StockAudits() {
     { key: "createdAt", label: "Opened", render: (r) => dateTime(r.createdAt) },
   ];
   return (
-    <div className="inv-page">
-      <PageHead title="Stock audits" crumb="Automation">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={() => setCreating(true)}>New audit</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Stock audits" count={`${list.total} audit(s)`}>
+        {canWrite && <Btn type="button" kind="primary" onClick={() => setCreating(true)}>New audit</Btn>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <select className="inv-select" aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
+      <div className="inv-stack">
+        <Toolbar>
+          <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">All statuses</option>{["counting", "pending_approval", "approved", "posted", "cancelled"].map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
-          </select>
-        </div>
-        <DataTable columns={cols} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} rowKey={(r) => r.id} empty="No audits yet. Open one to count what is physically on the shelves." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+          </Select>
+        </Toolbar>
+        <DataTable columns={cols} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} rowKey={(r) => r.id} empty="No audits yet. Open one to count what is physically on the shelves." more={list} />
       </div>
       {creating && <NewAudit locations={locations.filter((l) => l.status === "active")} onClose={() => setCreating(false)} onDone={(id) => { setCreating(false); list.reload(); setOpen(id); }} />}
       {open && <AuditSheet id={open} onClose={() => setOpen(null)} onChanged={list.reload} />}

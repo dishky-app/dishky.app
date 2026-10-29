@@ -5,7 +5,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, PageHead, dateShort, errText, money, qty } from "./InvUi";
+import { Badge, Btn, DataTable, PageHead, dateShort, errText, money, qty } from "./InvUi";
 
 const SECTIONS = [
   ["outOfStock", "Out of stock", "red"], ["expired", "Expired stock", "red"], ["consumptionIssues", "Orders that could not be fully deducted", "amber"],
@@ -15,7 +15,7 @@ const SECTIONS = [
 
 export default function InventoryAlerts() {
   const { hasModulePermission } = useAuth();
-  const { venueId, venueParam, currentVenue } = useVenue();
+  const { venueId, venueParam } = useVenue();
   const { toast } = useToast();
   const canWrite = hasModulePermission("inventoryAlerts", "write");
   const [data, setData] = useState(null);
@@ -48,16 +48,15 @@ export default function InventoryAlerts() {
   };
   const mk = (key) => [
     ...cols[key].map(([k, label, render]) => ({ key: k, label, render })),
-    ...(key === "consumptionIssues" && canWrite ? [{ key: "x", label: "", render: (r) => <button type="button" className="inv-btn inv-btn-sm" onClick={() => resolve(r.id)}>Resolve</button> }] : []),
+    ...(key === "consumptionIssues" && canWrite ? [{ key: "x", label: "", render: (r) => <Btn type="button" kind="plain" sm onClick={() => resolve(r.id)}>Resolve</Btn> }] : []),
   ];
   const pa = data?.pendingApprovals;
 
   return (
-    <div className="inv-page">
-      <PageHead title="Inventory alerts" crumb="Automation">
-        <button type="button" className="inv-btn" onClick={load} disabled={loading}>Refresh</button>
+    <div className="inner-page inv-page">
+      <PageHead title="Inventory alerts">
+        <Btn type="button" kind="plain" onClick={load} disabled={loading}>Refresh</Btn>
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}{data ? ` · updated ${new Date(data.generatedAt).toLocaleTimeString("en-IN")}` : ""}</div>}
       {error && <div className="inv-banner" role="alert">{error}</div>}
       {data && (
         <>
@@ -77,12 +76,12 @@ export default function InventoryAlerts() {
           )}
           {SECTIONS.filter(([k]) => data[k].length).map(([k, label, tone]) => (
             <div key={k} className="inv-card">
-              <div className="inv-toolbar"><b>{label}</b> <Badge tone={tone}>{data[k].length}</Badge></div>
+              <div className="inv-panel-title"><b>{label}</b> <Badge tone={tone}>{data[k].length}</Badge></div>
               <DataTable columns={mk(k)} rows={data[k]} rowKey={(r, i) => r.id || `${r.itemId}-${r.batchNo || ""}-${i}`} />
             </div>
           ))}
           {SECTIONS.every(([k]) => !data[k].length) && <div className="inv-card" style={{ padding: 20 }}>Nothing needs attention right now.</div>}
-          <div className="inv-muted">Alerts are worked out each time this page loads; they are not pushed to phones. Expiry window: {data.settings.expiryAlertDays} days.</div>
+          <div className="inv-muted">Alerts are worked out each time this page loads; they are not pushed to phones. Expiry window: {data.settings.expiryAlertDays} days. Updated {new Date(data.generatedAt).toLocaleTimeString("en-IN")}.</div>
         </>
       )}
     </div>

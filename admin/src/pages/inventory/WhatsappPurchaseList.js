@@ -8,12 +8,12 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, PageHead, Pager, dateTime, errText, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, Field, PageHead, Select, dateTime, errText, usePagedList, useRef_ } from "./InvUi";
 import { LineEditor, linesPayload } from "./PurchUi";
 
 export default function WhatsappPurchaseList() {
   const { hasModulePermission } = useAuth();
-  const { venueParam, currentVenue } = useVenue();
+  const { venueParam } = useVenue();
   const { toast } = useToast();
   const canSend = hasModulePermission("purchaseWhatsapp", "write");
   const suppliers = useRef_("/inventory/suppliers", { status: "active", limit: 200 }, (d) => d.data);
@@ -53,22 +53,21 @@ export default function WhatsappPurchaseList() {
     { key: "sentByName", label: "Sent by" },
   ];
   return (
-    <div className="inv-page">
-      <PageHead title="WhatsApp purchase list" crumb="Automation" />
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
+    <div className="inner-page inv-page">
+      <PageHead title="WhatsApp purchase list" />
       <div className="inv-banner">Sending needs the server's WhatsApp (AiSensy) key and an approved template name — set it in <Link to="/purchase/automation">Automation settings</Link>. This sends a message only; it does not create or approve a purchase order.</div>
-      <div className="inv-card" style={{ padding: 16 }}>
+      <div className="details-container inv-form">
         <div className="inv-grid">
-          <Field label="Supplier" required><select className="inv-select" value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">Select…</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></Field>
+          <Field label="Supplier" required><Select value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">Select…</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>
         </div>
         <div className="inv-section">Items to order</div>
         <LineEditor items={items} value={lines} onChange={setLines} />
-        <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-          <button type="button" className="inv-btn" disabled={busy || !lines.length} onClick={doPreview}>Preview</button>
-          {canSend && <button type="button" className="inv-btn inv-btn-primary" disabled={busy || !preview || !preview.phoneValid || !preview.templateConfigured || !preview.apiConfigured} onClick={() => send(false)}>Send on WhatsApp</button>}
+        <div className="inv-btnrow">
+          <Btn type="button" kind="plain" disabled={busy || !lines.length} onClick={doPreview}>Preview</Btn>
+          {canSend && <Btn type="button" kind="primary" disabled={busy || !preview || !preview.phoneValid || !preview.templateConfigured || !preview.apiConfigured} onClick={() => send(false)}>Send on WhatsApp</Btn>}
         </div>
         {preview && (
-          <div className="inv-card" style={{ padding: 12, marginTop: 12 }}>
+          <div className="inv-preview">
             <div><b>{preview.supplier.name}</b> · {preview.phoneValid ? preview.phoneMasked : <Badge tone="red">no valid mobile number on file</Badge>} · {preview.itemCount} item(s)</div>
             <div className="inv-muted" style={{ marginTop: 6 }}>{preview.variables[2]}</div>
             {!preview.templateConfigured && <div className="inv-banner" style={{ marginTop: 8 }}>No template name is set.</div>}
@@ -77,10 +76,9 @@ export default function WhatsappPurchaseList() {
           </div>
         )}
       </div>
-      <div className="inv-card">
-        <div className="inv-toolbar"><b>Send log</b></div>
-        <DataTable columns={cols} rows={log.rows} loading={log.loading} error={log.error} onRetry={log.reload} rowKey={(r) => r.id} empty="Nothing sent yet." />
-        <Pager page={log.page} setPage={log.setPage} total={log.total} pageSize={log.pageSize} />
+      <div className="inv-card inv-logcard">
+        <div className="inv-panel-title"><b>Send log</b></div>
+        <DataTable columns={cols} rows={log.rows} loading={log.loading} error={log.error} onRetry={log.reload} rowKey={(r) => r.id} empty="Nothing sent yet." more={log} />
       </div>
     </div>
   );

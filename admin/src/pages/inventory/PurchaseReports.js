@@ -3,13 +3,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import api from "../../api";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { DataTable, Field, PageHead, dateShort, errText, money, qty, useRef_ } from "./InvUi";
+import { Btn, DataTable, DateInput, Field, PageHead, Select, Tabs, Toolbar, dateShort, errText, money, qty, useRef_ } from "./InvUi";
 
 const TABS = [["purchase-summary", "Purchases"], ["payables-aging", "Payables aging"], ["price-trend", "Price trend"], ["consumption-cost", "Usage & waste cost"], ["invoice-variance", "Invoice variances"]];
 const iso = (d) => d.toISOString().slice(0, 10);
 
+const TOTAL_LABELS = { taxable: "Taxable value", tax: "Tax (GST)", total: "Total", returns: "Returns", net: "Net purchases" };
+
 export default function PurchaseReports() {
-  const { venueParam, venueId, currentVenue } = useVenue();
+  const { venueParam, venueId } = useVenue();
   const { toast } = useToast();
   const items = useRef_("/inventory/items", { limit: 200 }, (d) => d.data);
   const [tab, setTab] = useState("purchase-summary");
@@ -50,27 +52,26 @@ export default function PurchaseReports() {
   const rows = data ? data.rows || data.series || [] : [];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Purchase & cost reports" crumb="Finance">
-        <button type="button" className="inv-btn" onClick={download} disabled={!rows.length}>Download CSV</button>
+    <div className="inner-page inv-page">
+      <PageHead title="Purchase & cost reports">
+        <Btn type="button" kind="plain" onClick={download} disabled={!rows.length}>Download CSV</Btn>
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
-      <div className="inv-tabs" role="tablist">{TABS.map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={tab === k} className="inv-tab" onClick={() => { setTab(k); setData(null); }}>{l}</button>)}</div>
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          {tab !== "payables-aging" && <><Field label="From"><input type="date" className="inv-input" value={from} onChange={(e) => setFrom(e.target.value)} /></Field><Field label="To"><input type="date" className="inv-input" value={to} onChange={(e) => setTo(e.target.value)} /></Field></>}
+      <Tabs tabs={TABS} value={tab} onChange={(k) => { setTab(k); setData(null); }} />
+      <div className="inv-stack">
+        <Toolbar>
+          {tab !== "payables-aging" && <><DateInput label="From" value={from} onChange={(e) => setFrom(e.target.value)} /><DateInput label="To" value={to} onChange={(e) => setTo(e.target.value)} /></>}
           {tab === "purchase-summary" && <>
-            <Field label="Based on"><select className="inv-select" value={basis} onChange={(e) => setBasis(e.target.value)}><option value="received">Goods received</option><option value="invoiced">Approved invoices</option></select></Field>
-            <Field label="Group by"><select className="inv-select" value={groupBy} onChange={(e) => setGroupBy(e.target.value)}><option value="supplier">Supplier</option><option value="item">Item</option><option value="month">Month</option></select></Field></>}
-          {tab === "price-trend" && <Field label="Item"><select className="inv-select" value={itemId} onChange={(e) => setItemId(e.target.value)}><option value="">Choose item</option>{items.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}</select></Field>}
-        </div>
-        {data && data.note && <div className="inv-hint" style={{ padding: "8px 12px" }}>{data.note}</div>}
+            <Field label="Based on"><Select value={basis} onChange={(e) => setBasis(e.target.value)}><option value="received">Goods received</option><option value="invoiced">Approved invoices</option></Select></Field>
+            <Field label="Group by"><Select value={groupBy} onChange={(e) => setGroupBy(e.target.value)}><option value="supplier">Supplier</option><option value="item">Item</option><option value="month">Month</option></Select></Field></>}
+          {tab === "price-trend" && <Field label="Item"><Select value={itemId} onChange={(e) => setItemId(e.target.value)}><option value="">Choose item</option>{items.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}</Select></Field>}
+        </Toolbar>
+        {data && data.note && <div className="inv-hint inv-note">{data.note}</div>}
         {tab === "price-trend" && !itemId ? <div className="inv-empty">Choose an item to see what you paid over time.</div> : (
           <DataTable columns={cols} rows={rows} loading={loading} error={error} onRetry={load} rowKey={(r) => r.key || r.supplierId ? `${r.key || r.supplierId}${r.month || ""}` : `${r.docNo}${r.item}${r.issue}`} empty="No data for this period." />)}
-        {data && data.totals && tab !== "payables-aging" && <div className="inv-totals" style={{ padding: 12 }}>{Object.entries(data.totals).map(([k, v]) => <div key={k}><span>{k.replace(/([A-Z])/g, " $1")}</span><span>{money(v)}</span></div>)}</div>}
-        {data && tab === "payables-aging" && <div className="inv-totals" style={{ padding: 12 }}><div className="inv-grand"><span>Total owed</span><span>{money(data.totals.total)}</span></div></div>}
-        {data && tab === "price-trend" && data.changePct !== null && data.changePct !== undefined && <div className="inv-hint" style={{ padding: 12 }}>Change from first to last month: {data.changePct}%. Lowest {money(data.min)}, highest {money(data.max)}.</div>}
-        {data && tab === "payables-aging" && data.invoices && <div style={{ padding: 12 }}><div className="inv-section">Invoices owed</div><ul className="inv-history">{data.invoices.map((i) => <li key={i.docNo}>{i.docNo} ({i.invoiceNo}) — {i.supplier} — due {dateShort(i.dueDate)} — {money(i.outstanding)}</li>)}</ul></div>}
+        {data && data.totals && tab !== "payables-aging" && <div className="inv-card inv-totals">{Object.entries(data.totals).map(([k, v]) => <div key={k} className={k === "net" || k === "total" ? "inv-grand" : ""}><span>{TOTAL_LABELS[k] || k.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase())}</span><span>{money(v)}</span></div>)}</div>}
+        {data && tab === "payables-aging" && <div className="inv-card inv-totals"><div className="inv-grand"><span>Total owed</span><span>{money(data.totals.total)}</span></div></div>}
+        {data && tab === "price-trend" && data.changePct !== null && data.changePct !== undefined && <div className="inv-card inv-note">Change from first to last month: {data.changePct}%. Lowest {money(data.min)}, highest {money(data.max)}.</div>}
+        {data && tab === "payables-aging" && data.invoices && <div className="inv-card inv-note"><div className="inv-section">Invoices owed</div><ul className="inv-history">{data.invoices.map((i) => <li key={i.docNo}>{i.docNo} ({i.invoiceNo}) — {i.supplier} — due {dateShort(i.dueDate)} — {money(i.outstanding)}</li>)}</ul></div>}
       </div>
     </div>
   );

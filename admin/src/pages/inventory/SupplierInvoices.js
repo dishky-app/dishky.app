@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
 import { History, KeyVals, LineEditor, ReasonDialog, StatusBadge, linesPayload, statusLabel } from "./PurchUi";
 
 const MATCH_TONE = { matched: "green", variance: "amber", unmatched: "red" };
@@ -14,7 +14,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 
 export default function SupplierInvoices() {
   const { hasModulePermission } = useAuth();
-  const { venueId, currentVenue } = useVenue();
+  const { venueId } = useVenue();
   const { toast } = useToast();
   const canWrite = hasModulePermission("purchaseInvoices", "write");
   const canApprove = hasModulePermission("purchaseApprovals", "write");
@@ -86,7 +86,7 @@ export default function SupplierInvoices() {
   };
 
   const columns = [
-    { key: "docNo", label: "Ref", render: (r) => <button type="button" className="inv-link" onClick={() => open(r.id)}>{r.docNo}</button> },
+    { key: "docNo", label: "Ref", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.docNo}</span> },
     { key: "invoiceNo", label: "Supplier invoice" }, { key: "supplierName", label: "Supplier" },
     { key: "invoiceDate", label: "Date", render: (r) => dateShort(r.invoiceDate) },
     { key: "dueDate", label: "Due", render: (r) => <>{dateShort(r.dueDate)} {r.overdue && <Badge tone="red">overdue</Badge>}</> },
@@ -97,32 +97,30 @@ export default function SupplierInvoices() {
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Supplier invoices" crumb="Finance">
-        {canWrite && <button type="button" className="inv-btn inv-btn-primary" onClick={openNew}>+ Record invoice</button>}
+    <div className="inner-page inv-page">
+      <PageHead title="Supplier invoices" count={`${list.total} invoice(s)`}>
+        {canWrite && <Btn type="button" kind="primary" onClick={openNew}>+ Record invoice</Btn>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <input className="inv-input inv-search" placeholder="Search ref, invoice no. or supplier" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select className="inv-select" aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["draft", "pending_approval", "approved", "rejected", "disputed", "cancelled"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</select>
-          <select className="inv-select" aria-label="Match" value={match} onChange={(e) => setMatch(e.target.value)}><option value="">Any match</option><option value="matched">Matched</option><option value="variance">Variance</option><option value="unmatched">No order</option></select>
-          <label className="inv-check"><input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} />Overdue only</label>
-        </div>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No supplier invoices yet." />
-        <Pager page={list.page} setPage={list.setPage} total={list.total} pageSize={list.pageSize} />
+      <div className="inv-stack">
+        <Toolbar>
+          <SearchBox placeholder=" Search ref, invoice no. or supplier" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["draft", "pending_approval", "approved", "rejected", "disputed", "cancelled"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
+          <Select aria-label="Match" value={match} onChange={(e) => setMatch(e.target.value)}><option value="">Any match</option><option value="matched">Matched</option><option value="variance">Variance</option><option value="unmatched">No order</option></Select>
+          <label className="checkbox-item inv-check"><input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} />Overdue only</label>
+        </Toolbar>
+        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No supplier invoices yet." more={list} />
       </div>
 
       {form && (
         <Modal wide title="Record supplier invoice" onClose={() => setForm(null)}
-          footer={<><button type="button" className="inv-btn" onClick={() => setForm(null)}>Cancel</button><button type="submit" form="sinv-form" className="inv-btn inv-btn-primary" disabled={busy}>Save draft</button></>}>
+          footer={<><Btn type="button" kind="plain" onClick={() => setForm(null)}>Cancel</Btn><Btn type="submit" form="sinv-form" kind="primary" disabled={busy}>Save draft</Btn></>}>
           <form id="sinv-form" onSubmit={save}>
             <div className="inv-grid">
-              <Field label="Purchase order" hint="Pick the order to prefill what was received and not yet invoiced."><select className="inv-select" value={form.poId} onChange={(e) => pickPo(e.target.value)}><option value="">No order (will show as unmatched)</option>{pos.map((p) => <option key={p.id} value={p.id}>{p.poNo} — {p.supplierName}</option>)}</select></Field>
-              <Field label="Supplier" required={!form.poId}><select className="inv-select" disabled={!!form.poId} value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}><option value="">Choose supplier</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></Field>
+              <Field label="Purchase order" hint="Pick the order to prefill what was received and not yet invoiced."><Select value={form.poId} onChange={(e) => pickPo(e.target.value)}><option value="">No order (will show as unmatched)</option>{pos.map((p) => <option key={p.id} value={p.id}>{p.poNo} — {p.supplierName}</option>)}</Select></Field>
+              <Field label="Supplier" required={!form.poId}><Select disabled={!!form.poId} value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}><option value="">Choose supplier</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>
               <Field label="Supplier's invoice no." required><input className="inv-input" maxLength={60} value={form.invoiceNo} onChange={(e) => setForm({ ...form, invoiceNo: e.target.value })} /></Field>
-              <Field label="Invoice date" required><input type="date" className="inv-input" value={form.invoiceDate} onChange={(e) => setForm({ ...form, invoiceDate: e.target.value })} /></Field>
-              <Field label="Due date" hint="Leave blank to use the payment terms (e.g. Net 30)."><input type="date" className="inv-input" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></Field>
+              <Field label="Invoice date" required><DateInput value={form.invoiceDate} onChange={(e) => setForm({ ...form, invoiceDate: e.target.value })} /></Field>
+              <Field label="Due date" hint="Leave blank to use the payment terms (e.g. Net 30)."><DateInput value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} /></Field>
               <Field label="Total printed on the invoice (₹)" hint="Optional cross-check against the calculated total."><input className="inv-input" inputMode="decimal" value={form.statedTotal} onChange={(e) => setForm({ ...form, statedTotal: e.target.value })} /></Field>
             </div>
             <div className="inv-section">Items (price per selected unit, before discount and GST)</div>
@@ -139,14 +137,14 @@ export default function SupplierInvoices() {
       {detail && !form && (
         <Modal wide title={`${detail.docNo} — ${detail.invoiceNo}`} onClose={() => setDetail(null)}
           footer={<div className="inv-btnrow">
-            {["draft", "rejected", "disputed"].includes(detail.status) && canWrite && <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={() => act("submit", {}, "Submitted for approval")}>Submit for approval</button>}
+            {["draft", "rejected", "disputed"].includes(detail.status) && canWrite && <Btn type="button" kind="primary" disabled={busy} onClick={() => act("submit", {}, "Submitted for approval")}>Submit for approval</Btn>}
             {detail.status === "pending_approval" && canApprove && <>
-              <button type="button" className="inv-btn inv-btn-primary" disabled={busy} onClick={tryApprove}>Approve</button>
-              <button type="button" className="inv-btn" onClick={() => setAsk({ title: "Mark as disputed", path: "dispute", label: "What is disputed with the supplier?" })}>Dispute</button>
-              <button type="button" className="inv-btn inv-btn-danger" onClick={() => setAsk({ title: "Reject invoice", path: "reject", label: "Reason for rejection", danger: true })}>Reject</button></>}
-            {detail.status === "approved" && canWrite && detail.outstanding > 0 && <button type="button" className="inv-btn" onClick={loadCredits}>Apply credit note</button>}
+              <Btn type="button" kind="primary" disabled={busy} onClick={tryApprove}>Approve</Btn>
+              <Btn type="button" kind="plain" onClick={() => setAsk({ title: "Mark as disputed", path: "dispute", label: "What is disputed with the supplier?" })}>Dispute</Btn>
+              <Btn type="button" kind="danger" onClick={() => setAsk({ title: "Reject invoice", path: "reject", label: "Reason for rejection", danger: true })}>Reject</Btn></>}
+            {detail.status === "approved" && canWrite && detail.outstanding > 0 && <Btn type="button" kind="plain" onClick={loadCredits}>Apply credit note</Btn>}
             {detail.status === "approved" && canPay && detail.payableNow > 0 && <span className="inv-muted">Record the payment under Supplier Payments.</span>}
-            {["draft", "pending_approval", "rejected", "disputed", "approved"].includes(detail.status) && canWrite && <button type="button" className="inv-btn inv-btn-danger" onClick={() => setAsk({ title: "Cancel invoice", path: "cancel", label: "Reason for cancelling", danger: true })}>Cancel</button>}
+            {["draft", "pending_approval", "rejected", "disputed", "approved"].includes(detail.status) && canWrite && <Btn type="button" kind="danger" onClick={() => setAsk({ title: "Cancel invoice", path: "cancel", label: "Reason for cancelling", danger: true })}>Cancel</Btn>}
           </div>}>
           <KeyVals rows={[["Status", <StatusBadge key="s" status={detail.status} />], ["Supplier", `${detail.supplierName}${detail.supplierGstin ? ` · ${detail.supplierGstin}` : ""}`], ["Order", detail.poNo || "None"], ["Invoice date", dateShort(detail.invoiceDate)], ["Due", dateShort(detail.dueDate)], ["Recorded by", detail.createdByName], ["Notes", detail.notes], ["Override reason", detail.overrideReason]]} />
           {detail.match && <div>
@@ -182,11 +180,11 @@ export default function SupplierInvoices() {
       {ask && <ReasonDialog title={ask.title} label={ask.label} danger={ask.danger} confirmLabel={ask.confirmLabel} busy={busy} onClose={() => setAsk(null)}
         onSubmit={(t) => act(ask.path, ask.override ? { overrideReason: t } : { reason: t }, "Done")} />}
       {credits && (
-        <Modal title="Apply a supplier credit note" onClose={() => setCredits(null)} footer={<button type="button" className="inv-btn" onClick={() => setCredits(null)}>Close</button>}>
+        <Modal title="Apply a supplier credit note" onClose={() => setCredits(null)} footer={<Btn type="button" kind="plain" onClick={() => setCredits(null)}>Close</Btn>}>
           {credits.length === 0 ? <div className="inv-muted">No unapplied credit notes from this supplier. Record one on a dispatched supplier return first.</div> : credits.map((r) => (
             <div key={r.id} className="inv-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
               <span>{r.creditNoteNo} — {r.returnNo} — {money(r.creditAmount)}</span>
-              <button type="button" className="inv-btn inv-btn-sm inv-btn-primary" disabled={busy} onClick={async () => { const x = await run(() => api.post(`/finance/invoices/${detail.id}/apply-credit`, { returnId: r.id }), "Credit applied"); if (x) { setCredits(null); open(detail.id); } }}>Apply</button>
+              <Btn type="button" kind="primary" sm disabled={busy} onClick={async () => { const x = await run(() => api.post(`/finance/invoices/${detail.id}/apply-credit`, { returnId: r.id }), "Credit applied"); if (x) { setCredits(null); open(detail.id); } }}>Apply</Btn>
             </div>))}
         </Modal>
       )}

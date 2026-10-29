@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Field, PageHead, errText } from "./InvUi";
+import { Btn, Field, PageHead, errText } from "./InvUi";
 
 export default function PurchaseSettings() {
   const { hasModulePermission } = useAuth();
@@ -19,12 +19,12 @@ export default function PurchaseSettings() {
     try { setF((await api.patch("/purchase/settings", f)).data); toast.success("Settings saved"); }
     catch (e) { toast.error(errText(e)); } finally { setBusy(false); }
   };
-  if (error) return <div className="inv-page"><div className="inv-error" role="alert">{error}</div></div>;
-  if (!f) return <div className="inv-page"><div className="inv-muted">Loading…</div></div>;
+  if (error) return <div className="inner-page inv-page"><div className="inv-error" role="alert">{error}</div></div>;
+  if (!f) return <div className="inner-page inv-page"><div className="inv-muted">Loading…</div></div>;
   return (
-    <div className="inv-page">
-      <PageHead title="Purchase settings" crumb="Procurement" />
-      <form className="inv-card" style={{ padding: 20, maxWidth: 720 }} onSubmit={save}>
+    <div className="inner-page inv-page">
+      <PageHead title="Purchase settings" />
+      <form className="details-container inv-form" onSubmit={save}>
         <div className="inv-grid">
           <Field label="Purchase request auto-approval limit (₹)" hint="Requests up to this value skip approval. 0 = every request needs approval."><input className="inv-input" inputMode="decimal" disabled={!canWrite} value={f.prApprovalLimit} onChange={(e) => setF({ ...f, prApprovalLimit: e.target.value })} /></Field>
           <Field label="Purchase order auto-approval limit (₹)" hint="Orders up to this value skip approval. 0 = every order needs approval."><input className="inv-input" inputMode="decimal" disabled={!canWrite} value={f.poApprovalLimit} onChange={(e) => setF({ ...f, poApprovalLimit: e.target.value })} /></Field>
@@ -35,10 +35,10 @@ export default function PurchaseSettings() {
           <Field label="Invoice total tolerance (₹)" hint="Allowed difference between the printed and calculated total (rounding)."><input className="inv-input" inputMode="decimal" disabled={!canWrite} value={f.invoiceTotalTolerance} onChange={(e) => setF({ ...f, invoiceTotalTolerance: e.target.value })} /></Field>
           <Field label="Payment auto-approval limit (₹)" hint="Payments up to this amount skip approval. 0 = every payment needs approval."><input className="inv-input" inputMode="decimal" disabled={!canWrite} value={f.paymentApprovalLimit} onChange={(e) => setF({ ...f, paymentApprovalLimit: e.target.value })} /></Field>
           <Field label="Over-delivery tolerance (%)" hint="Extra quantity accepted above the ordered quantity. 0 = none."><input className="inv-input" inputMode="decimal" disabled={!canWrite} value={f.overReceiptPct} onChange={(e) => setF({ ...f, overReceiptPct: e.target.value })} /></Field>
-          <label className="inv-check inv-full"><input type="checkbox" disabled={!canWrite} checked={!!f.allowSelfApproval} onChange={(e) => setF({ ...f, allowSelfApproval: e.target.checked })} />Allow people to approve documents they created themselves (not recommended)</label>
-          <label className="inv-check inv-full"><input type="checkbox" disabled={!canWrite} checked={!!f.allowManualPo} onChange={(e) => setF({ ...f, allowManualPo: e.target.checked })} />Allow purchase orders without a purchase request or quotation</label>
+          <label className="checkbox-item inv-check inv-full"><input type="checkbox" disabled={!canWrite} checked={!!f.allowSelfApproval} onChange={(e) => setF({ ...f, allowSelfApproval: e.target.checked })} />Allow people to approve documents they created themselves (not recommended)</label>
+          <label className="checkbox-item inv-check inv-full"><input type="checkbox" disabled={!canWrite} checked={!!f.allowManualPo} onChange={(e) => setF({ ...f, allowManualPo: e.target.checked })} />Allow purchase orders without a purchase request or quotation</label>
         </div>
-        {canWrite && <div style={{ marginTop: 16 }}><button type="submit" className="inv-btn inv-btn-primary" disabled={busy}>Save settings</button></div>}
+        {canWrite && <div className="inv-formfoot"><Btn type="submit" kind="primary" disabled={busy}>Save settings</Btn></div>}
       </form>
     </div>
   );

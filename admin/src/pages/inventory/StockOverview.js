@@ -7,9 +7,8 @@
 import React, { useMemo, useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, DataTable, Field, Modal, PageHead, Pager, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Tabs, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
 
 const ROW_VIEWS = [
   ["all", "All stock"], ["available", "Available"], ["reserved", "Reserved"], ["quarantined", "Quarantined"],
@@ -75,26 +74,26 @@ function PostForm({ action, preset, items, locations, onClose, onDone }) {
 
   return (
     <Modal title={cfg.title} onClose={onClose}
-      footer={<><button type="button" className="inv-btn" onClick={onClose}>Cancel</button><button type="submit" form="inv-post-form" className="inv-btn inv-btn-primary" disabled={busy}>{busy ? "Posting…" : "Post"}</button></>}>
+      footer={<><Btn type="button" kind="plain" onClick={onClose}>Cancel</Btn><Btn type="submit" form="inv-post-form" kind="primary" disabled={busy}>{busy ? "Posting…" : "Post"}</Btn></>}>
       <form id="inv-post-form" onSubmit={submit} noValidate>
         <div className="inv-grid">
           <Field label="Item" required error={errors.itemId} full>
-            <select className="inv-select" value={f.itemId} onChange={(e) => { setF((p) => ({ ...p, itemId: e.target.value, unit: "" })); setErrors((p) => ({ ...p, itemId: "" })); }}>
+            <Select value={f.itemId} onChange={(e) => { setF((p) => ({ ...p, itemId: e.target.value, unit: "" })); setErrors((p) => ({ ...p, itemId: "" })); }}>
               <option value="">Select item…</option>{items.map((i) => <option key={i.id} value={i.id}>{i.name} ({i.sku})</option>)}
-            </select>
+            </Select>
           </Field>
           <Field label="Storage location" required error={errors.locationId}>
-            <select className="inv-select" value={f.locationId} onChange={set("locationId")}><option value="">Select…</option>{locations.filter((l) => l.status === "active").map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</select>
+            <Select value={f.locationId} onChange={set("locationId")}><option value="">Select…</option>{locations.filter((l) => l.status === "active").map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}</Select>
           </Field>
           <Field label="Batch number" required={!!item?.trackBatches} error={errors.batchNo}><input className="inv-input" value={f.batchNo} onChange={set("batchNo")} maxLength={60} /></Field>
           <Field label="Quantity" required error={errors.qty}><input className={`inv-input${errors.qty ? " inv-invalid" : ""}`} inputMode="decimal" value={f.qty} onChange={set("qty")} /></Field>
           <Field label="Unit" hint="Converted to the item's base unit on the server">
-            <select className="inv-select" value={f.unit || item?.baseUnit || ""} onChange={set("unit")} disabled={!item}>{unitChoices.map((u) => <option key={u} value={u}>{u}</option>)}</select>
+            <Select value={f.unit || item?.baseUnit || ""} onChange={set("unit")} disabled={!item}>{unitChoices.map((u) => <option key={u} value={u}>{u}</option>)}</Select>
           </Field>
           {cfg.needsCost && <Field label={`Unit cost (₹ per ${f.unit || item?.baseUnit || "unit"})`}><input className="inv-input" inputMode="decimal" value={f.unitCost} onChange={set("unitCost")} /></Field>}
-          {cfg.needsCost && <Field label="Expiry date" required={!!item?.trackExpiry} error={errors.expiryDate}><input className="inv-input" type="date" value={f.expiryDate} onChange={set("expiryDate")} /></Field>}
-          {cfg.needsCost && <Field label="Manufactured on"><input className="inv-input" type="date" value={f.mfgDate} onChange={set("mfgDate")} /></Field>}
-          {cfg.waste && <Field label="Waste reason" required><select className="inv-select" value={f.wasteReason} onChange={set("wasteReason")}>{WASTE.map((w) => <option key={w} value={w}>{w.replace("_", " ")}</option>)}</select></Field>}
+          {cfg.needsCost && <Field label="Expiry date" required={!!item?.trackExpiry} error={errors.expiryDate}><DateInput value={f.expiryDate} onChange={set("expiryDate")} /></Field>}
+          {cfg.needsCost && <Field label="Manufactured on"><DateInput value={f.mfgDate} onChange={set("mfgDate")} /></Field>}
+          {cfg.waste && <Field label="Waste reason" required><Select value={f.wasteReason} onChange={set("wasteReason")}>{WASTE.map((w) => <option key={w} value={w}>{w.replace("_", " ")}</option>)}</Select></Field>}
           <Field label={cfg.needsReason ? "Reason" : "Notes"} required={cfg.needsReason} error={errors.reason} full><textarea className="inv-textarea" value={f.reason} onChange={set("reason")} maxLength={500} /></Field>
         </div>
       </form>
@@ -104,7 +103,6 @@ function PostForm({ action, preset, items, locations, onClose, onDone }) {
 
 export default function StockOverview() {
   const { hasModulePermission } = useAuth();
-  const { currentVenue } = useVenue();
   const canWrite = hasModulePermission("inventoryStock", "write");
   const [tab, setTab] = useState("items");
   const [view, setView] = useState("");
@@ -159,23 +157,22 @@ export default function StockOverview() {
     { key: "expiry", label: "Expiry", render: (r) => (r.expiryDate ? <Badge tone={r.isExpired ? "red" : "grey"}>{dateShort(r.expiryDate)}</Badge> : "—") },
     ...(canWrite ? [{ key: "act", label: "", render: (r) => (
       <span style={{ display: "flex", gap: 6 }}>
-        <button type="button" className="inv-btn inv-btn-sm" onClick={() => setPost({ action: "waste", preset: r })}>Waste</button>
-        <button type="button" className="inv-btn inv-btn-sm" onClick={() => setPost({ action: r.quarantined ? "release" : "quarantine", preset: r })}>{r.quarantined ? "Release" : "Quarantine"}</button>
+        <Btn type="button" kind="plain" sm onClick={() => setPost({ action: "waste", preset: r })}>Waste</Btn>
+        <Btn type="button" kind="plain" sm onClick={() => setPost({ action: r.quarantined ? "release" : "quarantine", preset: r })}>{r.quarantined ? "Release" : "Quarantine"}</Btn>
       </span>) }] : []),
   ];
 
   return (
-    <div className="inv-page">
-      <PageHead title="Stock overview" crumb="Inventory">
+    <div className="inner-page inv-page">
+      <PageHead title="Stock overview">
         {canWrite && <>
-          {canImport && <button type="button" className="inv-btn" onClick={importIngredients}>Import from Ingredients</button>}
-          <button type="button" className="inv-btn" disabled={noLoc} onClick={() => setPost({ action: "opening" })}>Opening stock</button>
-          <button type="button" className="inv-btn" disabled={noLoc} onClick={() => setPost({ action: "adjust_in" })}>Add stock</button>
-          <button type="button" className="inv-btn" disabled={noLoc} onClick={() => setPost({ action: "adjust_out" })}>Remove stock</button>
-          <button type="button" className="inv-btn" disabled={noLoc} onClick={() => setPost({ action: "waste" })}>Record waste</button>
+          {canImport && <Btn type="button" kind="plain" onClick={importIngredients}>Import from Ingredients</Btn>}
+          <Btn type="button" kind="plain" disabled={noLoc} onClick={() => setPost({ action: "opening" })}>Opening stock</Btn>
+          <Btn type="button" kind="plain" disabled={noLoc} onClick={() => setPost({ action: "adjust_in" })}>Add stock</Btn>
+          <Btn type="button" kind="plain" disabled={noLoc} onClick={() => setPost({ action: "adjust_out" })}>Remove stock</Btn>
+          <Btn type="button" kind="plain" disabled={noLoc} onClick={() => setPost({ action: "waste" })}>Record waste</Btn>
         </>}
       </PageHead>
-      {currentVenue && <div className="inv-muted">Branch: {currentVenue.name}</div>}
       {canWrite && noLoc && <div className="inv-banner">Create a storage location first (Storage Locations) before posting stock.</div>}
 
       {totals && (
@@ -186,21 +183,17 @@ export default function StockOverview() {
         </div>
       )}
 
-      <div className="inv-card">
-        <div className="inv-toolbar">
-          <div className="inv-tabs" role="tablist">
-            <button type="button" role="tab" className="inv-tab" aria-selected={tab === "items"} onClick={() => setTab("items")}>By item</button>
-            <button type="button" role="tab" className="inv-tab" aria-selected={tab === "rows"} onClick={() => setTab("rows")}>By location &amp; batch</button>
-          </div>
-          <input className="inv-input inv-search" placeholder="Search item, SKU, barcode" aria-label="Search stock" value={search} onChange={(e) => setSearch(e.target.value)} />
+      <div className="inv-stack">
+        <Toolbar>
+          <Tabs inline tabs={[["items", "By item"], ["rows", "By location & batch"]]} value={tab} onChange={setTab} />
+          <SearchBox placeholder=" Search item, SKU, barcode" aria-label="Search stock" value={search} onChange={(e) => setSearch(e.target.value)} />
           {tab === "items"
-            ? <select className="inv-select" aria-label="Item view" value={view} onChange={(e) => setView(e.target.value)}>{ITEM_VIEWS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
-            : <select className="inv-select" aria-label="Stock view" value={rowView} onChange={(e) => setRowView(e.target.value)}>{ROW_VIEWS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>}
-        </div>
+            ? <Select aria-label="Item view" value={view} onChange={(e) => setView(e.target.value)}>{ITEM_VIEWS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select>
+            : <Select aria-label="Stock view" value={rowView} onChange={(e) => setRowView(e.target.value)}>{ROW_VIEWS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</Select>}
+        </Toolbar>
         <DataTable columns={tab === "items" ? itemCols : rowCols} rows={active.rows} loading={active.loading} error={active.error} onRetry={active.reload}
           rowKey={(r) => `${r.itemId}|${r.locationId || ""}|${r.batchNo || ""}`}
-          empty={tab === "items" ? "No items to show. Add inventory items first." : "No stock in this view."} />
-        <Pager page={active.page} setPage={active.setPage} total={active.total} pageSize={active.pageSize} />
+          empty={tab === "items" ? "No items to show. Add inventory items first." : "No stock in this view."} more={active} />
       </div>
 
       {post && <PostForm action={post.action} preset={post.preset} items={items} locations={locations} onClose={() => setPost(null)} onDone={() => { setPost(null); reloadAll(); }} />}

@@ -50,7 +50,7 @@ export const MEMO_TYPES = [
   "Incident", "Customer Complaint", "Service Issue", "Kitchen Issue",
   "Food Quality Issue", "Staff Issue", "Equipment Issue", "Hygiene Issue",
   "Safety Issue", "Billing Issue", "Inventory Issue", "Maintenance Issue",
-  "Delivery Issue", "Other",
+  "Delivery Issue", "Supplier Issue", "Other",
 ];
 
 export const LOCATIONS = ["Kitchen", "Dining Area", "Cash Counter", "Store", "Delivery Area", "Restaurant Entrance", "Other"];

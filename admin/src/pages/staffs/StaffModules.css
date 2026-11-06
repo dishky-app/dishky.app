@@ -404,7 +404,7 @@
 /* Both st-card-footer and sc-footer share ribbon treatment */
 .st-card-footer,
 .sc-footer {
-    margin-top: 1.5rem;
+    margin-top: -0.5rem;
     display: grid;
     place-items: center;
     height: 50px;

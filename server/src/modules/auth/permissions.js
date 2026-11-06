@@ -52,6 +52,7 @@ const MODULES = {
   mise: "Kitchen Mise en Place",
   grooming: "Kitchen Grooming",
   recipes: "Recipes",
+  trialDishes: "Trial Dishes",
   // Service department (SMS)
   serviceActivity: "Service Activity Log",
   serviceSchedules: "Service Schedules",
@@ -63,7 +64,7 @@ const MODULES = {
   // Menu / catalog
   categories: "Categories",
   ingredients: "Ingredients / Stocks",
-  // Purchase & Inventory management
+  // Purchase management (suppliers, orders, receiving, invoices, payments) and Inventory management (items, stock, alerts, audits)
   suppliers: "Suppliers",
   inventoryItems: "Inventory Items, Units & Locations",
   inventoryStock: "Stock Overview & Adjustments",
@@ -191,6 +192,11 @@ function defaultRows() {
     rows.push(row(r, "stockAudits", true, true));
     rows.push(row(r, "supplierScorecards", true, false));
   }
+
+  // trial dishes — kitchen roles run trials (read + write); service roles can follow and review them (read).
+  // Approving / rejecting / retesting is additionally limited to Manager and Super Admin role groups in the route itself.
+  for (const r of KITCHEN_ROLES) rows.push(row(r, "trialDishes", true, true));
+  for (const r of SERVICE_ROLES) rows.push(row(r, "trialDishes", true, false));
 
   // combo — CH, SC full
   for (const r of KITCHEN_ROLES) rows.push(row(r, "combo", true, true));
@@ -324,7 +330,7 @@ async function seedDefaultPermissions() {
   // only if missing ($setOnInsert), so a Super Admin's customised matrix is
   // never overwritten.
   try {
-    const newModules = new Set(["payments", "supportTickets", "suppliers", "inventoryItems", "inventoryStock", "stockLedger", "purchaseRequests", "purchaseApprovals", "purchaseRfq", "purchaseOrders", "purchaseSettings", "purchaseReceiving", "purchaseReturns", "purchaseInvoices", "purchasePayments", "purchaseReports", "inventoryAlerts", "stockAudits", "purchaseWhatsapp", "supplierScorecards"]);
+    const newModules = new Set(["payments", "supportTickets", "suppliers", "inventoryItems", "inventoryStock", "stockLedger", "purchaseRequests", "purchaseApprovals", "purchaseRfq", "purchaseOrders", "purchaseSettings", "purchaseReceiving", "purchaseReturns", "purchaseInvoices", "purchasePayments", "purchaseReports", "inventoryAlerts", "stockAudits", "purchaseWhatsapp", "supplierScorecards", "trialDishes"]);
     const ops = defaultRows()
       .filter((r) => newModules.has(r.module))
       .map((r) => ({

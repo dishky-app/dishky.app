@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Toolbar, errText, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { useVenue } from "../../context/VenueContext";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Toolbar, errText, qty, useDebounced, usePagedList, useOpenParam, useRef_, ExportBtn } from "../pi-shared/InvUi";
 
 const TYPES = ["ingredient", "raw_material", "packaging", "beverage", "cleaning", "other"];
 const label = (t) => t.replace("_", " ");
@@ -99,11 +100,11 @@ function ItemForm({ item, units, suppliers, categories, onClose, onSaved }) {
           </div>
 
           <div className="inv-section inv-full">Stock levels (in {f.baseUnit})</div>
-          {numField("minStock", "Minimum stock")}
-          {numField("reorderPoint", "Reorder point")}
-          {numField("safetyStock", "Safety stock")}
-          {numField("maxStock", "Maximum stock")}
-          {numField("reorderQty", "Preferred reorder quantity")}
+          {numField("minStock", `Minimum stock (${f.baseUnit})`)}
+          {numField("reorderPoint", `Reorder point (${f.baseUnit})`)}
+          {numField("safetyStock", `Safety stock (${f.baseUnit})`)}
+          {numField("maxStock", `Maximum stock (${f.baseUnit})`)}
+          {numField("reorderQty", `Preferred reorder quantity (${f.baseUnit})`)}
 
           <div className="inv-section inv-full">Tracking &amp; tax</div>
           <div className="inv-full" style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
@@ -155,9 +156,12 @@ export default function InventoryItems() {
       </span>) }] : []),
   ];
 
+  const { venueParam: openVenueParam } = useVenue();
+  useOpenParam(async (id) => { try { setEditing((await api.get(`/inventory/items/${id}`, { params: openVenueParam() })).data); } catch { /* record not found */ } });
   return (
     <div className="inner-page inv-page">
       <PageHead title="Inventory items" count={`${list.total} item(s)`}>
+        <ExportBtn list={list} columns={columns} name="inventory_items" sheet="Inventory items" />
         {canWrite && <Btn type="button" kind="primary" onClick={() => setEditing({})}>+ New item</Btn>}
       </PageHead>
       <div className="inv-stack">
@@ -166,7 +170,7 @@ export default function InventoryItems() {
           <Select aria-label="Filter by type" value={itemType} onChange={(e) => setItemType(e.target.value)}><option value="">All types</option>{TYPES.map((t) => <option key={t} value={t}>{label(t)}</option>)}</Select>
           <Select aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></Select>
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No items yet. Add ingredients, packaging and supplies to start tracking stock." more={list} />
+        <DataTable detail="inventory/items" columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No items yet. Add ingredients, packaging and supplies to start tracking stock." more={list} />
       </div>
       {editing && <ItemForm item={editing.id ? editing : null} units={unitSet} suppliers={suppliers} categories={categories} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); list.reload(); }} />}
     </div>

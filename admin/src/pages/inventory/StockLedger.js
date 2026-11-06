@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, Select, Toolbar, dateTime, errText, money, qty, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, Select, Toolbar, dateTime, errText, money, qty, usePagedList, useRef_ , ExportBtn, localToday } from "../pi-shared/InvUi";
 
 const TYPES = ["opening", "receipt", "adjustment_in", "adjustment_out", "waste", "consumption", "supplier_return", "transfer_in", "transfer_out", "status_change", "reversal"];
 const TONE = { opening: "blue", receipt: "green", adjustment_in: "green", transfer_in: "green", reversal: "amber", status_change: "grey" };
@@ -43,8 +43,8 @@ export default function StockLedger() {
     { key: "txnNo", label: "Txn", render: (e) => <span className="inv-strong">{e.txnNo}</span> },
     { key: "type", label: "Type", render: (e) => <Badge tone={TONE[e.type] || "grey"}>{e.type.replace(/_/g, " ")}</Badge> },
     { key: "item", label: "Item", render: (e) => <div><div className="inv-strong">{e.itemName}</div><div className="inv-muted">{e.locationName}{e.batchNo ? ` · ${e.batchNo}` : ""}</div></div> },
-    { key: "in", label: "In", num: true, render: (e) => (e.qtyIn ? qty(e.qtyIn) : "") },
-    { key: "out", label: "Out", num: true, render: (e) => (e.qtyOut ? qty(e.qtyOut) : "") },
+    { key: "in", label: "In", num: true, render: (e) => (e.qtyIn ? `${qty(e.qtyIn)} ${e.unit}` : "") },
+    { key: "out", label: "Out", num: true, render: (e) => (e.qtyOut ? `${qty(e.qtyOut)} ${e.unit}` : "") },
     { key: "bal", label: "Balance", num: true, render: (e) => `${qty(e.balanceAfter)} ${e.unit}` },
     { key: "val", label: "Value impact", num: true, render: (e) => (e.valueImpact ? money(e.valueImpact) : "—") },
     { key: "reason", label: "Reason", render: (e) => e.reason || "—" },
@@ -55,13 +55,13 @@ export default function StockLedger() {
 
   return (
     <div className="inner-page inv-page">
-      <PageHead title="Stock ledger" count={`${list.total} entr(ies)`} />
+      <PageHead title="Stock ledger" count={`${list.total} entr(ies)`}><ExportBtn list={list} columns={columns} name="stock_ledger" sheet="Stock ledger" /></PageHead>
       <div className="inv-stack">
         <Toolbar>
           <Select aria-label="Item" value={itemId} onChange={(e) => setItemId(e.target.value)}><option value="">All items</option>{items.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}</Select>
           <Select aria-label="Type" value={type} onChange={(e) => setType(e.target.value)}><option value="">All types</option>{TYPES.map((t) => <option key={t} value={t}>{t.replace(/_/g, " ")}</option>)}</Select>
-          <DateInput label="From" value={from} onChange={(e) => setFrom(e.target.value)} />
-          <DateInput label="To" value={to} onChange={(e) => setTo(e.target.value)} />
+          <DateInput label="From" value={from} max={to || localToday()} onChange={(e) => { const v = e.target.value; setFrom(v); if (v && to && v > to) setTo(v); }} />
+          <DateInput label="To" value={to} min={from || undefined} max={localToday()} onChange={(e) => setTo(e.target.value)} />
         </Toolbar>
         <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No stock movements match these filters." more={list} />
       </div>

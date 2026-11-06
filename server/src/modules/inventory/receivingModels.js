@@ -70,6 +70,7 @@ const retSchema = new Schema(
     supplierId: { type: String, required: true }, supplierName: String,
     poId: { type: String, default: null }, poNo: { type: String, default: "" },
     reasonCategory: { type: String, enum: ["damaged", "expired", "quality", "wrong_item", "short_shelf_life", "excess", "other"], default: "quality" },
+    returnReason: { type: String, default: "", maxlength: 1000 }, // free-text explanation of why the goods are going back
     notes: { type: String, default: "", maxlength: 2000 },
     lines: { type: [retLine], default: [] },
     totalPaise: { type: Number, default: 0 },

@@ -17,6 +17,7 @@ const C = require("./purchaseCalc");
 const F = require("./financeCalc");
 const P = require("./precision");
 const U = require("./units");
+const CS = require("./creditService");
 
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const LIVE_INV = ["pending_approval", "approved", "disputed"]; // invoices that consume billable quantity
@@ -345,6 +346,38 @@ function buildFinanceRouter({ requireAuth, requirePerm, hasPermission, scopeFilt
     res.json(outInvoice(await FM.SupplierInvoice.findOne({ id: inv.id }).lean()));
   }));
 
+  /* ═════════════ CREDIT ACCOUNTS ═════════════
+     Suppliers on credit: limit, what is owed, what is left, and when it must be settled. Repayments are ordinary
+     payments with purpose "credit_settlement" (POST /payments), so they get the same approval and audit trail. */
+  const outPosition = (p) => ({
+    limit: P.fromPaise(p.limitPaise), outstanding: P.fromPaise(p.outstandingPaise), available: P.fromPaise(p.availablePaise), advance: P.fromPaise(p.advancePaise),
+    utilizationPct: p.utilizationPct, dueDate: p.dueDate, overdue: p.overdue, limitReached: p.limitReached, settleNow: p.settleNow, reason: p.reason,
+  });
+  router.get("/credit/accounts", requirePerm("purchasePayments", "read"), wrap(async (req, res) => {
+    const suppliers = await M.Supplier.find({ status: { $ne: "blocked" } }).sort({ name: 1 }).lean();
+    const creditOrders = await PM.PurchaseOrder.distinct("supplierId", { purchaseMode: "credit", status: { $in: ["pending_approval", "approved", "sent", "partially_received", "received", "closed"] } });
+    const onCredit = new Set(creditOrders);
+    const data = [];
+    for (const s of suppliers) {
+      if (!s.creditEnabled && !onCredit.has(s.id)) continue;
+      const pos = await CS.positionFor(s);
+      data.push({ supplierId: s.id, name: s.name, code: s.code, creditEnabled: !!s.creditEnabled, graceDays: s.creditGraceDays ?? 5, ...outPosition(pos) });
+    }
+    const due = data.filter((d) => d.settleNow);
+    res.json({ data, summary: { suppliers: data.length, outstanding: data.reduce((n, d) => n + d.outstanding, 0), settlementsDue: due.length, dueAmount: due.reduce((n, d) => n + d.outstanding, 0) } });
+  }));
+  router.get("/credit/accounts/:supplierId", requirePerm("purchasePayments", "read"), wrap(async (req, res) => {
+    const s = await M.Supplier.findOne({ id: str(req.params.supplierId, 80) }).lean();
+    if (!s) throw bad("Supplier not found", "NOT_FOUND", 404);
+    const pos = await CS.positionFor(s);
+    const settlements = await FM.SupplierPayment.find({ supplierId: s.id, purpose: "credit_settlement" }).sort({ createdAt: -1 }).limit(100).lean();
+    res.json({
+      supplierId: s.id, name: s.name, creditEnabled: !!s.creditEnabled, graceDays: s.creditGraceDays ?? 5, ...outPosition(pos),
+      statement: pos.statement.map((o) => ({ id: o.id, poNo: o.poNo, orderDate: o.orderDate, status: o.status, cycle: o.cycle, dueDate: o.dueDate, value: P.fromPaise(o.valuePaise), settled: P.fromPaise(o.settledPaise), remaining: P.fromPaise(o.remainingPaise) })),
+      settlements: settlements.map(outPay),
+    });
+  }));
+
   /* ═════════════ PAYMENTS ═════════════ */
   // What can still be paid on an invoice, counting every other live payment (completed or pending).
   async function payableNow(inv, excludePaymentId) {
@@ -378,6 +411,7 @@ function buildFinanceRouter({ requireAuth, requirePerm, hasPermission, scopeFilt
     for (const f of ["status", "supplierId", "method"]) { const v = str(req.query[f], 80); if (v) q[f] = v; }
     const inv = str(req.query.invoiceId, 80); if (inv) q["allocations.invoiceId"] = inv;
     const search = str(req.query.search, 60);
+    const purposeQ = str(req.query.purpose, 20); if (purposeQ) q.purpose = purposeQ === "invoice" ? { $ne: "credit_settlement" } : purposeQ;
     if (search) q.$or = [{ payNo: { $regex: esc(search), $options: "i" } }, { reference: { $regex: esc(search), $options: "i" } }, { supplierName: { $regex: esc(search), $options: "i" } }];
     const [rows, total] = await Promise.all([FM.SupplierPayment.find(q).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(), FM.SupplierPayment.countDocuments(q)]);
     res.json({ data: rows.map(outPay), page, limit, total });
@@ -402,15 +436,23 @@ function buildFinanceRouter({ requireAuth, requirePerm, hasPermission, scopeFilt
     if (amountPaise <= 0) throw bad("Amount must be greater than zero");
     const paymentDate = date(b.paymentDate, "Payment date") || new Date();
     const settings = await getSettings();
+    const purpose = b.purpose === "credit_settlement" ? "credit_settlement" : "invoice";
+    if (purpose === "credit_settlement") {
+      if (Array.isArray(b.allocations) && b.allocations.length) throw bad("A credit settlement repays the credit account, not individual invoices.", "NO_ALLOCATIONS");
+      // never settle more than is owed (counting settlements still waiting for approval)
+      const pending = await FM.SupplierPayment.find({ supplierId: supplier.id, purpose: "credit_settlement", status: "pending_approval" }).select("amountPaise").lean();
+      const owed = (await CS.positionFor(supplier)).outstandingPaise - pending.reduce((n, p) => n + p.amountPaise, 0);
+      if (amountPaise > owed) throw bad(`Only ${P.fromPaise(Math.max(0, owed))} is outstanding on this supplier's credit account${pending.length ? " (after settlements already waiting for approval)" : ""}.`, "OVER_SETTLEMENT", 409, { outstanding: P.fromPaise(Math.max(0, owed)) });
+    }
     const doc = await withLock(`pay:${supplier.id}`, async () => {
-      const allocations = await checkAllocations(Array.isArray(b.allocations) ? b.allocations : [], supplier.id, venueId, null);
+      const allocations = purpose === "credit_settlement" ? [] : await checkAllocations(Array.isArray(b.allocations) ? b.allocations : [], supplier.id, venueId, null);
       const allocated = allocations.reduce((n, a) => n + a.amountPaise, 0);
       if (allocated > amountPaise) throw bad("Allocations add up to more than the payment amount", "OVER_ALLOCATED");
       const auto = settings.paymentApprovalLimitPaise > 0 && amountPaise <= settings.paymentApprovalLimitPaise;
       const refKey = reference ? `${supplier.id}|${method}|${reference.toUpperCase().replace(/\s+/g, "")}` : undefined;
       if (refKey && (await FM.SupplierPayment.exists({ refKey, status: { $ne: "cancelled" } }))) throw bad(`A payment with reference ${reference} is already recorded for this supplier.`, "DUPLICATE_PAYMENT", 409);
       return FM.SupplierPayment.create({
-        venueId, payNo: await M.nextNumber("spay", "PAY"), supplierId: supplier.id, supplierName: supplier.name, paymentDate, method, reference, refKey, idemKey, amountPaise, allocations,
+        venueId, payNo: await M.nextNumber("spay", "PAY"), supplierId: supplier.id, supplierName: supplier.name, paymentDate, method, reference, refKey, idemKey, amountPaise, purpose, allocations,
         notes: str(b.notes, 1000), status: auto ? "completed" : "pending_approval", createdBy: req.admin.id, createdByName: req.admin.name,
         history: [{ action: auto ? "auto_approved" : "submitted", by: req.admin.id, byName: req.admin.name, at: new Date(), comment: "", toStatus: auto ? "completed" : "pending_approval" }],
       });
@@ -579,7 +621,7 @@ function buildFinanceRouter({ requireAuth, requirePerm, hasPermission, scopeFilt
     const rows = [];
     for (const inv of await FM.SupplierInvoice.find({ ...scopeFilter(req), status: { $in: ["pending_approval", "approved", "disputed"] }, invoiceDate: { $gte: from, $lte: to } }).limit(20000).lean()) {
       if (!inv.match) continue;
-      for (const l of inv.match.lines) if (l.status !== "ok") rows.push({ docNo: inv.docNo, invoiceNo: inv.invoiceNo, supplier: inv.supplierName, po: inv.poNo, item: (inv.lines.find((x) => x.itemId === l.itemId) || {}).itemName || l.itemId, issue: l.status, priceVariance: rupees(l.priceVariancePaise || 0), qtyVariance: P.fromMilli(l.qtyVarianceMilli || 0), invoiceStatus: inv.status, override: inv.overrideReason });
+      for (const l of inv.match.lines) if (l.status !== "ok") rows.push({ docNo: inv.docNo, invoiceNo: inv.invoiceNo, supplier: inv.supplierName, po: inv.poNo, item: (inv.lines.find((x) => x.itemId === l.itemId) || {}).itemName || l.itemId, issue: l.status, priceVariance: rupees(l.priceVariancePaise || 0), qtyVariance: P.fromMilli(l.qtyVarianceMilli || 0), unit: (inv.lines.find((x) => x.itemId === l.itemId) || {}).unit || "", invoiceStatus: inv.status, override: inv.overrideReason });
       if (inv.match.status === "unmatched") rows.push({ docNo: inv.docNo, invoiceNo: inv.invoiceNo, supplier: inv.supplierName, po: "", item: "", issue: "no_purchase_order", priceVariance: 0, qtyVariance: 0, invoiceStatus: inv.status, override: inv.overrideReason });
     }
     reply(req, res, "invoice-variance", { from, to, rows, totalPriceVariance: Math.round(rows.reduce((n, r) => n + r.priceVariance, 0) * 100) / 100 }, rows);

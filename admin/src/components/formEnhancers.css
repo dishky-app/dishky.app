@@ -1,0 +1,4 @@
+.pw-eye-btn { position: absolute; z-index: 2; width: 26px; height: 26px; padding: 0; border: 0; background: transparent; color: #666; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.pw-eye-btn:hover { color: #111; }
+.pw-eye-btn svg { width: 18px; height: 18px; }
+input[data-pw-eye] { padding-right: 40px !important; }

@@ -6,7 +6,6 @@ import listIcon from "../assets/icons/list.png";
 import gridIcon from "../assets/icons/grid.png";
 import eventFallbackImg from "../assets/events-fallback.png";
 import Button3D from "./shared/Button3D";
-import QuickLinksFab from "./QuickLinksFab";
 import { fmtDate as fmtDateNumeric } from "../utils/dateUtils";
 import { handleImgFallback } from "../App";
 
@@ -622,6 +621,17 @@ const FoodCategory = ({ foodData, currentUser, categoryCards }) => {
     categoriesToRender.push({ id: category.id, name: category.name, image: category.image, route });
   });
 
+  /* Crowd Picks / Combo / Offers / Events — same tiles as the categories */
+  [
+    { id: "others", name: "Crowd Picks", route: "/favourites/others" },
+    { id: "combo", name: "Combo", route: "/combo" },
+    { id: "offers", name: "Offers", route: "/offers" },
+    { id: "events", name: "Events & Bookings", route: "/events" },
+  ].forEach((c) => {
+    if (!isCardEnabled(c.id)) return;
+    categoriesToRender.push({ ...c, name: cardName(c.id, c.name), image: cardImage(c.id, eventFallbackImg) });
+  });
+
   /* ── Preload category images ── */
   useEffect(() => {
     categoriesToRender.forEach((cat) => {
@@ -661,10 +671,6 @@ const FoodCategory = ({ foodData, currentUser, categoryCards }) => {
             to={category.route}
             className={`food-category-items ${viewMode}
               ${category.id === "my" ? "special" : ""}
-              ${category.id === "others" ? "special" : ""}
-              ${category.id === "combo" ? "special" : ""}
-              ${category.id === "events" ? "special" : ""}
-              ${category.id === "offers" ? "special" : ""}
               ${category.id === "my-orders" ? "special" : ""}
               ${category.id === "best-sellers" ? "special" : ""}
             `}
@@ -676,17 +682,6 @@ const FoodCategory = ({ foodData, currentUser, categoryCards }) => {
           </Link>
         ))}
       </div>
-
-      {/* Quick Links "…" FAB — Crowd Picks / Combo / Offers shortcuts,
-          this page only. Each link auto-hides if its Super-Admin card
-          toggle is off, and the whole button hides if every link it
-          would show is disabled. */}
-      <QuickLinksFab
-        isCrowdPicksEnabled={isCardEnabled("others")}
-        isComboEnabled={isCardEnabled("combo")}
-        isOffersEnabled={isCardEnabled("offers")}
-        isEventsEnabled={isCardEnabled("events")}
-      />
     </div>
   );
 };

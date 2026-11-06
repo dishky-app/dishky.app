@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Toolbar, errText, money, useDebounced, usePagedList } from "./InvUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Toolbar, errText, money, useDebounced, usePagedList, useOpenParam } from "./InvUi";
 
 const TONE = { active: "green", inactive: "grey", blocked: "red" };
 const TYPES = ["manufacturer", "wholesaler", "distributor", "retailer", "farmer", "service", "other"];
@@ -150,6 +150,7 @@ export default function Suppliers() {
       </span>) }] : []),
   ];
 
+  useOpenParam(async (id) => { try { setEditing((await api.get(`/inventory/suppliers/${id}`)).data); } catch { /* record not found */ } });
   return (
     <div className="inner-page inv-page">
       <PageHead title="Suppliers" count={`${list.total} supplier(s)`}>
@@ -162,7 +163,7 @@ export default function Suppliers() {
             <option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="blocked">Blocked</option>
           </Select>
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No suppliers yet. Add your first supplier to start purchasing." more={list} />
+        <DataTable detail="inventory/suppliers" columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No suppliers yet. Add your first supplier to start purchasing." more={list} />
       </div>
       {editing && <SupplierForm supplier={editing.id ? editing : null} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); list.reload(); }} />}
     </div>

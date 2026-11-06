@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useOpenParam, useRowFilters, useRef_ } from "./InvUi";
 import { History, KeyVals, LineEditor, ReasonDialog, StatusBadge, linesPayload, statusLabel } from "./PurchUi";
 
 const MATCH_TONE = { matched: "green", variance: "amber", unmatched: "red" };
@@ -25,6 +25,7 @@ export default function SupplierInvoices() {
   const [search, setSearch] = useState("");
   const dSearch = useDebounced(search);
   const list = usePagedList("/finance/invoices", { status, match, search: dSearch, ...(overdue ? { overdue: "true" } : {}) });
+  const rf = useRowFilters(list.rows, { supplier: "supplierName", date: "invoiceDate", dateLabel: "Invoice" });
   const items = useRef_("/inventory/items", { limit: 200 }, (d) => d.data);
   const suppliers = useRef_("/inventory/suppliers", { limit: 200 }, (d) => d.data);
   const [pos, setPos] = useState([]);
@@ -86,7 +87,7 @@ export default function SupplierInvoices() {
   };
 
   const columns = [
-    { key: "docNo", label: "Ref", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.docNo}</span> },
+    { key: "docNo", label: "Ref", render: (r) => <>{r.docNo}</> },
     { key: "invoiceNo", label: "Supplier invoice" }, { key: "supplierName", label: "Supplier" },
     { key: "invoiceDate", label: "Date", render: (r) => dateShort(r.invoiceDate) },
     { key: "dueDate", label: "Due", render: (r) => <>{dateShort(r.dueDate)} {r.overdue && <Badge tone="red">overdue</Badge>}</> },
@@ -96,6 +97,7 @@ export default function SupplierInvoices() {
     { key: "status", label: "Status", render: (r) => <><StatusBadge status={r.status} />{r.paymentStatus && <> <Badge tone={r.paymentStatus === "paid" ? "green" : r.paymentStatus === "partially_paid" ? "amber" : "grey"}>{statusLabel(r.paymentStatus)}</Badge></>}</> },
   ];
 
+  useOpenParam(open);
   return (
     <div className="inner-page inv-page">
       <PageHead title="Supplier invoices" count={`${list.total} invoice(s)`}>
@@ -107,8 +109,9 @@ export default function SupplierInvoices() {
           <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["draft", "pending_approval", "approved", "rejected", "disputed", "cancelled"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
           <Select aria-label="Match" value={match} onChange={(e) => setMatch(e.target.value)}><option value="">Any match</option><option value="matched">Matched</option><option value="variance">Variance</option><option value="unmatched">No order</option></Select>
           <label className="checkbox-item inv-check"><input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} />Overdue only</label>
+          {rf.controls}
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No supplier invoices yet." more={list} />
+        <DataTable detail="purchase/invoices" columns={columns} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} empty="No supplier invoices yet." more={list} />
       </div>
 
       {form && (
@@ -152,7 +155,7 @@ export default function SupplierInvoices() {
             {detail.match.flags.map((f) => <div key={f} className="inv-banner" style={{ marginTop: 6 }}>{FLAG_TEXT[f] || f}</div>)}
             {detail.match.lines.length > 0 && <div className="inv-tablewrap"><table className="inv-table">
               <thead><tr><th>Item</th><th className="inv-num">Received, not yet billed</th><th className="inv-num">Invoiced</th><th className="inv-num">Order price</th><th className="inv-num">Invoice price</th><th>Result</th></tr></thead>
-              <tbody>{detail.match.lines.map((l) => (<tr key={l.itemId}><td>{detail.lines.find((x) => x.itemId === l.itemId)?.itemName || l.itemId}</td><td className="inv-num">{qty(l.billable)}</td><td className="inv-num">{qty(l.invoiced)}</td><td className="inv-num">{money(l.poNetPrice)}</td><td className="inv-num">{money(l.invoiceNetPrice)}</td><td><Badge tone={l.status === "ok" ? "green" : "amber"}>{LINE_TEXT[l.status] || l.status}</Badge></td></tr>))}</tbody>
+              <tbody>{detail.match.lines.map((l) => (<tr key={l.itemId}><td>{detail.lines.find((x) => x.itemId === l.itemId)?.itemName || l.itemId}</td><td className="inv-num">{qty(l.billable)} {detail.lines.find((x) => x.itemId === l.itemId)?.unit}</td><td className="inv-num">{qty(l.invoiced)} {detail.lines.find((x) => x.itemId === l.itemId)?.unit}</td><td className="inv-num">{money(l.poNetPrice)}</td><td className="inv-num">{money(l.invoiceNetPrice)}</td><td><Badge tone={l.status === "ok" ? "green" : "amber"}>{LINE_TEXT[l.status] || l.status}</Badge></td></tr>))}</tbody>
             </table></div>}
             <div className="inv-hint">Prices are per base unit after discount, before GST. Quantities are the order's received quantity minus what other invoices already bill.</div>
           </div>}

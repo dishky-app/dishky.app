@@ -55,7 +55,7 @@ const MEMO_TYPES = [
   "Incident", "Customer Complaint", "Service Issue", "Kitchen Issue",
   "Food Quality Issue", "Staff Issue", "Equipment Issue", "Hygiene Issue",
   "Safety Issue", "Billing Issue", "Inventory Issue", "Maintenance Issue",
-  "Delivery Issue", "Other",
+  "Delivery Issue", "Supplier Issue", "Other",
 ];
 
 const LOCATIONS = ["Kitchen", "Dining Area", "Cash Counter", "Store", "Delivery Area", "Restaurant Entrance", "Other"];
@@ -190,6 +190,10 @@ const memoSchema = new mongoose.Schema(
     // Story / summary — the running narrative of the problem and how it is
     // being solved (what happened → why → what we did → outcome).
     story: { type: String, default: "" },
+
+    // Supplier link (purchase & inventory) — set server-side from the supplier record, never trusted from the client
+    supplierId: { type: String, default: "" },
+    supplierName: { type: String, default: "" },
 
     // Order / customer link — all optional, not every memo concerns a customer
     orderId: { type: String, default: "" },
@@ -448,6 +452,7 @@ function buildRouter({ requireAuth, requireRole, logAudit, uploadLimiter, emitCh
       if (q.resolutionStatus) filter.resolutionStatus = q.resolutionStatus;
       if (q.department) filter.department = q.department;
       if (q.createdBy) filter.createdBy = q.createdBy;
+      if (q.supplierId) filter.supplierId = asPlainString(q.supplierId);
       if (q.primaryResponsible) filter.primaryResponsible = q.primaryResponsible;
       if (q.compensationRequired === "true") filter.compensationRequired = true;
       if (q.compensationRequired === "false") filter.compensationRequired = false;
@@ -474,7 +479,7 @@ function buildRouter({ requireAuth, requireRole, logAudit, uploadLimiter, emitCh
         filter.$or = [
           { id: re }, { title: re }, { description: re },
           { customerName: re }, { primaryResponsibleName: re },
-          { createdByName: re }, { orderId: re }, { tableNumber: re },
+          { createdByName: re }, { orderId: re }, { tableNumber: re }, { supplierName: re },
         ];
       }
 
@@ -539,12 +544,23 @@ function buildRouter({ requireAuth, requireRole, logAudit, uploadLimiter, emitCh
         uploadedAt: new Date(),
       }));
 
+      // A memo about a supplier: the name comes from the supplier record, so it cannot be forged.
+      let supplierLink = { supplierId: "", supplierName: "" };
+      if (req.body.supplierId) {
+        const sup = await require("../inventory/models").Supplier.findOne({ id: asPlainString(req.body.supplierId) }).select("id name").lean();
+        if (!sup) return res.status(400).json({ error: "Unknown supplier" });
+        supplierLink = { supplierId: sup.id, supplierName: sup.name };
+      }
+
       const id = await generateMemoId(getModel);
       const initialTimeline = [
         timelineEntry({ action: "Memo Created", admin: req.admin, notes: req.body.title, story: req.body.story || req.body.description }),
       ];
       if (stampedEvidence.length) {
         initialTimeline.push(timelineEntry({ action: "Evidence Added", admin: req.admin, newValue: stampedEvidence.length }));
+      }
+      if (supplierLink.supplierId) {
+        initialTimeline.push(timelineEntry({ action: "Linked to Supplier", admin: req.admin, newValue: supplierLink.supplierName }));
       }
       if (req.body.primaryResponsible) {
         initialTimeline.push(timelineEntry({
@@ -555,6 +571,7 @@ function buildRouter({ requireAuth, requireRole, logAudit, uploadLimiter, emitCh
 
       const doc = await Memo.create({
         ...req.body,
+        ...supplierLink,
         id,
         venueId,
         evidence: stampedEvidence,
@@ -592,6 +609,7 @@ function buildRouter({ requireAuth, requireRole, logAudit, uploadLimiter, emitCh
         id: _ignoredId, venueId: _ignoredVenueId, createdBy: _cb, createdByName: _cbn,
         createdByRoleTitle: _cbr, timeline: _ignoredTimeline, reopenHistory: _ignoredReopen,
         status: _ignoredStatus, // status changes only via /status (validated transitions)
+        supplierId: _ignoredSupplierId, supplierName: _ignoredSupplierName, // the supplier link is fixed at creation
         ...editable
       } = req.body;
 

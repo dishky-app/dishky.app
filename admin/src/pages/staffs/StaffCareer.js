@@ -237,7 +237,7 @@ export default function StaffCareer() {
 
                 <div className="st-actions sc-card-actions" onClick={e => e.stopPropagation()}>
                   <Button3D variant="cancel" iconOnly title="Edit" onClick={() => openEditJob(job)}><img src={editIcon} alt="" /></Button3D>
-                  <Button3D variant="danger" iconOnly title="Delete" onClick={() => deleteJob(job)}><img src={deleteIcon} alt="" /></Button3D>
+                  <Button3D variant="cancel" iconOnly title="Delete" onClick={() => deleteJob(job)}><img src={deleteIcon} alt="" /></Button3D>
                 </div>
 
                 <div className="sc-footer">

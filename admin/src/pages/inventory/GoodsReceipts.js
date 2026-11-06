@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useOpenParam, useRowFilters, useRef_ } from "./InvUi";
 import { History, KeyVals, ReasonDialog, StatusBadge, statusLabel } from "./PurchUi";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -18,6 +18,7 @@ export default function GoodsReceipts() {
   const [search, setSearch] = useState("");
   const dSearch = useDebounced(search);
   const list = usePagedList("/receiving/grns", { status, search: dSearch });
+  const rf = useRowFilters(list.rows, { supplier: "supplierName", date: "receivedDate", dateLabel: "Received" });
   const locations = useRef_("/inventory/locations", {}, (d) => d.filter((l) => l.status === "active"));
   const items = useRef_("/inventory/items", { limit: 200 }, (d) => d.data);
   const [pos, setPos] = useState([]);
@@ -68,14 +69,15 @@ export default function GoodsReceipts() {
   const cancel = async (reason) => { const r = await run(() => api.post(`/receiving/grns/${detail.id}/cancel`, { reason }), "Cancelled"); if (r) { setAsk(false); setDetail(r.data); } };
 
   const columns = [
-    { key: "grnNo", label: "GRN no.", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.grnNo}</span> },
+    { key: "grnNo", label: "GRN no.", render: (r) => <>{r.grnNo}</> },
     { key: "poNo", label: "Order" }, { key: "supplierName", label: "Supplier" },
     { key: "receivedDate", label: "Received", render: (r) => dateShort(r.receivedDate) },
     { key: "deliveryNoteNo", label: "Delivery note", render: (r) => r.deliveryNoteNo || "—" },
-    { key: "rej", label: "Rejected / held", render: (r) => { const rej = r.lines.reduce((n, l) => n + l.rejected, 0), q = r.lines.reduce((n, l) => n + l.quarantined, 0); return rej || q ? <Badge tone="amber">{rej ? `${qty(rej)} rejected` : ""}{rej && q ? ", " : ""}{q ? `${qty(q)} held` : ""}</Badge> : "—"; } },
+    { key: "rej", label: "Rejected / held", render: (r) => { const parts = r.lines.flatMap((l) => [l.rejected > 0 && `${qty(l.rejected)} ${l.unit} rejected`, l.quarantined > 0 && `${qty(l.quarantined)} ${l.unit} held`]).filter(Boolean); return parts.length ? <Badge tone="amber">{parts.join(", ")}</Badge> : "—"; } },
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
   ];
 
+  useOpenParam(open);
   return (
     <div className="inner-page inv-page">
       <PageHead title="Goods receipts" count={`${list.total} receipt(s)`}>
@@ -85,8 +87,9 @@ export default function GoodsReceipts() {
         <Toolbar>
           <SearchBox placeholder=" Search GRN, order or delivery note" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
           <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["draft", "posting", "posted", "cancelled"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
+          {rf.controls}
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No goods receipts yet. Receive goods against a sent purchase order." more={list} />
+        <DataTable detail="purchase/receipts" columns={columns} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} empty="No goods receipts yet. Receive goods against a sent purchase order." more={list} />
       </div>
 
       {form && (
@@ -105,12 +108,12 @@ export default function GoodsReceipts() {
               <div className="inv-hint">Delivered = accepted + held in quarantine + rejected. Leave accepted blank to accept everything not held or rejected. Rejected goods never enter stock. Give a reason whenever goods are held or rejected.</div>
               {form.lines.map((l, i) => { const it = info(l.itemId); return (
                 <div key={i} className="inv-card" style={{ padding: 12 }}>
-                  <div className="inv-strong">{l.name} <span className="inv-muted">ordered {qty(l.ordered)}, outstanding {qty(l.outstanding)} {l.unit}</span></div>
+                  <div className="inv-strong">{l.name} <span className="inv-muted">ordered {qty(l.ordered)} {l.unit}, outstanding {qty(l.outstanding)} {l.unit}</span></div>
                   <div className="inv-grid" style={{ marginTop: 8 }}>
                     <Field label={`Delivered (${l.unit})`}><input className="inv-input" inputMode="decimal" value={l.delivered} onChange={(e) => setLine(i, { delivered: e.target.value })} /></Field>
-                    <Field label="Accepted"><input className="inv-input" inputMode="decimal" value={l.accepted} onChange={(e) => setLine(i, { accepted: e.target.value })} /></Field>
-                    <Field label="Hold in quarantine"><input className="inv-input" inputMode="decimal" value={l.quarantined} onChange={(e) => setLine(i, { quarantined: e.target.value })} /></Field>
-                    <Field label="Rejected"><input className="inv-input" inputMode="decimal" value={l.rejected} onChange={(e) => setLine(i, { rejected: e.target.value })} /></Field>
+                    <Field label={`Accepted (${l.unit})`}><input className="inv-input" inputMode="decimal" value={l.accepted} onChange={(e) => setLine(i, { accepted: e.target.value })} /></Field>
+                    <Field label={`Hold in quarantine (${l.unit})`}><input className="inv-input" inputMode="decimal" value={l.quarantined} onChange={(e) => setLine(i, { quarantined: e.target.value })} /></Field>
+                    <Field label={`Rejected (${l.unit})`}><input className="inv-input" inputMode="decimal" value={l.rejected} onChange={(e) => setLine(i, { rejected: e.target.value })} /></Field>
                     <Field label="Storage location"><Select value={l.locationId} onChange={(e) => setLine(i, { locationId: e.target.value })}>{locations.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</Select></Field>
                     <Field label={`Batch no.${it.trackBatches ? " *" : ""}`}><input className="inv-input" maxLength={60} value={l.batchNo} onChange={(e) => setLine(i, { batchNo: e.target.value })} /></Field>
                     <Field label={`Expiry date${it.trackExpiry ? " *" : ""}`}><DateInput value={l.expiryDate} onChange={(e) => setLine(i, { expiryDate: e.target.value })} /></Field>
@@ -133,7 +136,7 @@ export default function GoodsReceipts() {
           {detail.status === "posting" && <div className="inv-banner">This receipt is partly posted. Press “Resume posting” — nothing is posted twice.</div>}
           <div className="inv-tablewrap"><table className="inv-table">
             <thead><tr><th>Item</th><th className="inv-num">Delivered</th><th className="inv-num">Accepted</th><th className="inv-num">Held</th><th className="inv-num">Rejected</th><th>Batch / expiry</th><th className="inv-num">Value kept</th></tr></thead>
-            <tbody>{detail.lines.map((l, i) => (<tr key={i}><td>{l.itemName}{l.reason && <div className="inv-muted">{l.reason}</div>}</td><td className="inv-num">{qty(l.delivered)} {l.unit}</td><td className="inv-num">{qty(l.accepted)}</td><td className="inv-num">{qty(l.quarantined)}</td><td className="inv-num">{qty(l.rejected)}</td><td>{l.batchNo || "—"}{l.expiryDate ? ` · ${dateShort(l.expiryDate)}` : ""}</td><td className="inv-num">{money(l.value)}</td></tr>))}</tbody>
+            <tbody>{detail.lines.map((l, i) => (<tr key={i}><td>{l.itemName}{l.reason && <div className="inv-muted">{l.reason}</div>}</td><td className="inv-num">{qty(l.delivered)} {l.unit}</td><td className="inv-num">{qty(l.accepted)} {l.unit}</td><td className="inv-num">{qty(l.quarantined)} {l.unit}</td><td className="inv-num">{qty(l.rejected)} {l.unit}</td><td>{l.batchNo || "—"}{l.expiryDate ? ` · ${dateShort(l.expiryDate)}` : ""}</td><td className="inv-num">{money(l.value)}</td></tr>))}</tbody>
           </table></div>
           <div className="inv-hint">Stock is valued at the order price after discount and before GST (GST is treated as recoverable input tax). Freight is not added to stock cost.</div>
           <History entries={detail.history} />

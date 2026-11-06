@@ -9,6 +9,8 @@ import { ToastProvider } from './components/Usetoast';
 import { installInputLimits } from './utils/enforceInputLimits';
 import { installContentProtection } from './utils/contentProtection';
 import { installImageCropper } from './utils/imageCropper';
+import { installFormRules } from './utils/formRules';
+import GlobalConfirm from './components/GlobalConfirm';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -18,6 +20,8 @@ installInputLimits();
 // No dragging images / selecting or copying page text; every picked image goes through the crop step.
 installContentProtection();
 installImageCropper();
+// Mobile numbers: 10 digits; name fields capitalised; password fields get a show/hide eye.
+installFormRules();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 // dishky.com/<restaurant>/<venue>/display shows the order-status board. It is
@@ -34,6 +38,7 @@ root.render(
       <ThemeProvider>
         <ToastProvider>
           <App />
+          <GlobalConfirm />
         </ToastProvider>
       </ThemeProvider>
     )}

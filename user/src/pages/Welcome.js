@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 
 import api from "../api";
-import { resolved } from "../tenant";
+import tenant, { resolved } from "../tenant";
 
 import logoExtend from "../assets/logo-shrink.png";
 import logoShrink from "../assets/logo.png";
@@ -377,9 +377,12 @@ const Welcome = ({ toCamelCase, setCurrentUser, fetchMenu }) => {
           </Button3D>
           <span className="subtext">(No login needed)</span>
         </div>
-        <button type="button" className="at-welcome-link" onClick={() => navigate("/attender")}>
-          Attender login
-        </button>
+        {/* Attender login is for staff opening the plain link; guests who scanned a table QR never see it */}
+        {!tenant.table && (
+          <button type="button" className="at-welcome-link" onClick={() => navigate("/attender")}>
+            Attender login
+          </button>
+        )}
         {/* parent logo (image) + company name (text), wrapped in a flex container */}
         <a className="power-brand" href="https://www.marqwon.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit MarqWon Dynamics Pvt. Ltd.">
           <span className="power-prefix">Powered by</span>

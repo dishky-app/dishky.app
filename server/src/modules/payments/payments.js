@@ -479,12 +479,11 @@ function buildRouter({ requireAuth, requirePerm, logAudit, emitChange, getModel,
       });
     } catch (err) {
       console.error("POST /payments/webhook", err);
-      // Still 200: an internal error on our side shouldn't make
-      // Razorpay hammer retries for an event we may have already
-      // partially processed. The idempotency guards in each handler
-      // make a safe re-delivery (via Razorpay's own retry schedule, if
-      // this response had failed) a no-op rather than a duplicate.
-      res.status(200).json({ ok: false });
+      // 500 so Razorpay re-delivers on its backoff schedule: answering 200 here meant a
+      // transient DB error on a genuine "credited" event left a paid bill unpaid forever
+      // with no retry. The idempotency guards in each handler (PAID/FAILED are never
+      // re-processed) make a re-delivery a no-op rather than a duplicate.
+      res.status(500).json({ ok: false });
     }
   }
   router.post("/webhook", webhookHandler);

@@ -291,6 +291,14 @@ function buildReceivingRouter({ requireAuth, requirePerm, hasPermission, scopeFi
       if (!started) throw bad("This receipt is already being posted.", "INVALID_STATE", 409);
       const ctx = ctxFor(req, grn.venueId);
       const items = new Map((await M.InventoryItem.find({ id: { $in: grn.lines.map((l) => l.itemId) } }).lean()).map((i) => [i.id, i]));
+      // Every purchase is its own batch: a line with no batch number gets <GRN no>-<line>. Deterministic, so a retried post keeps it.
+      for (let i = 0; i < grn.lines.length; i++) {
+        const l = grn.lines[i];
+        if (l.acceptedMilli + l.quarantinedMilli > 0 && !l.batchNo) {
+          l.batchNo = `${grn.grnNo}-${i + 1}`;
+          await RM.Grn.updateOne({ id: grn.id }, { $set: { [`lines.${i}.batchNo`]: l.batchNo } });
+        }
+      }
       try {
         for (let i = 0; i < grn.lines.length; i++) {
           const l = grn.lines[i];
@@ -307,6 +315,12 @@ function buildReceivingRouter({ requireAuth, requirePerm, hasPermission, scopeFi
               refType: "grn", refId: grn.id, reason: l.reason || "Held at receiving", idempotencyKey: `grn:${grn.id}:${i}:q`,
             });
           }
+          // batch details row for this purchase (kept even if the stock is used up, so history stays complete)
+          await M.ItemBatch.updateOne(
+            { venueId: grn.venueId, itemId: l.itemId, batchNo: l.batchNo, grnId: grn.id },
+            { $setOnInsert: { source: "grn", grnNo: grn.grnNo, poId: grn.poId, poNo: grn.poNo, supplierId: grn.supplierId || "", supplierName: grn.supplierName || "", receivedDate: grn.receivedDate, receivedMilli: retained, unitCostMicro: l.unitCostMicro, mfgDate: l.mfgDate || null, expiryDate: l.expiryDate || null } },
+            { upsert: true }
+          ).catch((e) => console.warn("[receiving] batch row not saved:", e.message));
         }
       } catch (e) {
         throw Object.assign(e, { message: `${e.message} The receipt is partly posted; fix the cause and press Post again — nothing is posted twice.` });
@@ -336,12 +350,26 @@ function buildReceivingRouter({ requireAuth, requirePerm, hasPermission, scopeFi
   }));
 
   /* ═════════════ SUPPLIER RETURNS ═════════════ */
-  async function buildReturnLines(raw, venueId, po) {
+  /* What can still be returned on an order, per item: goods received through posted receipts (accepted + quarantined)
+     minus what live returns (draft → credited) already take. A return can never exceed it. */
+  async function returnableOnPo(po, excludeReturnId) {
+    const grns = await RM.Grn.find({ poId: po.id, status: "posted" }).lean();
+    const received = new Map();
+    for (const g of grns) for (const l of g.lines) received.set(l.itemId, (received.get(l.itemId) || 0) + (l.acceptedMilli || 0) + (l.quarantinedMilli || 0));
+    const live = await RM.SupplierReturn.find({ poId: po.id, status: { $in: ["draft", "pending_approval", "approved", "dispatched", "credited"] }, ...(excludeReturnId ? { id: { $ne: excludeReturnId } } : {}) }).lean();
+    const returned = new Map();
+    for (const r of live) for (const l of r.lines) if (l.source !== "rejected_at_gate") returned.set(l.itemId, (returned.get(l.itemId) || 0) + l.qtyMilli);
+    return { received, returned };
+  }
+
+  async function buildReturnLines(raw, venueId, po, excludeReturnId) {
     if (!Array.isArray(raw) || !raw.length) throw bad("At least one line is required", "NO_LINES");
     const customs = await customUnits();
     const items = new Map((await M.InventoryItem.find({ id: { $in: raw.map((l) => str(l.itemId, 80)) } }).lean()).map((i) => [i.id, i]));
     const active = await RM.SupplierReturn.find({ venueId, status: { $in: ["draft", "pending_approval", "approved", "dispatched", "credited"] } }).lean();
     const out = [];
+    const cap = po ? await returnableOnPo(po, excludeReturnId) : null;
+    const asked = new Map();
     for (const [n, l] of raw.entries()) {
       const where = `Line ${n + 1}`;
       const item = items.get(str(l.itemId, 80));
@@ -361,6 +389,11 @@ function buildReceivingRouter({ requireAuth, requirePerm, hasPermission, scopeFi
         line.grnId = grn.id; line.unitCostMicro = gl[0].unitCostMicro;
         if (po && grn.poId !== po.id) throw bad(`${where}: that receipt belongs to a different order`);
       } else {
+        if (cap) {
+          const max = Math.max(0, (cap.received.get(item.id) || 0) - (cap.returned.get(item.id) || 0) - (asked.get(item.id) || 0));
+          if (qtyMilli > max) throw bad(`${where}: only ${P.fromMilli(max)} ${item.baseUnit} of ${item.name} can still be returned on order ${po.poNo} (received ${P.fromMilli(cap.received.get(item.id) || 0)}, already returned ${P.fromMilli((cap.returned.get(item.id) || 0) + (asked.get(item.id) || 0))})`, "OVER_RETURN", 409);
+          asked.set(item.id, (asked.get(item.id) || 0) + qtyMilli);
+        }
         const loc = await M.StorageLocation.findOne({ id: str(l.locationId, 80), venueId }).lean();
         if (!loc) throw bad(`${where}: choose the storage location the goods are in`, "NO_LOCATION");
         const bal = await M.StockBalance.findOne({ venueId, itemId: item.id, locationId: loc.id, batchNo: str(l.batchNo, 60) }).lean();
@@ -381,11 +414,20 @@ function buildReceivingRouter({ requireAuth, requirePerm, hasPermission, scopeFi
       if (!["damaged", "expired", "quality", "wrong_item", "short_shelf_life", "excess", "other"].includes(b.reasonCategory)) throw bad("Invalid reason category");
       o.reasonCategory = b.reasonCategory;
     }
+    if (b.returnReason !== undefined) o.returnReason = str(b.returnReason, 1000);
     if (b.notes !== undefined) o.notes = str(b.notes, 2000);
     if (b.vehicleNo !== undefined) o.vehicleNo = str(b.vehicleNo, 40);
     return o;
   };
 
+  router.get("/returns/returnable", requirePerm("purchaseReturns", "read"), wrap(async (req, res) => {
+    const po = await loadScoped(PM.PurchaseOrder, req, str(req.query.poId, 80));
+    const { received, returned } = await returnableOnPo(po, str(req.query.excludeReturnId, 80) || null);
+    res.json(po.lines.map((l) => {
+      const rec = received.get(l.itemId) || 0, ret = returned.get(l.itemId) || 0;
+      return { itemId: l.itemId, itemName: l.itemName, unit: l.unit, ordered: P.fromMilli(l.qtyMilli), received: P.fromMilli(rec), returned: P.fromMilli(ret), max: P.fromMilli(Math.max(0, rec - ret)) };
+    }));
+  }));
   router.get("/returns", requirePerm("purchaseReturns", "read"), wrap(async (req, res) => {
     const { limit, page, skip } = paging(req);
     const q = { ...scopeFilter(req) };
@@ -404,6 +446,7 @@ function buildReceivingRouter({ requireAuth, requirePerm, hasPermission, scopeFi
     const supplier = await M.Supplier.findOne({ id: supplierId }).lean();
     if (!supplier) throw bad("Choose the supplier the goods go back to", "NO_SUPPLIER", 404);
     const lines = await buildReturnLines(b.lines, venueId, po);
+    if (!str(b.returnReason, 1000)) throw bad("Say why the goods are being returned", "REASON_REQUIRED");
     const doc = await RM.SupplierReturn.create({
       ...retHeader(b), venueId, returnNo: await M.nextNumber("ret", "SRT"), supplierId: supplier.id, supplierName: supplier.name, poId: po ? po.id : null, poNo: po ? po.poNo : "",
       lines, totalPaise: lines.reduce((n, l) => n + l.valuePaise, 0), createdBy: req.admin.id, createdByName: req.admin.name,
@@ -417,9 +460,10 @@ function buildReceivingRouter({ requireAuth, requirePerm, hasPermission, scopeFi
     const cur = await loadScoped(RM.SupplierReturn, req, req.params.id);
     if (!["draft", "rejected"].includes(cur.status)) throw bad("Only a draft or rejected return can be edited.", "INVALID_STATE", 409);
     const set = retHeader(req.body);
+    if (req.body.returnReason !== undefined && !set.returnReason) throw bad("Say why the goods are being returned", "REASON_REQUIRED");
     if (req.body.lines !== undefined) {
       const po = cur.poId ? await PM.PurchaseOrder.findOne({ id: cur.poId }).lean() : null;
-      set.lines = await buildReturnLines(req.body.lines, cur.venueId, po);
+      set.lines = await buildReturnLines(req.body.lines, cur.venueId, po, cur.id);
       set.totalPaise = set.lines.reduce((n, l) => n + l.valuePaise, 0);
     }
     if (!Object.keys(set).length) throw bad("Nothing to update");

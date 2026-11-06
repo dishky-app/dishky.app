@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useOpenParam, useRowFilters, useRef_ } from "./InvUi";
 import { History, KeyVals, LineEditor, ReasonDialog, StatusBadge, linesPayload, statusLabel } from "./PurchUi";
 
 const STATUSES = ["draft", "pending_approval", "changes_requested", "approved", "rfq_issued", "ordered", "rejected", "cancelled"];
@@ -22,6 +22,7 @@ export default function PurchaseRequests() {
   const [search, setSearch] = useState("");
   const dSearch = useDebounced(search);
   const list = usePagedList("/purchase/requests", { status, search: dSearch });
+  const rf = useRowFilters(list.rows, { date: "requiredDate", dateLabel: "Needed", future: true });
   const items = useRef_("/inventory/items", { status: "active", limit: 200 }, (d) => d.data);
   const suppliers = useRef_("/inventory/suppliers", { status: "active", limit: 200 }, (d) => d.data);
   const [form, setForm] = useState(null);
@@ -59,7 +60,7 @@ export default function PurchaseRequests() {
   };
 
   const columns = [
-    { key: "prNo", label: "PR no.", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.prNo}</span> },
+    { key: "prNo", label: "PR no.", render: (r) => <>{r.prNo}</> },
     { key: "requestedByName", label: "Requested by" },
     { key: "purpose", label: "Purpose", render: (r) => r.purpose || <span className="inv-muted">—</span> },
     { key: "priority", label: "Priority", render: (r) => <span className={r.priority === "urgent" ? "inv-urgent" : ""}>{r.priority}</span> },
@@ -68,6 +69,7 @@ export default function PurchaseRequests() {
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
   ];
 
+  useOpenParam(open);
   return (
     <div className="inner-page inv-page">
       <PageHead title="Purchase requests" count={`${list.total} request(s)`}>
@@ -79,8 +81,9 @@ export default function PurchaseRequests() {
           <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">All statuses</option>{STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
           </Select>
+          {rf.controls}
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No purchase requests yet." more={list} />
+        <DataTable detail="purchase/requests" columns={columns} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} empty="No purchase requests yet." more={list} />
       </div>
 
       {form && (

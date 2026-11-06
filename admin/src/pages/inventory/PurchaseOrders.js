@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useOpenParam, useRowFilters, useRef_ } from "./InvUi";
 import { History, KeyVals, LineEditor, ReasonDialog, StatusBadge, linesPayload, statusLabel } from "./PurchUi";
 
 const STATUSES = ["draft", "pending_approval", "approved", "rejected", "sent", "partially_received", "received", "closed", "cancelled"];
@@ -22,6 +22,7 @@ export default function PurchaseOrders() {
   const [search, setSearch] = useState("");
   const dSearch = useDebounced(search);
   const list = usePagedList("/purchase/orders", { status, supplierId, search: dSearch, ...(overdue ? { overdue: "true" } : {}) });
+  const rf = useRowFilters(list.rows, { date: "orderDate", dateLabel: "Order" });
   const items = useRef_("/inventory/items", { status: "active", limit: 200 }, (d) => d.data);
   const suppliers = useRef_("/inventory/suppliers", { limit: 200 }, (d) => d.data);
   const settings = useRef_("/purchase/settings", {}, (d) => [d]);
@@ -30,7 +31,9 @@ export default function PurchaseOrders() {
   const [ask, setAsk] = useState(null);
   const [sendDlg, setSendDlg] = useState(null);
   const [busy, setBusy] = useState(false);
-  const manualOk = settings[0]?.allowManualPo;
+  const canSettings = hasModulePermission("purchaseSettings", "write");
+  const [manualOn, setManualOn] = useState(false);
+  const manualOk = manualOn || settings[0]?.allowManualPo;
 
   const run = useCallback(async (fn, msg) => {
     setBusy(true);
@@ -43,6 +46,29 @@ export default function PurchaseOrders() {
   const act = async (po, path, body = {}, msg) => {
     const r = await run(() => api.post(`/purchase/orders/${po.id}/${path}`, body), msg);
     if (r) { setAsk(null); setSendDlg(null); setDetail(r.data); }
+  };
+  // Purchase requests and RFQs are not part of this module, so every order is raised directly. The server still needs its
+  // "manual orders" switch on; turn it on for the person who is allowed to, otherwise explain who can.
+  const ensureManual = async () => {
+    if (manualOk) return true;
+    if (!canSettings) { toast.error("Ask an administrator to turn on direct purchase orders in Purchase settings."); return false; }
+    try { await api.patch("/purchase/settings", { allowManualPo: true }); setManualOn(true); return true; }
+    catch (e) { toast.error(errText(e)); return false; }
+  };
+  const newOrder = async () => {
+    if (!(await ensureManual())) return;
+    setForm({ supplierId: "", expectedDate: "", paymentTerms: "", deliveryTerms: "", deliveryAddress: "", notes: "", freight: "", otherCharges: "", lines: [] });
+  };
+  // Re-order: a new draft order to the same supplier for the same items and quantities (price, discount and GST are carried over; review before saving).
+  const reorder = async (po) => {
+    if (!(await ensureManual())) return;
+    let src = po;
+    if (!src.lines) { try { src = (await api.get(`/purchase/orders/${po.id}`)).data; } catch (e) { toast.error(errText(e)); return; } }
+    setDetail(null);
+    setForm({
+      reorderOf: src.poNo, supplierId: src.supplierId, expectedDate: "", paymentTerms: src.paymentTerms || "", deliveryTerms: src.deliveryTerms || "", deliveryAddress: src.deliveryAddress || "", notes: "", freight: "", otherCharges: "",
+      lines: src.lines.map((l) => ({ itemId: l.itemId, qty: l.qty, unit: l.unit, unitPrice: l.unitPrice, discountPct: l.discountPct || "", gstRate: l.gstRate })),
+    });
   };
   const edit = (po) => setForm({
     id: po.id, supplierId: po.supplierId, expectedDate: po.expectedDate ? po.expectedDate.slice(0, 10) : "", paymentTerms: po.paymentTerms, deliveryTerms: po.deliveryTerms, deliveryAddress: po.deliveryAddress, notes: po.notes,
@@ -62,18 +88,20 @@ export default function PurchaseOrders() {
   };
 
   const columns = [
-    { key: "poNo", label: "PO no.", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.poNo}{r.version > 1 ? ` (v${r.version})` : ""}</span> },
+    { key: "poNo", label: "PO no.", render: (r) => <>{r.poNo}{r.version > 1 ? ` (v${r.version})` : ""}</> },
     { key: "supplierName", label: "Supplier" },
     { key: "orderDate", label: "Ordered", render: (r) => dateShort(r.orderDate) },
     { key: "expectedDate", label: "Expected", render: (r) => <>{dateShort(r.expectedDate)} {r.overdue && <Badge tone="red">overdue</Badge>}</> },
     { key: "total", label: "Total", num: true, render: (r) => money(r.totals.grandTotal) },
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
+    ...(canWrite ? [{ key: "act", label: "", render: (r) => (r.status === "draft" ? null : <Btn type="button" kind="plain" sm disabled={busy} onClick={() => reorder(r)}>Re-order</Btn>) }] : []),
   ];
 
+  useOpenParam(open);
   return (
     <div className="inner-page inv-page">
       <PageHead title="Purchase orders" count={`${list.total} order(s)`}>
-        {canWrite && manualOk && <Btn type="button" kind="primary" onClick={() => setForm({ supplierId: "", expectedDate: "", paymentTerms: "", deliveryTerms: "", deliveryAddress: "", notes: "", freight: "", otherCharges: "", lines: [] })}>+ Manual order</Btn>}
+        {canWrite && <Btn type="button" kind="primary" onClick={newOrder}>+ New order</Btn>}
       </PageHead>
       <div className="inv-stack">
         <Toolbar>
@@ -81,16 +109,17 @@ export default function PurchaseOrders() {
           <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
           <Select aria-label="Supplier" value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">All suppliers</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select>
           <label className="checkbox-item inv-check"><input type="checkbox" checked={overdue} onChange={(e) => setOverdue(e.target.checked)} />Overdue only</label>
+          {rf.controls}
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No purchase orders yet. Create one from an approved request or an awarded RFQ." more={list} />
+        <DataTable detail="purchase/orders" columns={columns} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} empty="No purchase orders yet. Press “+ New order” to create one." more={list} />
       </div>
 
       {form && (
-        <Modal wide title={form.id ? "Edit draft order" : "New manual order"} onClose={() => setForm(null)}
+        <Modal wide title={form.id ? "Edit draft order" : form.reorderOf ? `Re-order from ${form.reorderOf}` : "New purchase order"} onClose={() => setForm(null)}
           footer={<><Btn type="button" kind="plain" onClick={() => setForm(null)}>Cancel</Btn><Btn type="submit" form="po-form" kind="primary" disabled={busy}>Save draft</Btn></>}>
           <form id="po-form" onSubmit={save}>
             <div className="inv-grid">
-              {!form.id && <Field label="Supplier" required><Select value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}><option value="">Choose supplier</option>{suppliers.filter((s) => s.status === "active").map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>}
+              {!form.id && <Field label="Supplier" required><Select disabled={!!form.reorderOf} value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}><option value="">Choose supplier</option>{suppliers.filter((s) => s.status === "active").map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>}
               <Field label="Expected delivery"><DateInput value={form.expectedDate} onChange={(e) => setForm({ ...form, expectedDate: e.target.value })} /></Field>
               <Field label="Payment terms"><input className="inv-input" maxLength={200} value={form.paymentTerms} onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })} /></Field>
               <Field label="Delivery terms"><input className="inv-input" maxLength={200} value={form.deliveryTerms} onChange={(e) => setForm({ ...form, deliveryTerms: e.target.value })} /></Field>
@@ -118,6 +147,7 @@ export default function PurchaseOrders() {
             {detail.status === "pending_approval" && canApprove && <>
               <Btn type="button" kind="primary" disabled={busy} onClick={() => act(detail, "approve", {}, "Approved")}>Approve</Btn>
               <Btn type="button" kind="danger" onClick={() => setAsk({ title: "Reject order", path: "reject", label: "Reason for rejection", danger: true })}>Reject</Btn></>}
+            {detail.status !== "draft" && canWrite && <Btn type="button" kind="plain" disabled={busy} onClick={() => reorder(detail)}>Re-order</Btn>}
             {detail.status === "approved" && canWrite && <Btn type="button" kind="primary" onClick={() => setSendDlg({ via: "whatsapp" })}>Mark as sent</Btn>}
             {["approved", "sent"].includes(detail.status) && canWrite && <Btn type="button" kind="plain" onClick={() => setAsk({ title: "Revise order", path: "revise", label: "Why is it being revised?", confirmLabel: "Revise" })}>Revise</Btn>}
             {["sent", "partially_received", "received"].includes(detail.status) && canWrite && <Btn type="button" kind="plain" onClick={() => setAsk({ title: "Close order (short-close)", path: "close", label: "Why is the remaining quantity no longer expected?" })}>Close order</Btn>}

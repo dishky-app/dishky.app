@@ -3,7 +3,7 @@
  * Shared infinite-scroll sentinel + spinner component
  */
 
-import React from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 
 import "./InfiniteScrollLoader.css";
 
@@ -40,12 +40,7 @@ const InfiniteScrollLoader = ({
   const content = (
     <>
       <div ref={sentinelRef} className="isl-sentinel" aria-hidden="true" />
-      {hasMore && (
-        <div className="isl-loader" role="status" aria-live="polite">
-          <span className="isl-spinner" aria-hidden="true" />
-          <span className="isl-label">{label}</span>
-        </div>
-      )}
+      {/* The visible loading state is the shared <InfiniteScrollOverlay/> over the whole table; this stays an invisible sentinel. */}
     </>
   );
 
@@ -77,9 +72,45 @@ const InfiniteScrollLoader = ({
  * label       string    Optional. Override the loading text.
  */
 export const InfiniteScrollOverlay = ({ isLoading, label = "Loading…" }) => {
+  const ref = useRef(null);
+  const [box, setBox] = useState(null);
+
+  // The overlay is pinned (position: fixed) to the on-screen box of the table's scroll container, so it covers the
+  // whole table no matter how far the table has been scrolled, and follows it while the page scrolls or resizes.
+  useLayoutEffect(() => {
+    if (!isLoading) { setBox(null); return undefined; }
+    const el = ref.current;
+    if (!el) return undefined;
+    let host = el.parentElement;
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+      const cs = window.getComputedStyle(p);
+      if (/(auto|scroll)/.test(cs.overflowY) || /(auto|scroll)/.test(cs.overflowX)) { host = p; break; }
+    }
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const r = host.getBoundingClientRect();
+      const top = Math.max(r.top, 0), left = Math.max(r.left, 0);
+      const bottom = Math.min(r.bottom, window.innerHeight), right = Math.min(r.right, window.innerWidth);
+      setBox((prev) => {
+        const next = { top, left, width: Math.max(right - left, 0), height: Math.max(bottom - top, 0) };
+        return prev && prev.top === next.top && prev.left === next.left && prev.width === next.width && prev.height === next.height ? prev : next;
+      });
+    };
+    const schedule = () => { if (!raf) raf = window.requestAnimationFrame(measure); };
+    measure();
+    window.addEventListener("scroll", schedule, true);
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule, true);
+      window.removeEventListener("resize", schedule);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [isLoading]);
+
   if (!isLoading) return null;
   return (
-    <div className="isl-table-overlay" role="status" aria-live="polite">
+    <div ref={ref} className="isl-table-overlay" role="status" aria-live="polite" style={box || { visibility: "hidden" }}>
       <span className="isl-spinner" aria-hidden="true" />
       <span className="isl-label">{label}</span>
     </div>

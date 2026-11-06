@@ -1,5 +1,6 @@
 import axios from "axios";
 import tenant, { resolved } from "./tenant";
+import { confirmInfoFor, getConfirmHandler, recentlyConfirmed } from "./utils/confirmGate";
 
 // In production, calls go through the /api/* rewrite defined in
 // vercel.json, which proxies to the Render backend server-side. This
@@ -40,6 +41,16 @@ api.interceptors.request.use((config) => {
     config.params = { venueId: resolved.venueId, ...(config.params || {}) };
   }
   return config;
+});
+
+// Deletes and sensitive changes ask "are you sure?" first (see utils/confirmGate.js). Declining rejects the request with a
+// cancellation; a page that already confirmed is not asked again. Opt out with { confirmed: true }.
+api.interceptors.request.use(async (config) => {
+  const info = confirmInfoFor(config);
+  const ask = getConfirmHandler();
+  if (!info || !ask || recentlyConfirmed()) return config;
+  if (await ask(info)) return config;
+  throw new axios.CanceledError("Cancelled by the user");
 });
 
 // ---- Save / error toasts -----------------------------------------------

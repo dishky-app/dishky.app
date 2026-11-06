@@ -170,7 +170,7 @@ async function applyPaid(sub, { planKey, cycle, providerSubscriptionId, paymentI
   sub.currentPeriodEnd = periodEnd || (require("./billing/mock").addMonths(sub.currentPeriodStart, sub.billingCycle === "yearly" ? 12 : 1));
   sub.graceEndsAt = null;
   sub.cancelAtPeriodEnd = false;
-  sub.trialEndsAt = sub.trialEndsAt; // kept for history
+  // trialEndsAt is intentionally left untouched (kept for history)
   if (sub.pendingChange && sub.pendingChange.effectiveAt && sub.pendingChange.planKey === sub.planKey) {
     sub.pendingChange = { planKey: null, billingCycle: null, effectiveAt: null };
   }

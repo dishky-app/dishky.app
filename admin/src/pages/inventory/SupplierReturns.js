@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Tabs, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Tabs, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useOpenParam, useRowFilters, useRef_ } from "./InvUi";
 import { History, KeyVals, ReasonDialog, StatusBadge, statusLabel } from "./PurchUi";
 
 const CATS = ["damaged", "expired", "quality", "wrong_item", "short_shelf_life", "excess", "other"];
@@ -20,6 +20,7 @@ export default function SupplierReturns() {
   const [search, setSearch] = useState("");
   const dSearch = useDebounced(search);
   const list = usePagedList("/receiving/returns", { status, search: dSearch });
+  const rf = useRowFilters(list.rows, { supplier: "supplierName" });
   const suppliers = useRef_("/inventory/suppliers", { limit: 200 }, (d) => d.data);
   const locations = useRef_("/inventory/locations", {}, (d) => d);
   const items = useRef_("/inventory/items", { limit: 200 }, (d) => d.data);
@@ -57,10 +58,20 @@ export default function SupplierReturns() {
     if (r) { setForm(null); setTab("returns"); setDetail(r.data); }
   };
 
+  // Refund = the supplier's credit note: recorded once the return is credited, expected once the goods have been dispatched.
+  const refundCell = (r) => {
+    if (r.status === "credited") return <><b>{money(r.creditAmount)}</b><div className="inv-muted">{r.creditNoteNo}{r.creditVariance < 0 ? ` · ${money(-r.creditVariance)} less than value` : ""}</div></>;
+    if (r.status === "dispatched") return <Badge tone="blue">Awaiting refund</Badge>;
+    return <span className="inv-muted">—</span>;
+  };
   const columns = [
-    { key: "returnNo", label: "Return no.", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.returnNo}</span> },
-    { key: "supplierName", label: "Supplier" }, { key: "reasonCategory", label: "Reason", render: (r) => statusLabel(r.reasonCategory) },
+    { key: "returnNo", label: "Return no.", render: (r) => <>{r.returnNo}</> },
+    { key: "createdAt", label: "Date", render: (r) => dateShort(r.createdAt) },
+    { key: "supplierName", label: "Supplier" },
+    { key: "items", label: "Returned items", sort: false, render: (r) => r.lines.map((l, i) => <div key={i}>{l.itemName} <span className="inv-muted">— {qty(l.qty)} {l.unit}</span></div>) },
+    { key: "reasonCategory", label: "Reason", render: (r) => statusLabel(r.reasonCategory) },
     { key: "total", label: "Value", num: true, render: (r) => money(r.total) },
+    { key: "creditAmount", label: "Refund", num: true, sortValue: (r) => (r.status === "credited" ? r.creditAmount : -1), render: refundCell },
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
   ];
   const qcols = [
@@ -70,9 +81,10 @@ export default function SupplierReturns() {
     ...(canWrite ? [{ key: "act", label: "", render: (r) => <Btn type="button" kind="plain" sm onClick={() => startFromQuarantine(r)}>Return to supplier</Btn> }] : []),
   ];
 
+  useOpenParam(open);
   return (
     <div className="inner-page inv-page">
-      <PageHead title="Supplier returns & quarantine">
+      <PageHead title="Supplier returns & quarantine" count={tab === "returns" ? `${list.total} return(s)` : undefined}>
         {canWrite && <Btn type="button" kind="primary" onClick={() => setForm({ supplierId: "", reasonCategory: "quality", notes: "", lines: [] })}>+ New return</Btn>}
       </PageHead>
       <Tabs tabs={[["returns", "Returns"], ["quarantine", "Quarantine"]]} value={tab} onChange={setTab} />
@@ -81,8 +93,9 @@ export default function SupplierReturns() {
           <Toolbar>
             <SearchBox placeholder=" Search return no." aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
             <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["draft", "pending_approval", "approved", "rejected", "dispatched", "credited", "cancelled"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
-          </Toolbar>
-          <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No supplier returns." more={list} />
+            {rf.controls}
+        </Toolbar>
+          <DataTable detail="purchase/returns" columns={columns} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} empty="No supplier returns." more={list} />
         </div>
       ) : (
         <div className="inv-stack">

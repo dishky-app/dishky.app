@@ -1,7 +1,7 @@
 /** SupplierScorecards.js — delivery, fill, quality and invoice-accuracy scores per supplier. */
 import React, { useEffect, useState } from "react";
 import api from "../../api";
-import { Badge, Btn, DataTable, PageHead, errText, money } from "./InvUi";
+import { Badge, Btn, DataTable, PageHead, SearchBox, Select, Toolbar, errText, money } from "./InvUi";
 
 const TONE = { A: "green", B: "green", C: "amber", D: "red", unrated: "grey" };
 const pct = (v) => (v === null || v === undefined ? "—" : `${v}%`);
@@ -26,11 +26,21 @@ export default function SupplierScorecards() {
     { key: "returns", label: "Returns", num: true, render: (r) => (r.returns ? `${r.returns} (${money(r.returnValue)})` : "0") },
     { key: "disputedInvoices", label: "Disputed", num: true },
   ];
+  const [search, setSearch] = useState("");
+  const [grade, setGrade] = useState("");
+  const shown = state.rows.filter((r) => (!grade || r.grade === grade) &&
+    (!search.trim() || `${r.name} ${r.code}`.toLowerCase().includes(search.trim().toLowerCase())));
+
   return (
     <div className="inner-page inv-page">
-      <PageHead title="Supplier scorecards"><Btn type="button" kind="plain" onClick={load}>Refresh</Btn></PageHead>
+      <PageHead title="Supplier scorecards" count={`${shown.length} supplier(s)`}><Btn type="button" kind="plain" onClick={load}>Refresh</Btn></PageHead>
       {state.meta && <div className="inv-banner">{state.meta.note}</div>}
-      <div className="inv-stack"><DataTable columns={columns} rows={state.rows} loading={state.loading} error={state.error} onRetry={load} rowKey={(r) => r.supplierId} empty="No suppliers yet." /></div>
+      <div className="inv-stack">
+        <Toolbar>
+          <SearchBox placeholder=" Search supplier or code" aria-label="Search suppliers" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Grade" value={grade} onChange={(e) => setGrade(e.target.value)}><option value="">All grades</option>{["A", "B", "C", "D", "unrated"].map((g) => <option key={g} value={g}>{g === "unrated" ? "Not rated" : `Grade ${g}`}</option>)}</Select>
+        </Toolbar>
+        <DataTable columns={columns} rows={shown} loading={state.loading} error={state.error} onRetry={load} rowKey={(r) => r.supplierId} empty="No suppliers yet." /></div>
     </div>
   );
 }

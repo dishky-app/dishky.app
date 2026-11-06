@@ -31,6 +31,8 @@ const workPlanModule = require("./src/modules/workPlan/workPlan");
 const auditLogModule = require("./src/modules/auditLog/auditLog");
 const documentsModule = require("./src/modules/documents/documents");
 const memosModule = require("./src/modules/memos/memos");
+const trialDishesModule = require("./src/modules/trialDishes/trialDishes");
+const closingModule = require("./src/modules/closing/closing");
 const { isThumbnailableDocument, generateFirstPageThumbnail } = require("./src/services/fileThumbnail");
 const { validateOptionalDataUrlFile, asPlainString, payloadShapeGuard, safeErrorMessage } = require("./src/core/validation");
 const { buildLimiter } = require("./src/core/rateLimitStore");
@@ -518,6 +520,7 @@ async function attachStaffFileThumbnails(body, previousDoc) {
   const flatFileFields = [
     { dataField: "idProof", typeField: "idProofType", thumbField: "idProofThumbnail" },
     { dataField: "bonafide", typeField: "bonafideType", thumbField: "bonafideThumbnail" },
+    { dataField: "payslip", typeField: "payslipType", thumbField: "payslipThumbnail" },
   ];
 
   for (const { dataField, typeField, thumbField, label } of flatFileFields) {
@@ -753,7 +756,9 @@ async function priceOrderServerSide(items, venueId) {
       }
     }
     sub += line;
-    lines.push({ ...it, quantity: qty, unitPrice: Math.round(unit), totalPrice: line });
+    const outLine = { ...it, quantity: qty, unitPrice: Math.round(unit), totalPrice: line };
+    if (it.ingredients !== undefined) outLine.ingredients = sanitizeOrderIngredients(it.ingredients);
+    lines.push(outLine);
   }
   const cgst = Number((sub * 0.025).toFixed(2));
   const sgst = Number((sub * 0.025).toFixed(2));
@@ -2429,7 +2434,13 @@ GLOBAL_SINGLETONS.forEach((name) => {
 // Ephemeral table-bell state, per restaurant + venue (acceptable to lose on restart).
 // key: `${restaurantId}|${venueId}|${tableNo}`
 const activeBells = new Map();
+const { cleanBellPayload, sanitizeOrderIngredients, MAX_ACTIVE_BELLS_PER_RESTAURANT } = require("./src/core/guestInput");
 const bellKey = (rid, venueId, tableNo) => `${rid}|${venueId || "-"}|${tableNo}`;
+const activeBellCount = (rid) => {
+  let n = 0;
+  for (const k of activeBells.keys()) if (k.startsWith(`${rid}|`)) n++;
+  return n;
+};
 
 /** The bells a socket may see: its restaurant's, narrowed to its venue when it has one. */
 function bellsFor(socket) {
@@ -2545,6 +2556,9 @@ io.on("connection", (socket) => {
         venueId = v ? v.id : null;
       }
       if (!socket.data.isStaff) {
+        if (socket.data.restaurantId && socket.data.restaurantId !== restaurant.id) {
+          socket.leave(roomOf(socket.data.restaurantId, "guests")); // never keep receiving another restaurant's events
+        }
         socket.data.restaurantId = restaurant.id;
         socket.data.venueId = venueId;
         socket.join(roomOf(restaurant.id, "guests"));
@@ -2579,10 +2593,13 @@ io.on("connection", (socket) => {
 
   socket.on("bell-ring", (payload) => {
     if (!joined()) return;
-    const { tableNo } = payload || {};
-    if (!tableNo) return;
-    const venueId = socket.data.venueId || (payload && payload.venueId) || null;
-    activeBells.set(bellKey(socket.data.restaurantId, venueId, tableNo), true);
+    const clean = cleanBellPayload(payload);
+    if (!clean) return;
+    const { tableNo } = clean;
+    const venueId = socket.data.venueId || clean.venueId || null;
+    const key = bellKey(socket.data.restaurantId, venueId, tableNo);
+    if (!activeBells.has(key) && activeBellCount(socket.data.restaurantId) >= MAX_ACTIVE_BELLS_PER_RESTAURANT) return;
+    activeBells.set(key, true);
     const evt = { tableNo, venueId };
     io.to(roomOf(socket.data.restaurantId, "staff")).emit("bell-ring", evt);
     io.to(roomOf(socket.data.restaurantId, "guests")).emit("bell-ring", evt);
@@ -2590,9 +2607,10 @@ io.on("connection", (socket) => {
 
   socket.on("bell-off", (payload) => {
     if (!joined()) return;
-    const { tableNo } = payload || {};
-    if (!tableNo) return;
-    const venueId = socket.data.venueId || (payload && payload.venueId) || null;
+    const clean = cleanBellPayload(payload);
+    if (!clean) return;
+    const { tableNo } = clean;
+    const venueId = socket.data.venueId || clean.venueId || null;
     activeBells.delete(bellKey(socket.data.restaurantId, venueId, tableNo));
     const evt = { tableNo, venueId };
     io.to(roomOf(socket.data.restaurantId, "staff")).emit("bell-off", evt);
@@ -2683,6 +2701,12 @@ io.on("connection", (socket) => {
       }
     }
 
+    // jobId is client-generated: refuse one that is already in flight so another panel can
+    // neither overwrite a pending job (hijacking its result) nor leak an orphaned timer.
+    if (typeof jobId !== "string" || jobId.length > 100 || pendingPrintJobs.has(jobId)) {
+      socket.emit("printer:result", { jobId, success: false, error: "Invalid or duplicate jobId" });
+      return;
+    }
     pendingPrintJobs.set(jobId, { requesterSocketId: socket.id, restaurantId: rid });
 
     // Safety timeout in case the bridge never responds
@@ -2767,9 +2791,22 @@ app.use(
   documentsModule.buildRouter({ requireAuth: requireAdminAuth, requireRole: requireAdminRole, logAudit, uploadLimiter })
 );
 app.use(
+  "/closing",
+  closingModule.buildRouter({ requireAuth: requireAdminAuth, requireRole: requireAdminRole, logAudit, emitChange })
+);
+app.use(
+  "/attenders",
+  attendersModule.buildAdminRouter({ requireAuth: requireAdminAuth, requireRole: requireAdminRole, logAudit })
+);
+app.use(
   "/memos",
   requireModule("memos"),
   memosModule.buildRouter({ requireAuth: requireAdminAuth, requireRole: requireAdminRole, logAudit, uploadLimiter, emitChange, getModel })
+);
+app.use(
+  "/trial-dishes",
+  requireModule("trialDishes"),
+  trialDishesModule.buildRouter({ requireAuth: requireAdminAuth, requirePerm, logAudit, emitChange, getModel, adminModel: require("./src/modules/auth/auth").Admin })
 );
 app.use(
   "/payments",
@@ -2818,6 +2855,11 @@ app.use(
   require("./src/modules/inventory/financeRoutes").buildFinanceRouter({
     requireAuth: requireAdminAuth, requirePerm, hasPermission, scopeFilter, scopeVenueForCreate, venueBelongsToTenant, logAudit, emitChange,
   })
+);
+
+app.use(
+  "/purchase-extract",
+  require("./src/modules/inventory/documentExtract").buildExtractRouter({ requireAuth: requireAdminAuth, requirePerm })
 );
 
 app.use(

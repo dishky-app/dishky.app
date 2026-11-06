@@ -7,15 +7,17 @@
  * + `.mat` floating-label fields and the `.status` pills. Only layout bits that have no global equivalent
  * live in inventory.css (prefix `inv-`).
  */
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../api";
 import { useVenue } from "../../context/VenueContext";
 import Button3D from "../../components/Button3D";
+import CollapseChevron from "../../components/CollapseChevron";
 import CustomDropdown from "../../components/CustomDropdown";
 import { CustomDatePicker } from "../../components/CustomDatePicker";
 import { EmptyRow } from "../../App";
 import useServerInfinite from "../../hooks/useServerInfinite";
-import InfiniteScrollLoader from "../../components/InfiniteScrollLoader";
+import InfiniteScrollLoader, { InfiniteScrollOverlay } from "../../components/InfiniteScrollLoader";
 import closeIcon from "../../icon/close-icon.png";
 import "../ModalCSS.css";
 import "../Todo.css"; // supplies the floating-label (.mat) styles used by page-level forms inside .details-container
@@ -84,11 +86,27 @@ export function Btn({ kind = "plain", sm = false, className = "", children, ...r
 }
 
 /* ── page layout ───────────────────────────────────────────── */
-/** Same markup as every other admin page: title, optional result count, actions on the right. */
+/**
+ * Same markup as the Payments / Dishes headers: collapse chevron, title, optional result count, actions on the
+ * right. The chevron collapses the page's filter bars, tabs, KPI strips and notes (CSS keyed on `data-collapsed`
+ * on the surrounding `.inv-page`, see inventory.css).
+ */
 export function PageHead({ title, count, children }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const page = ref.current?.closest(".inv-page");
+    if (page) page.setAttribute("data-collapsed", String(collapsed));
+  }, [collapsed]);
   return (
-    <div className="header">
+    <div className="header" ref={ref}>
       <div className="header-title-row">
+        <div className="header-collapse-col">
+          <button type="button" className="header-collapse-btn" onClick={() => setCollapsed((c) => !c)}
+            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={collapsed ? "Expand filters" : "Collapse filters"} aria-expanded={!collapsed}>
+            <CollapseChevron collapsed={collapsed} />
+          </button>
+        </div>
         <div className="header-title-col">
           <div className="header-title-with-count">
             <h2 className="title">{title}</h2>
@@ -101,9 +119,14 @@ export function PageHead({ title, count, children }) {
   );
 }
 
+/** Animated wrapper (same grid-rows trick as CollapseSection) that closes when the page header is collapsed. */
+function Collapsible({ children }) {
+  return <div className="inv-collapsible"><div className="inv-collapsible-inner">{children}</div></div>;
+}
+
 /** Filter bar container; put SearchBox / Select / DateInput / Btn inside. */
 export function Toolbar({ children }) {
-  return <div className="filter-bar"><div className="filter-groups">{children}</div></div>;
+  return <Collapsible><div className="filter-bar"><div className="filter-groups">{children}</div></div></Collapsible>;
 }
 /** Tab switcher drawn with the filter pills used by every other page. tabs = [[key, label], ...] */
 export function Tabs({ tabs, value, onChange, inline = false }) {
@@ -114,14 +137,43 @@ export function Tabs({ tabs, value, onChange, inline = false }) {
       ))}
     </div>
   );
-  return inline ? group : <div className="filter-bar"><div className="filter-groups">{group}</div></div>;
+  return inline ? group : <Collapsible><div className="filter-bar"><div className="filter-groups">{group}</div></div></Collapsible>;
 }
 export function SearchBox({ value, onChange, placeholder = " Search…", ...rest }) {
   return <input className="search-input" placeholder={placeholder} value={value} onChange={onChange} {...rest} />;
 }
 
-/** Generic table in the panel's table style (`more` = an infinite list from usePagedList): columns = [{ key, label, render?, num? }] */
-export function DataTable({ columns, rows, loading, error, empty = "Nothing here yet", onRetry, rowKey, more }) {
+/**
+ * Generic table in the panel's table style (`more` = an infinite list from usePagedList).
+ * columns = [{ key, label, render?, num?, sortValue?, sort?: false }]
+ *  - Sortable headers behave exactly like the Dishes page (▲ / ▼, click to toggle). A column sorts on r[key], or on
+ *    sortValue(r); columns with no data of their own (buttons, computed cells) are left unsortable.
+ *  - `detail="purchase/orders"`: clicking any cell opens /purchase/orders/<row id>, like clicking a dish name opens
+ *    the dish. The first column is drawn as the blue `.clickable` link; buttons / inputs inside a row keep their own action.
+ */
+export function DataTable({ columns, rows, loading, error, empty = "Nothing here yet", onRetry, rowKey, more, detail }) {
+  const navigate = useNavigate();
+  const [sort, setSort] = useState({ key: "", direction: "asc" });
+  const NO_SORT = ["act", "pick", "x"];
+  const canSort = (c) => c.sort !== false && !NO_SORT.includes(c.key) && c.label !== "" &&
+    (!!c.sortValue || rows.some((r) => r[c.key] !== undefined && r[c.key] !== null && typeof r[c.key] !== "object"));
+  const toggle = (key) => setSort((p) => (p.key === key ? { key, direction: p.direction === "asc" ? "desc" : "asc" } : { key, direction: "asc" }));
+  const sorted = useMemo(() => {
+    const c = columns.find((x) => x.key === sort.key);
+    if (!c) return rows;
+    const dir = sort.direction === "asc" ? 1 : -1;
+    const val = (r) => (c.sortValue ? c.sortValue(r) : r[c.key]);
+    return [...rows].sort((a, b) => {
+      const x = val(a), y = val(b);
+      if ((x === undefined || x === null) && (y === undefined || y === null)) return 0;
+      if (x === undefined || x === null) return 1;
+      if (y === undefined || y === null) return -1;
+      if (typeof x === "number" && typeof y === "number") return (x - y) * dir;
+      return String(x).localeCompare(String(y), undefined, { numeric: true, sensitivity: "base" }) * dir;
+    });
+  }, [rows, columns, sort]);
+  const span = columns.length;
+
   if (error) {
     return (
       <div className="inv-error" role="alert">
@@ -130,25 +182,94 @@ export function DataTable({ columns, rows, loading, error, empty = "Nothing here
       </div>
     );
   }
+  const go = (e, r) => {
+    if (!detail || !r.id) return;
+    if (e.target.closest("button, a, input, select, textarea, label")) return;
+    navigate(`/${detail}/${r.id}`);
+  };
   return (
     <div className="table-wrapper">
       <table>
-        <thead><tr>{columns.map((c) => <th key={c.key} className={c.num ? "inv-num" : ""}>{c.label}</th>)}</tr></thead>
+        <thead>
+          <tr>
+            {columns.map((c) => canSort(c) ? (
+              <th key={c.key} onClick={() => toggle(c.key)} className={`${c.num ? "inv-num" : ""}${sort.key === c.key ? " sorted" : ""}`.trim()}>
+                <span className="th-content sort-th">
+                  <span>{c.label}</span>
+                  <span className="sort-arrow">{sort.key === c.key ? (sort.direction === "asc" ? "▲" : "▼") : ""}</span>
+                </span>
+              </th>
+            ) : <th key={c.key} className={c.num ? "inv-num" : ""}>{c.label}</th>)}
+          </tr>
+        </thead>
         <tbody>
           {loading && rows.length === 0
-            ? <EmptyRow colSpan={columns.length} message="Loading…" />
+            ? <EmptyRow colSpan={span} message="Loading…" />
             : rows.length === 0
-              ? <EmptyRow colSpan={columns.length} message={empty} />
-              : rows.map((r, i) => (
+              ? <EmptyRow colSpan={span} message={empty} />
+              : sorted.map((r, i) => (
                 <tr key={rowKey ? rowKey(r, i) : r.id || i}>
-                  {columns.map((c) => <td key={c.key} className={c.num ? "inv-num" : ""}>{c.render ? c.render(r) : r[c.key] ?? "—"}</td>)}
+                  {columns.map((c, ci) => {
+                    const content = c.render ? c.render(r) : r[c.key] ?? "—";
+                    const link = detail && r.id && ci === 0;
+                    return (
+                      <td key={c.key} className={`${c.num ? "inv-num" : ""}${detail && r.id ? " inv-rowlink" : ""}`.trim()} onClick={detail ? (e) => go(e, r) : undefined}>
+                        {link ? <span className="clickable">{content}</span> : content}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
-          {more && rows.length > 0 && <InfiniteScrollLoader sentinelRef={more.sentinelRef} hasMore={more.hasMore} colSpan={columns.length} />}
+          {more && rows.length > 0 && <InfiniteScrollLoader sentinelRef={more.sentinelRef} hasMore={more.hasMore} colSpan={span} />}
         </tbody>
       </table>
+      {more && <InfiniteScrollOverlay isLoading={!!(more.loadingMore || (more.busy && rows.length > 0))} label={more.busy ? "Updating…" : undefined} />}
     </div>
   );
+}
+
+/** Opens a record's manage dialog when the page is reached as /list?open=<id> (the "Manage" button on a details page). */
+export function useOpenParam(fn) {
+  const [sp, setSp] = useSearchParams();
+  const ran = useRef(false);
+  useEffect(() => {
+    const id = sp.get("open");
+    if (!id || ran.current) return;
+    ran.current = true;
+    fn(id);
+    const next = new URLSearchParams(sp); next.delete("open"); setSp(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+}
+
+/** Today as YYYY-MM-DD in local time (date filters never offer future dates unless the field is a due / deadline date). */
+export const localToday = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+
+/**
+ * Client-side filters for lists whose API only filters by status / search: an optional Supplier dropdown (built from the
+ * loaded rows) and an optional From / To date range. Returns the filtered rows and the controls to drop into <Toolbar>.
+ */
+export function useRowFilters(rows, { supplier, date, dateLabel = "", future = false } = {}) {
+  const [sup, setSup] = useState("");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const options = useMemo(() => (supplier ? [...new Set(rows.map((r) => r[supplier]).filter(Boolean))].sort() : []), [rows, supplier]);
+  const filtered = useMemo(() => rows.filter((r) => {
+    if (supplier && sup && r[supplier] !== sup) return false;
+    if (date) {
+      const d = r[date] ? String(r[date]).slice(0, 10) : "";
+      if (from && (!d || d < from)) return false;
+      if (to && (!d || d > to)) return false;
+    }
+    return true;
+  }), [rows, supplier, sup, date, from, to]);
+  const controls = (
+    <>
+      {supplier && <Select aria-label="Supplier" value={sup} onChange={(e) => setSup(e.target.value)}><option value="">All suppliers</option>{options.map((n) => <option key={n} value={n}>{n}</option>)}</Select>}
+      {date && <><DateInput label={`${dateLabel} from`.trim()} value={from} max={to || (future ? undefined : localToday())} onChange={(e) => { const v = e.target.value; setFrom(v); if (v && to && v > to) setTo(v); }} /><DateInput label={`${dateLabel} to`.trim()} value={to} min={from || undefined} max={future ? undefined : localToday()} onChange={(e) => setTo(e.target.value)} /></>}
+    </>
+  );
+  return { filtered, controls };
 }
 
 /** Same pill the Orders / Support pages use. */

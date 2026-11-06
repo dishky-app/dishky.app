@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getVenueIdForRequest } from "./venueStore";
 import { getRestaurant } from "./tenant";
+import { confirmInfoFor, getConfirmHandler, recentlyConfirmed } from "./confirmGate";
 
 // In production, calls go through the /api/* rewrite defined in
 // vercel.json, which proxies to the Render backend server-side. This
@@ -55,6 +56,16 @@ api.interceptors.request.use((config) => {
   const restaurant = getRestaurant();
   if (restaurant) config.headers["X-Restaurant"] = restaurant;
   return config;
+});
+
+// Every delete and every sensitive change asks "are you sure?" first (see confirmGate.js). Declining rejects the request
+// with a cancellation; a page that already confirmed (any confirm dialog) is not asked again. Opt out with { confirmed: true }.
+api.interceptors.request.use(async (config) => {
+  const info = confirmInfoFor(config);
+  const ask = getConfirmHandler();
+  if (!info || !ask || recentlyConfirmed()) return config;
+  if (await ask(info)) return config;
+  throw new axios.CanceledError("Cancelled by the user");
 });
 
 api.interceptors.request.use((config) => {

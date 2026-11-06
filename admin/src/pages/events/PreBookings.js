@@ -924,13 +924,12 @@ const PreBookings = ({ adminData, setAdminData, filters, patchFilters, onResetFi
                 const history = item.callHistory || [];
 
                 return (
-                  <tr className="evt-pre-row">
+                  <tr className="evt-pre-row" key={item.id}>
 
                     {/* Guest name */}
                     <td>
                       <span>
                         <span className="evt-pre-name clickable"
-                          key={item.id}
                           onClick={() => navigate(`/prebookings/${item.id}`, { state: { fromDetail: true } })}
                         >
                           {item.name || "—"}

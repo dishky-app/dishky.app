@@ -294,6 +294,25 @@ const Topbar = ({ admin, adminData = {}, setAdminData }) => {
     setSupportNotes((d) => ({ unread: Math.max(0, d.unread - 1), rows: d.rows.map((r) => (r.id === n.id ? { ...r, read: true } : r)) }));
     navigate(n.ticketId ? `/support/${n.ticketId}` : "/support");
   };
+  // Trial-dish workflow notifications (assignment, review requests, decisions) — same refresh pattern as support.
+  const [trialNotes, setTrialNotes] = useState({ unread: 0, rows: [] });
+  const loadTrialNotes = useCallback(() => {
+    api.get("/trial-dishes/notifications").then((r) => setTrialNotes(r.data || { unread: 0, rows: [] })).catch(() => {});
+  }, []);
+  useEffect(() => {
+    loadTrialNotes();
+    const t = setInterval(loadTrialNotes, 60000);
+    const onChange = (e) => { if (e && e.resource === "trialDishNotifications") loadTrialNotes(); };
+    socket.on("data-change", onChange);
+    return () => { clearInterval(t); socket.off("data-change", onChange); };
+  }, [loadTrialNotes]);
+  const unreadTrial = trialNotes.rows.filter((n) => !n.read);
+  const openTrialNote = (n) => {
+    notificationsPopup.close();
+    api.post("/trial-dishes/notifications/read", { ids: [n.id] }).catch(() => {});
+    setTrialNotes((d) => ({ unread: Math.max(0, d.unread - 1), rows: d.rows.map((r) => (r.id === n.id ? { ...r, read: true } : r)) }));
+    navigate(n.trialId ? `/trial-dishes/${n.trialId}` : "/trial-dishes");
+  };
   const profilePopup = usePopupAnimation();
   const phonePopup = usePopupAnimation();
   const [showChat, setShowChat] = useState(false);
@@ -571,7 +590,7 @@ const Topbar = ({ admin, adminData = {}, setAdminData }) => {
     return null;
   }).filter(Boolean);
 
-  const notificationCount = unreadOrders.length + (unreadLowStock.length > 0 ? 1 : 0) + expiryNotifications.length + unreadSupport.length;
+  const notificationCount = unreadOrders.length + (unreadLowStock.length > 0 ? 1 : 0) + expiryNotifications.length + unreadSupport.length + unreadTrial.length;
   const displayCount = notificationCount > 9 ? "9+" : notificationCount;
   const bellTableList = Object.keys(activeBells);
 
@@ -885,6 +904,12 @@ const Topbar = ({ admin, adminData = {}, setAdminData }) => {
                     <span>{n.message}</span>
                   </li>
                 ))}
+                {unreadTrial.map((n) => (
+                  <li key={n.id} onClick={(e) => { e.stopPropagation(); openTrialNote(n); }}>
+                    <strong>Trial Dish {n.trialRef ? `· ${n.trialRef}` : ""}</strong>
+                    <span>{n.message}</span>
+                  </li>
+                ))}
                 {unreadLowStock.length > 0 && (
                   <li onClick={(e) => { e.stopPropagation(); notificationsPopup.close(); navigate("/stocks"); }}>
                     <strong>Low Stock</strong>
@@ -897,7 +922,7 @@ const Topbar = ({ admin, adminData = {}, setAdminData }) => {
                     <span>{ing.name} expires in {ing.daysLeft} day{ing.daysLeft === 1 ? "" : "s"}</span>
                   </li>
                 ))}
-                {unreadOrders.length === 0 && unreadLowStock.length === 0 && expiryNotifications.length === 0 && unreadSupport.length === 0 && (
+                {unreadOrders.length === 0 && unreadLowStock.length === 0 && expiryNotifications.length === 0 && unreadSupport.length === 0 && unreadTrial.length === 0 && (
                   <li><span>No new notifications</span></li>
                 )}
               </ul>

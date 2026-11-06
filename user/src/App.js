@@ -5,7 +5,7 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import api from "./api";
 import socket from "./socket";
-import { resolved } from "./tenant";
+import tenant, { resolved } from "./tenant";
 
 // ─── Page Components ───────────────────────────────────────────────────────
 import Welcome from "./pages/Welcome";
@@ -274,8 +274,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const tableNo = localStorage.getItem("tableNo");
-    setIsDineIn(!!tableNo);
+    setIsDineIn(!!tenant.table);
   }, [location.pathname]);
 
   useEffect(() => { fetchMenu(); }, []);
@@ -495,7 +494,7 @@ function App() {
       .replace(/(^|\s)(\S)/g, (_, sep, ch) => sep + ch.toUpperCase());
 
   const handleRingBell = () => {
-    const tableNo = localStorage.getItem("tableNo") || "Guest";
+    const tableNo = localStorage.getItem("tableNo") || tenant.table || "Guest";
     if (isRinging) return;
     socket.emit("bell-ring", { tableNo, venueId: resolved.venueId });
     setIsRinging(true);
@@ -583,7 +582,7 @@ function App() {
         )}
 
         {/* Attender table switcher — only while an attender is signed in */}
-        {attenderCtl.isAttender && location.pathname !== "/" && !location.pathname.startsWith("/attender") && (
+        {attenderCtl.isAttender && !isAuthenticatedUser && location.pathname !== "/" && !location.pathname.startsWith("/attender") && (
           <AttenderSwitcher attenderCtl={attenderCtl} handleNavigate={handleNavigate} />
         )}
 
@@ -595,7 +594,8 @@ function App() {
             repositioning class there instead of sharing the default
             spot used everywhere else. */}
         {isAuthenticatedUser &&
-          !["/", "/thank-you", "/profile"].includes(location.pathname) && (
+          !["/", "/thank-you", "/profile"].includes(location.pathname) &&
+          !location.pathname.startsWith("/attender") && (
             <button
               type="button"
               id="floating-profile-btn"
@@ -608,7 +608,7 @@ function App() {
           )}
 
         {/* Floating Bell — dine-in guests only (an attender is the one being called) */}
-        {isDineIn && !attenderCtl.isAttender && (
+        {isDineIn && (!attenderCtl.isAttender || isAuthenticatedUser) && (
           <div
             className={`floating-bell-wrapper${isRinging ? " is-ringing" : ""}`}
             onClick={handleRingBell}

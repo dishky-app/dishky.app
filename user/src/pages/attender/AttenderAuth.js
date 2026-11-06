@@ -13,11 +13,10 @@ import logoExtend from "../../assets/logo-shrink.png";
 import logoShrink from "../../assets/logo.png";
 
 /**
- * AttenderAuth — sign in / sign up page for attenders (waiters), plus the
- * forgot-password flow.
+ * AttenderAuth — sign in page for attenders (waiters), plus the forgot-password
+ * flow. There is no signup: the restaurant creates each account from the admin panel.
  *
  *   login   : mobile + password
- *   signup  : name + mobile + password (+ confirm)
  *   forgot  : mobile  -> a 6-digit code is sent to that number's WhatsApp
  *   reset   : code + new password
  *
@@ -62,10 +61,9 @@ const PasswordField = (props) => {
   );
 };
 
-const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate, toCamelCase }) => {
+const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate }) => {
   const { toast } = useToast();
-  const [view, setView] = useState("login"); // login | signup | forgot | reset
-  const [name, setName] = useState("");
+  const [view, setView] = useState("login"); // login | forgot | reset
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -88,20 +86,11 @@ const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate, toCamelCase }) =>
     setPassword("");
     setConfirm("");
     setCode("");
-    if (next === "login" || next === "signup") setName("");
   };
 
   const onMobile = (e) => {
     setMobile(e.target.value.replace(/\D/g, "").slice(0, 10));
     clearError("mobile");
-  };
-
-  const onName = (e) => {
-    const value = e.target.value;
-    if (value.length > 100) return;
-    if (value.trim().split(/\s+/).length > 5) return;
-    setName(toCamelCase ? toCamelCase(value) : value);
-    clearError("name");
   };
 
   // Maps an API error to a field message where it makes sense, otherwise a toast.
@@ -129,25 +118,6 @@ const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate, toCamelCase }) =>
       onAuthed(res.data.attender);
     } catch (err) {
       handleError(err, "Couldn't sign in. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignup = async () => {
-    const e = {};
-    if (name.trim().length < 2) e.name = "Enter a valid name.";
-    if (mobile.length !== 10) e.mobile = MOBILE_ERR;
-    if (password.length < 6) e.password = PASSWORD_ERR;
-    if (confirm !== password) e.confirm = "Passwords don't match.";
-    if (Object.keys(e).length) return setErrors(e);
-
-    try {
-      setLoading(true);
-      const res = await api.post("/attender-auth/signup", { name: name.trim(), mobile, password });
-      onAuthed(res.data.attender);
-    } catch (err) {
-      handleError(err, "Couldn't create your account. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -200,7 +170,6 @@ const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate, toCamelCase }) =>
 
   const heading = {
     login: "Attender sign in",
-    signup: "Create attender account",
     forgot: "Forgot password",
     reset: "Set a new password",
   }[view];
@@ -229,44 +198,13 @@ const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate, toCamelCase }) =>
 
         <div className="at-form-col">
         <div className="at-auth-card">
-          {(view === "login" || view === "signup") && (
-            <div className="at-auth-tabs">
-              <button
-                type="button"
-                className={`at-auth-tab ${view === "login" ? "active" : ""}`}
-                onClick={() => switchView("login")}
-              >
-                Login
-              </button>
-              <button
-                type="button"
-                className={`at-auth-tab ${view === "signup" ? "active" : ""}`}
-                onClick={() => switchView("signup")}
-              >
-                Sign Up
-              </button>
-            </div>
-          )}
-
           <h2 className="at-auth-title">{heading}</h2>
+          {view === "login" && <p className="at-auth-hint">Sign in with the mobile number and password your restaurant gave you.</p>}
           {view === "forgot" && (
             <p className="at-auth-hint">Enter your mobile number and we'll send a 6-digit code to its WhatsApp.</p>
           )}
           {view === "reset" && (
             <p className="at-auth-hint">Enter the code sent to +91 {mobile} and choose a new password.</p>
-          )}
-
-          {view === "signup" && (
-            <MatField
-              label="Full Name"
-              type="text"
-              maxLength={100}
-              autoComplete="name"
-              value={name}
-              onChange={onName}
-              error={errors.name}
-              wrapperClassName=""
-            />
           )}
 
           {view !== "reset" && (
@@ -311,14 +249,14 @@ const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate, toCamelCase }) =>
             />
           )}
 
-          {(view === "signup" || view === "reset") && (
+          {view === "reset" && (
             <PasswordField
               label="Confirm Password"
               autoComplete="new-password"
               maxLength={72}
               value={confirm}
               onChange={(e) => { setConfirm(e.target.value); clearError("confirm"); }}
-              onKeyDown={submitOnEnter(view === "signup" ? handleSignup : handleReset)}
+              onKeyDown={submitOnEnter(handleReset)}
               error={errors.confirm}
               wrapperClassName=""
             />
@@ -329,9 +267,6 @@ const AttenderAuth = ({ attenderCtl, onAuthed, handleNavigate, toCamelCase }) =>
               <Button3D className="btn-3d red at-auth-btn" onClick={handleLogin} disabled={loading}>Login</Button3D>
               <button type="button" className="at-link" onClick={() => switchView("forgot")}>Forgot password?</button>
             </>
-          )}
-          {view === "signup" && (
-            <Button3D className="btn-3d red at-auth-btn" onClick={handleSignup} disabled={loading}>Sign Up</Button3D>
           )}
           {view === "forgot" && (
             <>

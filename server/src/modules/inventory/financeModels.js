@@ -65,6 +65,8 @@ const paySchema = new Schema(
     refKey: { type: String, default: undefined }, // supplier|method|reference — duplicate guard (only when a reference exists)
     idemKey: { type: String, default: undefined }, // client Idempotency-Key
     amountPaise: { type: Number, required: true, min: 1 },
+    // "credit_settlement" repays the supplier's credit account (purchases made in credit mode) instead of invoices
+    purpose: { type: String, enum: ["invoice", "credit_settlement"], default: "invoice" },
     allocations: { type: [new Schema({ invoiceId: String, docNo: String, amountPaise: Number }, { _id: false })], default: [] },
     notes: { type: String, default: "", maxlength: 1000 },
     status: { type: String, enum: PAYMENT_STATUS, default: "pending_approval" },

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useVenue } from "../../context/VenueContext";
-import { Badge, Btn, DataTable, DateInput, PageHead, Tabs, Toolbar, dateShort, errText, money, qty } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, PageHead, Tabs, Toolbar, dateShort, errText, money, qty, ExportBtn, localToday } from "../pi-shared/InvUi";
 
 const RISK = { stockout_before_delivery: ["red", "Runs out before delivery"], stockout_within_horizon: ["amber", "Runs out in the period"], ok: ["green", "OK"] };
 const CONF = { high: "green", medium: "amber", low: "grey" };
@@ -33,10 +33,10 @@ export default function DemandForecast() {
     { key: "name", label: "Item", render: (r) => <><span className="inv-strong">{r.name}</span><div className="inv-muted">{r.sku}</div></> },
     { key: "risk", label: "Status", render: (r) => <Badge tone={RISK[r.risk][0]}>{RISK[r.risk][1]}</Badge> },
     { key: "available", label: "Available", num: true, render: (r) => `${qty(r.available)} ${r.unit}` },
-    { key: "avgDailyUse", label: "Daily use", num: true, render: (r) => qty(r.avgDailyUse) },
+    { key: "avgDailyUse", label: "Daily use", num: true, render: (r) => `${qty(r.avgDailyUse)} ${r.unit}` },
     { key: "coverDays", label: "Lasts (days)", num: true, render: (r) => (r.coverDays === null ? "—" : r.coverDays) },
     { key: "stockoutDate", label: "Runs out", render: (r) => (r.stockoutDate ? dateShort(r.stockoutDate) : "—") },
-    { key: "forecastUse", label: "Expected use", num: true, render: (r) => qty(r.forecastUse) },
+    { key: "forecastUse", label: "Expected use", num: true, render: (r) => `${qty(r.forecastUse)} ${r.unit}` },
     { key: "trendPct", label: "Trend (7d)", num: true, render: (r) => (r.trendPct === null ? "—" : `${r.trendPct > 0 ? "+" : ""}${r.trendPct}%`) },
     { key: "suggestedOrderQty", label: "Suggested order", num: true, render: (r) => `${qty(r.suggestedOrderQty)} ${r.unit}` },
     { key: "confidence", label: "Confidence", render: (r) => <Badge tone={CONF[r.confidence]}>{r.confidence}</Badge> },
@@ -48,13 +48,14 @@ export default function DemandForecast() {
     { key: "wasted", label: "Wasted", num: true, render: (r) => `${qty(r.wasted)} ${r.unit}` },
     { key: "wasteCost", label: "Waste cost", num: true, render: (r) => money(r.wasteCost) },
     { key: "wastePct", label: "Waste %", num: true, render: (r) => `${r.wastePct}%` },
-    { key: "adjustedOut", label: "Adjusted out", num: true, render: (r) => qty(r.adjustedOut) },
-    { key: "adjustedIn", label: "Adjusted in", num: true, render: (r) => qty(r.adjustedIn) },
+    { key: "adjustedOut", label: "Adjusted out", num: true, render: (r) => `${qty(r.adjustedOut)} ${r.unit}` },
+    { key: "adjustedIn", label: "Adjusted in", num: true, render: (r) => `${qty(r.adjustedIn)} ${r.unit}` },
   ];
   const cov = us.meta?.coverage;
   return (
     <div className="inner-page inv-page">
       <PageHead title="Forecast & usage">
+        {tab === "forecast" ? <ExportBtn rows={fc.rows} columns={fcCols} name="demand_forecast" sheet="Forecast" /> : <ExportBtn rows={us.rows} columns={usCols} name="usage_and_waste" sheet="Usage" />}
         <Btn type="button" kind="plain" onClick={() => nav("/purchase/reorder")}>Reorder planning</Btn>
       </PageHead>
       <Tabs tabs={[["forecast", "Forecast"], ["usage", "Usage & waste"]]} value={tab} onChange={setTab} />
@@ -66,8 +67,8 @@ export default function DemandForecast() {
       ) : (
         <>
           <Toolbar>
-            <DateInput label="From" value={range.from} max={range.to} onChange={(e) => setRange((r) => ({ ...r, from: e.target.value }))} />
-            <DateInput label="To" value={range.to} min={range.from} onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))} />
+            <DateInput label="From" value={range.from} max={range.to} onChange={(e) => { const v = e.target.value; setRange((r) => ({ ...r, from: v, to: v && r.to && v > r.to ? v : r.to })); }} />
+            <DateInput label="To" value={range.to} min={range.from} max={localToday()} onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))} />
             {us.meta && <span className="inv-muted">Order cost {money(us.meta.totals.orderCost)} · waste {money(us.meta.totals.wasteCost)}</span>}
           </Toolbar>
           {cov && cov.unlinkedCount > 0 && (

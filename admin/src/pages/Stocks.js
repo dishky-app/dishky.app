@@ -448,7 +448,7 @@ const Stocks = ({ adminData, setAdminData, handleSort, sortConfig }) => {
                       : "—"}
                   </td>
                   <td>₹{toTwoDecimals(ing.pricePer100g)}</td>
-                  <td>{toTwoDecimals(ing.stockRemaining ?? 0)}</td>
+                  <td>{toTwoDecimals(ing.stockRemaining ?? 0)} kg</td>
                   <td
                     style={{
                       fontWeight: 600,

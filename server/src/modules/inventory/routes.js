@@ -15,6 +15,7 @@
 const express = require("express");
 const { asPlainString, safeErrorMessage } = require("../../core/validation");
 const M = require("./models");
+const A = require("./automationModels");
 const P = require("./precision");
 const U = require("./units");
 const svc = require("./stockService");
@@ -182,6 +183,12 @@ function buildRouter({ requireAuth, requirePerm, scopeFilter, scopeVenueForCreat
     if (Array.isArray(b.categories)) out.categories = b.categories.map((c) => str(c, 60)).filter(Boolean).slice(0, 100);
     if (b.leadTimeDays !== undefined) out.leadTimeDays = Number(b.leadTimeDays);
     if (b.creditLimit !== undefined) out.creditLimitPaise = P.toPaise(b.creditLimit, "credit limit");
+    if (b.creditEnabled !== undefined) out.creditEnabled = !!b.creditEnabled;
+    if (b.creditGraceDays !== undefined) {
+      const g = Number(b.creditGraceDays);
+      if (!Number.isInteger(g) || g < 0 || g > 30) throw Object.assign(new Error("Grace days must be a whole number from 0 to 30"), { name: "InventoryError", code: "BAD_GRACE" });
+      out.creditGraceDays = g;
+    }
     if (b.minOrderValue !== undefined) out.minOrderValuePaise = P.toPaise(b.minOrderValue, "minimum order value");
     if (b.bank && typeof b.bank === "object") {
       for (const f of ["accountName", "bankName", "branch", "upi"]) if (b.bank[f] !== undefined) out[`bank.${f}`] = str(b.bank[f], 100);
@@ -329,6 +336,92 @@ function buildRouter({ requireAuth, requirePerm, scopeFilter, scopeVenueForCreat
     const i = await M.InventoryItem.findOne({ id: req.params.id }).lean();
     if (!i) return res.status(404).json({ error: "Not found" });
     res.json(outItem(i));
+  }));
+  /* ── batches of one item (one row per purchase) ──────────────────────────────────────────────────────
+     Rows come from goods receipts; stock that never came through one (opening balances, legacy batches) shows up as a
+     "stock" row and gets its own detail row the first time it is edited. Quantity and expiry used by the stock rules
+     stay on the balances; editing the dates here updates the balances of that batch too. */
+  const outBatch = (b, item, bals, now = Date.now(), alertDays = 7) => {
+    const mine = bals.filter((x) => x.batchNo === b.batchNo && x.venueId === b.venueId);
+    const sum = (k) => mine.reduce((n, x) => n + (x[k] || 0), 0);
+    const onHand = sum("qtyOnHandMilli");
+    const exp = b.expiryDate ? +new Date(b.expiryDate) : null;
+    const state = exp === null ? "no_expiry" : exp < now ? "expired" : exp <= now + alertDays * 864e5 ? "near_expiry" : "ok";
+    return {
+      id: b.id, venueId: b.venueId, itemId: b.itemId, batchNo: b.batchNo, source: b.source, grnId: b.grnId, grnNo: b.grnNo, poNo: b.poNo, supplierName: b.supplierName,
+      receivedDate: b.receivedDate, received: P.fromMilli(b.receivedMilli || 0), unit: item.baseUnit, unitCost: P.fromMicro(b.unitCostMicro || 0),
+      mfgDate: b.mfgDate, expiryDate: b.expiryDate, supplierLotNo: b.supplierLotNo || "", storageCondition: b.storageCondition || "", qualityGrade: b.qualityGrade || "", notes: b.notes || "",
+      onHand: P.fromMilli(onHand), available: state === "expired" ? 0 : P.fromMilli(sum("availableMilli")), quarantined: P.fromMilli(sum("quarantinedMilli")),
+      value: P.fromPaise(mine.reduce((n, x) => n + P.valuePaise(x.qtyOnHandMilli, x.unitCostMicro), 0)),
+      locations: mine.filter((x) => x.qtyOnHandMilli > 0).map((x) => x.locationId), state,
+      detailsMissing: !b.expiryDate && !!item.trackExpiry, persisted: b.source !== "stock" || !!b.persisted,
+    };
+  };
+  router.get("/items/:id/batches", requirePerm("inventoryItems", "read"), wrap(async (req, res) => {
+    const item = await M.InventoryItem.findOne({ id: req.params.id }).lean();
+    if (!item) return res.status(404).json({ error: "Not found" });
+    const scope = scopeFilter(req);
+    const [rows, bals] = await Promise.all([M.ItemBatch.find({ itemId: item.id, ...scope }).sort({ receivedDate: -1, createdAt: -1 }).lean(), M.StockBalance.find({ itemId: item.id, ...scope }).lean()]);
+    const known = new Set(rows.map((r) => `${r.venueId}|${r.batchNo}`));
+    // stock that has no detail row yet (opening stock, older receipts): one synthetic row per branch + batch
+    const legacy = new Map();
+    for (const b of bals) {
+      const k = `${b.venueId}|${b.batchNo}`;
+      if (known.has(k) || legacy.has(k)) continue;
+      legacy.set(k, { id: `bal:${b.venueId}:${b.batchNo}`, venueId: b.venueId, itemId: item.id, batchNo: b.batchNo, source: "stock", expiryDate: b.expiryDate, mfgDate: b.mfgDate, unitCostMicro: b.unitCostMicro, persisted: false });
+    }
+    const alertDays = ((await A.AutomationSettings.findOne({ key: "automation" }).lean()) || {}).expiryAlertDays || 7;
+    const now = Date.now();
+    const data = [...rows, ...legacy.values()].map((b) => outBatch(b, item, bals, now, alertDays));
+    data.sort((a, b) => (+new Date(b.receivedDate || 0)) - (+new Date(a.receivedDate || 0)) || String(a.batchNo).localeCompare(String(b.batchNo)));
+    res.json({ data, item: { id: item.id, name: item.name, unit: item.baseUnit, trackBatches: !!item.trackBatches, trackExpiry: !!item.trackExpiry }, total: data.length });
+  }));
+  // body: { mfgDate?, expiryDate?, supplierLotNo?, storageCondition?, qualityGrade?, notes? }
+  router.patch("/items/:id/batches/:batchId", requirePerm("inventoryItems", "write"), wrap(async (req, res) => {
+    const item = await M.InventoryItem.findOne({ id: req.params.id }).lean();
+    if (!item) return res.status(404).json({ error: "Not found" });
+    const bad = (m, c = "BAD_REQUEST", st = 400) => Object.assign(new Error(m), { name: "InventoryError", status: st, code: c });
+    const scope = scopeFilter(req);
+    const bid = str(req.params.batchId, 160);
+    let row;
+    if (bid.startsWith("bal:")) {
+      const [, venueId, ...rest] = bid.split(":"); const batchNo = rest.join(":");
+      if (scope.venueId && scope.venueId !== venueId) throw bad("Not found", "NOT_FOUND", 404);
+      const bal = await M.StockBalance.findOne({ venueId, itemId: item.id, batchNo }).lean();
+      if (!bal) throw bad("Batch not found", "NOT_FOUND", 404);
+      row = await M.ItemBatch.findOneAndUpdate({ venueId, itemId: item.id, batchNo, grnId: "" }, { $setOnInsert: { source: "stock", mfgDate: bal.mfgDate || null, expiryDate: bal.expiryDate || null, unitCostMicro: bal.unitCostMicro } }, { upsert: true, returnDocument: "after" }).lean();
+    } else {
+      row = await M.ItemBatch.findOne({ id: bid, itemId: item.id, ...scope }).lean();
+    }
+    if (!row) throw bad("Batch not found", "NOT_FOUND", 404);
+    const b = req.body || {}, set = {};
+    const dateOf = (v, label) => { if (v === null || v === "") return null; const d = new Date(v); if (isNaN(d)) throw bad(`${label} is not a valid date`); return d; };
+    if (b.mfgDate !== undefined) set.mfgDate = dateOf(b.mfgDate, "Manufacturing date");
+    if (b.expiryDate !== undefined) set.expiryDate = dateOf(b.expiryDate, "Expiry date");
+    const mfg = set.mfgDate !== undefined ? set.mfgDate : row.mfgDate, exp = set.expiryDate !== undefined ? set.expiryDate : row.expiryDate;
+    if (mfg && exp && +new Date(mfg) > +new Date(exp)) throw bad("Manufacturing date is after the expiry date", "BAD_DATES");
+    if (item.trackExpiry && b.expiryDate !== undefined && !set.expiryDate) throw bad(`${item.name} tracks expiry, so the batch needs an expiry date`, "EXPIRY_REQUIRED");
+    if (b.supplierLotNo !== undefined) set.supplierLotNo = str(b.supplierLotNo, 60);
+    if (b.storageCondition !== undefined) {
+      if (!["", "ambient", "chilled", "frozen"].includes(b.storageCondition)) throw bad("Storage condition must be ambient, chilled or frozen");
+      set.storageCondition = b.storageCondition;
+    }
+    if (b.qualityGrade !== undefined) set.qualityGrade = str(b.qualityGrade, 40);
+    if (b.notes !== undefined) set.notes = str(b.notes, 500);
+    if (!Object.keys(set).length) throw bad("Nothing to update");
+    set.updatedBy = req.admin.id; set.updatedByName = req.admin.name;
+    const doc = await M.ItemBatch.findOneAndUpdate({ id: row.id }, { $set: set }, { returnDocument: "after" }).lean();
+    // the stock rules (FEFO, expiry alerts, expired-stock blocking) read the dates from the balances, so keep them in step
+    if (set.mfgDate !== undefined || set.expiryDate !== undefined) {
+      const bs = {};
+      if (set.mfgDate !== undefined) bs.mfgDate = set.mfgDate;
+      if (set.expiryDate !== undefined) bs.expiryDate = set.expiryDate;
+      await M.StockBalance.updateMany({ venueId: row.venueId, itemId: item.id, batchNo: row.batchNo }, { $set: bs, $inc: { rev: 1 } });
+      emitChange("inventoryStock", "updated", { venueId: row.venueId });
+    }
+    logAudit(req, { action: "update", resource: "inventoryItems", targetId: item.id, before: { batchNo: row.batchNo, mfgDate: row.mfgDate, expiryDate: row.expiryDate }, after: { batchNo: row.batchNo, ...set } });
+    const bals = await M.StockBalance.find({ itemId: item.id, venueId: row.venueId }).lean();
+    res.json(outBatch(doc, item, bals));
   }));
   router.post("/items", requirePerm("inventoryItems", "write"), wrap(async (req, res) => {
     const f = await itemFields(req.body, null);

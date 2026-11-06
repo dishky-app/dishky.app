@@ -36,3 +36,37 @@ select:autofill {
   background-clip: text !important;
   -webkit-text-fill-color: currentColor !important;
 }
+
+/* ── No scrollbars inside dropdowns (any page) ──────────────────────────────────────────────
+   Dropdown lists still scroll (wheel / touch / keys) — only the bar itself is hidden. */
+.cdd-options,
+.cdd-popup,
+.dropdown-menu,
+.dishes-dropdown-menu,
+.notification-list,
+.att-search-dropdown,
+.kgroom-search-dropdown,
+.sgroom-search-dropdown,
+.memo-order-picker-list,
+[class*="dropdown"],
+[role="listbox"],
+[role="menu"] {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.cdd-options::-webkit-scrollbar,
+.cdd-popup::-webkit-scrollbar,
+.dropdown-menu::-webkit-scrollbar,
+.dishes-dropdown-menu::-webkit-scrollbar,
+.notification-list::-webkit-scrollbar,
+.att-search-dropdown::-webkit-scrollbar,
+.kgroom-search-dropdown::-webkit-scrollbar,
+.sgroom-search-dropdown::-webkit-scrollbar,
+.memo-order-picker-list::-webkit-scrollbar,
+[class*="dropdown"]::-webkit-scrollbar,
+[role="listbox"]::-webkit-scrollbar,
+[role="menu"]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}

@@ -307,7 +307,7 @@ export default function StaffTraining({ adminData, setAdminData }) {
 
                 <div className="st-actions sc-card-actions" onClick={e => e.stopPropagation()}>
                   <Button3D variant="cancel" iconOnly title="Edit" onClick={() => openEditTraining(t)}><img src={editIcon} alt="" /></Button3D>
-                  <Button3D variant="danger" iconOnly title="Delete" onClick={() => deleteTraining(t)}><img src={deleteIcon} alt="" /></Button3D>
+                  <Button3D variant="cancel" iconOnly title="Delete" onClick={() => deleteTraining(t)}><img src={deleteIcon} alt="" /></Button3D>
                 </div>
 
                 <div className="st-card-footer">

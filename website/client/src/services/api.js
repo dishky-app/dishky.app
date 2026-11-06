@@ -13,6 +13,9 @@ const ORIGIN = import.meta.env.VITE_API_ORIGIN ?? "";
 const API_ENABLED = ORIGIN !== "off";
 const API_URL = ORIGIN && ORIGIN !== "off" ? `${ORIGIN.replace(/\/$/, "")}/platform` : "/api/platform";
 
+import { toast } from "../components/Toast/Toast.js";
+import { confirmInfoFor, markCancelled, recentlyConfirmed } from "../utils/confirmGate.js";
+
 export class ApiError extends Error {
   constructor(message, status, body) {
     super(message);
@@ -24,6 +27,12 @@ export class ApiError extends Error {
 
 async function request(path, { method = "GET", body } = {}) {
   if (!API_ENABLED) throw new ApiError("API is disabled (VITE_API_ORIGIN=off).", 0);
+  // Deletes and sensitive changes ask "are you sure?" first (see utils/confirmGate.js); a page that already confirmed is not asked again.
+  const info = confirmInfoFor({ method, url: path });
+  if (info && !recentlyConfirmed() && !(await toast.confirm(info.message, { title: info.title, confirmLabel: info.confirmLabel }))) {
+    markCancelled();
+    throw new ApiError("", 0, { code: "CANCELLED" });
+  }
   let res;
   try {
     res = await fetch(`${API_URL}${path}`, {

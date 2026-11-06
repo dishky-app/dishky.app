@@ -38,6 +38,7 @@ import React, {
 } from "react";
 import "./Toast.css";
 import { onApiResult } from "./api";
+import { justCancelled } from "./confirmGate";
 import Button3D from "./components/Button3D";
 
 /* ── Duration presets (item 12) ─────────────────────────
@@ -201,6 +202,7 @@ export const ToastProvider = ({ children }) => {
   const lastAuto = useRef({ message: "", at: 0 });
 
   const push = useCallback((type, message, duration, extras = {}) => {
+    if (type === "error" && justCancelled()) return; // the person said No to a confirmation; "couldn't delete" would be wrong
     if (!extras.auto) lastManual.current = Date.now();
     const id = ++counter.current;
     const durationMs = resolveDuration(duration);

@@ -17,7 +17,7 @@ export { Title, Reveal, CountUp, Photo, Demo, motion };
 // Section backgrounds are pure white or a shade of black: any off-white / light grey becomes #ffffff.
 const lum = (h) => { const m = /^#?([0-9a-f]{6})$/i.exec(h || ""); if (!m) return 0; const n = parseInt(m[1], 16); return 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255); };
 const pureBg = (o) => (o.bg && !o.dark && lum(o.bg) > 190 ? "#ffffff" : o.bg);
-export const mk = (o) => ({ dark: false, bg: "#ffffff", card: "#ffffff", accent: "#f33716", onAccent: "#ffffff", ...o, bg: pureBg({ bg: "#ffffff", ...o }), ink: o.ink || (o.dark ? "#eeeeee" : "#0a0a0a") });
+export const mk = (o) => ({ dark: false, card: "#ffffff", accent: "#f33716", onAccent: "#ffffff", ...o, bg: pureBg({ bg: "#ffffff", ...o }), ink: o.ink || (o.dark ? "#eeeeee" : "#0a0a0a") });
 export const mute = (t, a = 0.62) => (t.dark ? `rgba(255,255,255,${a})` : `rgba(10,10,10,${a})`);
 export const line = (t, a = 0.14) => (t.dark ? `rgba(255,255,255,${a})` : `rgba(10,10,10,${a})`);
 export const onColor = (hex) => {

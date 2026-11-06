@@ -60,7 +60,9 @@ const supplierSchema = new Schema(
     pan: { type: String, default: "", trim: true, uppercase: true, maxlength: 10 },
     categories: { type: [String], default: [] }, // inventory category ids supplied
     paymentTerms: { type: String, default: "", maxlength: 200 },
-    creditLimitPaise: { type: Number, default: 0, min: 0 },
+    creditLimitPaise: { type: Number, default: 0, min: 0 }, // the credit "fund limit": most the supplier may be owed at any time
+    creditEnabled: { type: Boolean, default: false }, // purchases on credit are only allowed when this is on
+    creditGraceDays: { type: Number, default: 5, min: 0, max: 30 }, // days after month end before a monthly settlement is overdue
     leadTimeDays: { type: Number, default: 0, min: 0, max: 365 },
     minOrderValuePaise: { type: Number, default: 0, min: 0 },
     // The full account number is stored ENCRYPTED (AES-256-GCM, SETTINGS_ENCRYPTION_KEY, same
@@ -213,6 +215,36 @@ balanceSchema.index({ venueId: 1, expiryDate: 1 });
 balanceSchema.index({ itemId: 1 });
 const StockBalance = mongoose.model("InvBalance", balanceSchema, "invBalances");
 
+/* ── Batch details (one row per purchase / goods-receipt line) ──────────────
+   StockBalance carries the quantity and the expiry the stock rules use. This row carries everything else the kitchen
+   wants to record about a delivered lot (supplier lot number, storage condition, quality grade, notes) plus where it
+   came from. Rows are created when a goods receipt is posted; legacy stock gets one the first time it is edited. */
+const batchSchema = new Schema(
+  {
+    id: { type: String, unique: true, default: () => newId("bat") },
+    venueId: { type: String, required: true },
+    itemId: { type: String, required: true },
+    batchNo: { type: String, required: true, trim: true, maxlength: 60 },
+    source: { type: String, enum: ["grn", "stock"], default: "grn" },
+    grnId: { type: String, default: "" }, grnNo: { type: String, default: "" }, poId: { type: String, default: "" }, poNo: { type: String, default: "" },
+    supplierId: { type: String, default: "" }, supplierName: { type: String, default: "" },
+    receivedDate: { type: Date, default: null },
+    receivedMilli: { type: Number, default: 0, min: 0 },
+    unitCostMicro: { type: Number, default: 0, min: 0 },
+    mfgDate: { type: Date, default: null },
+    expiryDate: { type: Date, default: null },
+    supplierLotNo: { type: String, default: "", maxlength: 60 },
+    storageCondition: { type: String, enum: ["", "ambient", "chilled", "frozen"], default: "" },
+    qualityGrade: { type: String, default: "", maxlength: 40 },
+    notes: { type: String, default: "", maxlength: 500 },
+    updatedBy: { type: String, default: "" }, updatedByName: { type: String, default: "" },
+  },
+  opts
+);
+batchSchema.index({ venueId: 1, itemId: 1, batchNo: 1, grnId: 1 }, { unique: true });
+batchSchema.index({ itemId: 1, receivedDate: -1 });
+const ItemBatch = mongoose.model("InvBatch", batchSchema, "invBatches");
+
 /* ── Stock ledger (append-only) ──────────────────────────────────── */
 const LEDGER_TYPES = [
   "opening", "receipt", "adjustment_in", "adjustment_out", "waste", "consumption",
@@ -272,5 +304,5 @@ module.exports = {
   Supplier, SUPPLIER_STATUS, SUPPLIER_TYPES,
   InventoryCategory, CustomUnit, StorageLocation, LOCATION_TYPES,
   InventoryItem, ITEM_TYPES, IngredientLink,
-  StockBalance, StockLedger, LEDGER_TYPES,
+  StockBalance, StockLedger, LEDGER_TYPES, ItemBatch,
 };

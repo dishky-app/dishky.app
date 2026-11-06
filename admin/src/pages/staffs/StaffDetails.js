@@ -598,6 +598,17 @@ const StaffDetails = ({ adminData, setAdminData }) => {
                 label="Preview / Download"
               />
             </div>
+            <div className="staff-document-item">
+              <span className="staff-info-label">Payslip</span>
+              {localStaff.payslip ? (
+                <FilePreviewLink
+                  href={localStaff.payslip}
+                  thumbnail={localStaff.payslipThumbnail}
+                  download={`${localStaff.name || "payslip"}-payslip`}
+                  label="Preview / Download"
+                />
+              ) : <span>—</span>}
+            </div>
           </div>
         </div>
       </div>

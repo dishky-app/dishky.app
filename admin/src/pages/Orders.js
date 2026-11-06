@@ -956,11 +956,6 @@ const OrderRow = React.memo(({
                 onClose={() => onOptionsClick(order.id)}
                 items={[
                   {
-                    label: "Close Dropdown",
-                    danger: true,
-                    onClick: () => isMenuOpen(false),
-                  },
-                  {
                     label: "Edit",
                     disabled: isOrderCancelled || isPaymentCompleted,
                     onClick: () => onMenuAction("edit", order),
@@ -1795,6 +1790,8 @@ const Orders = ({ adminData, setAdminData }) => {
       tableNo: order.tableNo,
       staffName: order.userName,
       attenderName: order.attenderName || undefined,
+      priority: !!order.priority,
+      notes: [order.notes, order.note, order.orderNotes, order.specialInstructions].find(v => typeof v === "string" && v.trim()) || "",
       items: (order.items || [])
         .filter(item => normalizeStatus(item.status) !== "cancelled")
         .map(item => ({

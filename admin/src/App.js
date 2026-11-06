@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useParams } from "react-router-dom";
 import SsoLanding from "./pages/SsoLanding";
 import PlanBanner from "./components/PlanBanner";
 
@@ -25,27 +25,23 @@ import DishDetails from "./pages/DishDetails";
 import Payments from "./pages/Payments";
 import PaymentDetails from "./pages/PaymentDetails";
 import Stocks from "./pages/Stocks";
-import Suppliers from "./pages/inventory/Suppliers";
+import Suppliers from "./pages/purchase/Suppliers";
 import InventoryItems from "./pages/inventory/InventoryItems";
 import StorageLocations from "./pages/inventory/StorageLocations";
 import StockOverview from "./pages/inventory/StockOverview";
 import StockLedger from "./pages/inventory/StockLedger";
-import PurchaseRequests from "./pages/inventory/PurchaseRequests";
-import ReorderPlanning from "./pages/inventory/ReorderPlanning";
-import Rfqs from "./pages/inventory/Rfqs";
-import PurchaseOrders from "./pages/inventory/PurchaseOrders";
-import PurchaseSettings from "./pages/inventory/PurchaseSettings";
-import GoodsReceipts from "./pages/inventory/GoodsReceipts";
-import SupplierReturns from "./pages/inventory/SupplierReturns";
-import SupplierInvoices from "./pages/inventory/SupplierInvoices";
-import SupplierPayments from "./pages/inventory/SupplierPayments";
-import PurchaseReports from "./pages/inventory/PurchaseReports";
+import PurchaseOrders from "./pages/purchase/PurchaseOrders";
+import PurchaseSettings from "./pages/purchase/PurchaseSettings";
+import GoodsReceipts from "./pages/purchase/GoodsReceipts";
+import SupplierReturns from "./pages/purchase/SupplierReturns";
+import SupplierInvoices from "./pages/purchase/SupplierInvoices";
+import SupplierPayments from "./pages/purchase/SupplierPayments";
+import PurchaseReports from "./pages/purchase/PurchaseReports";
 import InventoryAlerts from "./pages/inventory/InventoryAlerts";
 import StockAudits from "./pages/inventory/StockAudits";
-import DemandForecast from "./pages/inventory/DemandForecast";
-import SupplierScorecards from "./pages/inventory/SupplierScorecards";
-import WhatsappPurchaseList from "./pages/inventory/WhatsappPurchaseList";
-import AutomationSettings from "./pages/inventory/AutomationSettings";
+import CreditAccounts from "./pages/purchase/CreditAccounts";
+import PurchaseRecordDetails from "./pages/purchase/PurchaseRecordDetails";
+import InventoryRecordDetails from "./pages/inventory/InventoryRecordDetails";
 import ComboOffers from "./pages/ComboOffers";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -69,6 +65,8 @@ import AuditLogs from "./pages/AuditLogs";
 import AuditLogDetails from "./pages/AuditLogDetails";
 import Documents from "./pages/Documents";
 import Memos from "./pages/Memos";
+import TrialDishes from "./pages/TrialDishes";
+import TrialDishDetails from "./pages/TrialDishDetails";
 import MemoDetails from "./pages/MemoDetails";
 import BankAccount from "./pages/BankAccount";
 import DocumentDetails from "./pages/DocumentDetails";
@@ -96,6 +94,8 @@ import StaffAttendance from "./pages/staffs/StaffAttendance";
 import StaffSalary from "./pages/staffs/StaffSalary";
 import StaffCareer from "./pages/staffs/StaffCareer";
 import StaffTraining from "./pages/staffs/StaffTraining";
+import Attenders from "./pages/staffs/Attenders";
+import DailyClosing from "./pages/closing/DailyClosing";
 
 // KMS
 import KitchenRecipe from "./pages/kitchen/KitchenRecipe";
@@ -141,6 +141,12 @@ export const allowTextInput = (
 
   return nextValue;
 };
+
+// old supplier detail links (/inventory/suppliers/:id) now live under Purchase
+function LegacySupplierRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/purchase/suppliers/${id}`} replace />;
+}
 
 function App() {
   const { toast } = useToast();
@@ -767,14 +773,14 @@ function App() {
               }
             />
 
-            <Route path="/inventory/suppliers" element={<Suppliers />} />
+            <Route path="/purchase/suppliers" element={<Suppliers />} />
+            <Route path="/inventory/suppliers" element={<Navigate to="/purchase/suppliers" replace />} />
+            <Route path="/inventory/suppliers/:id" element={<LegacySupplierRedirect />} />
+            <Route path="/purchase/credit" element={<CreditAccounts />} />
             <Route path="/inventory/items" element={<InventoryItems />} />
             <Route path="/inventory/locations" element={<StorageLocations />} />
             <Route path="/inventory/stock" element={<StockOverview />} />
             <Route path="/inventory/ledger" element={<StockLedger />} />
-            <Route path="/purchase/requests" element={<PurchaseRequests />} />
-            <Route path="/purchase/reorder" element={<ReorderPlanning />} />
-            <Route path="/purchase/rfqs" element={<Rfqs />} />
             <Route path="/purchase/orders" element={<PurchaseOrders />} />
             <Route path="/purchase/receipts" element={<GoodsReceipts />} />
             <Route path="/purchase/returns" element={<SupplierReturns />} />
@@ -784,10 +790,14 @@ function App() {
             <Route path="/purchase/settings" element={<PurchaseSettings />} />
             <Route path="/inventory/alerts" element={<InventoryAlerts />} />
             <Route path="/inventory/audits" element={<StockAudits />} />
-            <Route path="/inventory/forecast" element={<DemandForecast />} />
-            <Route path="/purchase/scorecards" element={<SupplierScorecards />} />
-            <Route path="/purchase/whatsapp" element={<WhatsappPurchaseList />} />
-            <Route path="/purchase/automation" element={<AutomationSettings />} />
+            <Route path="/purchase/suppliers/:id" element={<PurchaseRecordDetails kind="suppliers" />} />
+            <Route path="/inventory/items/:id" element={<InventoryRecordDetails kind="items" />} />
+            <Route path="/purchase/orders/:id" element={<PurchaseRecordDetails kind="orders" />} />
+            <Route path="/purchase/receipts/:id" element={<PurchaseRecordDetails kind="receipts" />} />
+            <Route path="/purchase/returns/:id" element={<PurchaseRecordDetails kind="returns" />} />
+            <Route path="/purchase/invoices/:id" element={<PurchaseRecordDetails kind="invoices" />} />
+            <Route path="/purchase/payments/:id" element={<PurchaseRecordDetails kind="payments" />} />
+            <Route path="/inventory/audits/:id" element={<InventoryRecordDetails kind="audits" />} />
 
             <Route path="/profile" element={<Profile />} />
             <Route path="/todo" element={<Todo />} />
@@ -1014,6 +1024,8 @@ function App() {
 
             <Route path="/staff-salary" element={<StaffSalary adminData={adminData} setAdminData={setAdminData} />} />
             <Route path="/staff-career" element={<StaffCareer adminData={adminData} setAdminData={setAdminData} />} />
+            <Route path="/daily-closing" element={<DailyClosing />} />
+            <Route path="/attenders" element={<Attenders />} />
             <Route path="/staff-training" element={<StaffTraining adminData={adminData} setAdminData={setAdminData} />} />
             <Route path="/staff-chat" element={<StaffChat />} />
 
@@ -1125,6 +1137,8 @@ function App() {
             <Route path="/documents" element={<Documents sortConfig={sortConfig} handleSort={handleSort} />} />
             <Route path="/documents/:docId" element={<DocumentDetails />} />
             <Route path="/memos" element={<Memos adminData={adminData} sortConfig={sortConfig} handleSort={handleSort} />} />
+            <Route path="/trial-dishes" element={<TrialDishes adminData={adminData} />} />
+            <Route path="/trial-dishes/:id" element={<TrialDishDetails />} />
             <Route path="/memos/:memoId" element={<MemoDetails adminData={adminData} />} />
             <Route path="/bank-account" element={<BankAccount />} />
 

@@ -57,6 +57,7 @@ const EMPTY_FORM = {
   idProof: "",
   idImage: "",
   bonafide: "",
+  payslip: "",
   contact: "",
   altContact: "",
   permanentAddress: "",
@@ -950,6 +951,23 @@ export default function Staffs({
                           />
                         )}
                       </div>
+
+                      <div className="file-wrap">
+                        <label>Payslip <span style={{ fontSize: 11, color: "#aaa", fontWeight: 400 }}>(optional)</span></label>
+                        <input className="file-input" type="file" accept="image/*,application/pdf" onChange={(e) => handleFile(e, "payslip")} />
+                        <div className="file-label">
+                          {formData.payslip ? "✔ File selected" : "Choose file…"}
+                        </div>
+                        {formData.payslip && String(formData.payslip).startsWith("data:image") && (
+                          <img src={formData.payslip} alt="Preview" className="staff-image-preview" />
+                        )}
+                        {formData.payslip && !String(formData.payslip).startsWith("data:image") && (
+                          <div className="file-label" style={{ marginTop: 6 }}>Document attached</div>
+                        )}
+                        {formData.payslip && (
+                          <button type="button" className="filter-pill" style={{ marginTop: 6 }} onClick={() => setFormData(prev => ({ ...prev, payslip: "", payslipThumbnail: "", payslipType: "" }))}>Remove payslip</button>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -1221,7 +1239,7 @@ export default function Staffs({
                   </div>
 
                   {/* FILES */}
-                  {(formData.idProof || formData.idImage || formData.bonafide) && (
+                  {(formData.idProof || formData.idImage || formData.bonafide || formData.payslip) && (
                     <div className="preview-section">
                       <h4>Documents</h4>
                       <div style={{ display: "flex", gap: "10px" }}>
@@ -1252,6 +1270,15 @@ export default function Staffs({
                               src={formData.bonafide}
                               className="staff-image-preview"
                             />
+                          </div>
+                        }
+
+                        {formData.payslip &&
+                          <div className="admin-form-group">
+                            <label>Payslip</label>
+                            {String(formData.payslip).startsWith("data:image")
+                              ? <img alt="" src={formData.payslip} className="staff-image-preview" />
+                              : <div className="file-label">Document attached</div>}
                           </div>
                         }
                       </div>

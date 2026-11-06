@@ -18,6 +18,7 @@
   flex-wrap: wrap;
   text-align: center;
   margin-bottom: 12px;
+  width: 100%;
 }
 
 .pay-kpi {
@@ -25,13 +26,16 @@
   border-radius: 8px;
   padding: 10px;
   box-shadow: inset 5px 5px 10px #bbb, inset -5px -5px 10px #fff;
-  flex: 1;
-  min-width: 80px;
+  flex: 1 1 110px;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
   border-top: 3px solid transparent;
 }
 
 .pay-kpi-val {
-  font-size: 22px;
+  font-size: clamp(15px, 2.2vw, 22px);
+  overflow-wrap: anywhere;
   font-weight: 800;
   line-height: 1;
 }

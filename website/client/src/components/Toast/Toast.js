@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { createPortal } from "react-dom";
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from "lucide-react";
 import "./Toast.css";
+import { justCancelled, markConfirmClick } from "../../utils/confirmGate.js";
 
 /**
  * Dishky toast. One store, usable anywhere:
@@ -32,6 +33,7 @@ const dismiss = (id) => {
 
 const push = (type, message, duration) => {
   if (!message) return;
+  if (type === "error" && justCancelled()) return; // the person said No to a confirmation; "couldn't do it" would be wrong
   const text = String(message);
   if (list.some((t) => t.message === text && t.type === type && !t.leaving)) return; // no duplicates stacking
   const id = ++seq;
@@ -73,6 +75,7 @@ function ConfirmModal({ c }) {
   const close = (v) => {
     confirmState = null;
     emit();
+    if (v) markConfirmClick();
     c.res(v);
   };
   return (

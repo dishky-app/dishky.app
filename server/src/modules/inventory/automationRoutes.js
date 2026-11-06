@@ -345,6 +345,33 @@ function buildAutomationRouter({ requireAuth, requirePerm, hasPermission, scopeF
     return a;
   };
 
+  /* Stock audits also appear in Kitchen Management → Schedules (generic `kitchenSchedules` collection, same shape the
+     Schedules page writes: work / staff / date / department / status). Best-effort: a failure here never blocks the audit. */
+  const SCHEDULE_DEPT = "Stock Audit";
+  const todayIso = () => new Date().toISOString().slice(0, 10);
+  async function scheduleAudit(req, a) {
+    try {
+      const Sched = getModel("kitchenSchedules");
+      const doc = {
+        id: `${Date.now()}${Math.floor(Math.random() * 90 + 10)}`, // numeric string: the Schedules page computes max(id) + 1
+        venueId: a.venueId, work: `Stock audit ${a.auditNo}${a.title ? ` — ${a.title}` : ""}`.slice(0, 100),
+        staff: req.admin.name || "", date: todayIso(), department: SCHEDULE_DEPT, status: "Scheduled", lastRate: "0",
+        source: "stockAudit", refId: a.id,
+      };
+      const created = await Sched.create(doc);
+      const { _id, __v, ...out } = created.toObject();
+      emitChange("kitchenSchedules", "created", out);
+    } catch (e) { console.warn("[automation] could not add audit to kitchen schedules:", e.message); }
+  }
+  async function syncAuditSchedule(a, to) {
+    try {
+      const Sched = getModel("kitchenSchedules");
+      if (to === "cancelled") await Sched.deleteMany({ source: "stockAudit", refId: a.id });
+      else if (to === "posted") await Sched.updateMany({ source: "stockAudit", refId: a.id }, { $set: { status: "Completed", completedAt: new Date().toISOString() } });
+      emitChange("kitchenSchedules", "updated", { id: a.id, venueId: a.venueId });
+    } catch (e) { console.warn("[automation] could not sync audit schedule:", e.message); }
+  }
+
   router.get("/audits", requirePerm("stockAudits", "read"), wrap(async (req, res) => {
     const { limit, page, skip } = paging(req);
     const q = { ...scopeFilter(req) };
@@ -374,6 +401,7 @@ function buildAutomationRouter({ requireAuth, requirePerm, hasPermission, scopeF
       createdBy: req.admin.id, createdByName: req.admin.name, history: [entry(req, "create", "counting")],
     });
     audit(req, "stockAudits", doc.id, "create", { auditNo: doc.auditNo, lines: lines.length });
+    await scheduleAudit(req, doc);
     notify("stockAudits", doc);
     res.status(201).json(outAudit(doc.toObject(), { reveal: false }));
   }));
@@ -452,6 +480,7 @@ function buildAutomationRouter({ requireAuth, requirePerm, hasPermission, scopeF
     if (!["counting", "pending_approval", "approved"].includes(a.status)) throw bad("This audit can no longer be cancelled", "BAD_STATE", 409);
     if (a.lines.some((l) => l.postedEntryId)) throw bad("Some adjustments are already posted; reverse them from the stock ledger instead", "ALREADY_POSTED", 409);
     await move(A.StockAudit, req, a.id, a.status, "cancelled", { comment: str(req.body.reason, 300) });
+    await syncAuditSchedule(a, "cancelled");
     audit(req, "stockAudits", a.id, "cancel", {});
     res.json(outAudit(await loadAudit(req), { reveal: false }));
   }));
@@ -488,6 +517,7 @@ function buildAutomationRouter({ requireAuth, requirePerm, hasPermission, scopeF
         posted++;
       }
       await move(A.StockAudit, req, a.id, "approved", "posted", { comment: `${posted} adjustment(s) posted` });
+      await syncAuditSchedule(a, "posted");
       return { posted };
     });
     audit(req, "stockAudits", req.params.id, "post", out);

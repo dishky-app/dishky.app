@@ -8,7 +8,7 @@ import { Badge, Btn, Field, Modal, Select, qty } from "./InvUi";
 const TONES = {
   draft: "grey", pending_approval: "amber", changes_requested: "amber", approved: "green", rejected: "red", cancelled: "grey",
   rfq_issued: "blue", ordered: "blue", sent: "blue", responses_received: "blue", evaluation: "blue", awarded: "green", closed: "grey",
-  partially_received: "amber", received: "green", received_: "green", shortlisted: "blue", selected: "green", revision_requested: "amber",
+  dispatched: "blue", credited: "green", partially_received: "amber", received: "green", received_: "green", shortlisted: "blue", selected: "green", revision_requested: "amber",
 };
 export const statusLabel = (s) => String(s || "").replace(/_/g, " ");
 export function StatusBadge({ status }) {

@@ -5,7 +5,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, PageHead, errText, money, qty } from "./InvUi";
+import { Badge, Btn, DataTable, PageHead, SearchBox, Select, Toolbar, errText, money, qty } from "./InvUi";
 
 export default function ReorderPlanning() {
   const { hasModulePermission } = useAuth();
@@ -46,10 +46,10 @@ export default function ReorderPlanning() {
     { key: "name", label: "Item", render: (r) => <><span className="inv-strong">{r.name}</span><div className="inv-muted">{r.sku}</div></> },
     { key: "priority", label: "Priority", render: (r) => <Badge tone={r.priority === "urgent" ? "red" : r.priority === "high" ? "amber" : "blue"}>{r.priority}</Badge> },
     { key: "available", label: "Available", num: true, render: (r) => `${qty(r.available)} ${r.unit}` },
-    { key: "onOrder", label: "On order", num: true, render: (r) => qty(r.onOrder) },
-    { key: "onRequest", label: "Requested", num: true, render: (r) => qty(r.onRequest) },
-    { key: "reorderLevel", label: "Reorder level", num: true, render: (r) => qty(r.reorderLevel) },
-    { key: "avgDailyUse", label: "Avg daily use", num: true, render: (r) => qty(r.avgDailyUse) },
+    { key: "onOrder", label: "On order", num: true, render: (r) => `${qty(r.onOrder)} ${r.unit}` },
+    { key: "onRequest", label: "Requested", num: true, render: (r) => `${qty(r.onRequest)} ${r.unit}` },
+    { key: "reorderLevel", label: "Reorder level", num: true, render: (r) => `${qty(r.reorderLevel)} ${r.unit}` },
+    { key: "avgDailyUse", label: "Avg daily use", num: true, render: (r) => `${qty(r.avgDailyUse)} ${r.unit}` },
     { key: "supplier", label: "Supplier", render: (r) => r.supplier ? `${r.supplier.name} (${r.supplier.leadTimeDays}d)` : <span className="inv-muted">{r.supplierWarning}</span> },
     { key: "suggestedQty", label: `Order qty`, num: true, render: (r) => canWrite
       ? <><input className="inv-input inv-w90" aria-label={`Quantity for ${r.name}`} inputMode="decimal" value={sel[r.itemId] ?? ""} onChange={(e) => setSel({ ...sel, [r.itemId]: e.target.value })} /> <span className="inv-muted">{r.unit}</span></>
@@ -57,14 +57,26 @@ export default function ReorderPlanning() {
     { key: "estTotal", label: "Est. value", num: true, render: (r) => money(Number(sel[r.itemId] || 0) * r.estUnitCost) },
   ];
 
+  const [search, setSearch] = useState("");
+  const [prio, setPrio] = useState("");
+  const [supF, setSupF] = useState("");
+  const supOptions = [...new Set(rows.map((r) => r.supplier).filter(Boolean))].sort();
+  const shown = rows.filter((r) => (!prio || r.priority === prio) && (!supF || r.supplier === supF) &&
+    (!search.trim() || String(r.name || "").toLowerCase().includes(search.trim().toLowerCase())));
+
   return (
     <div className="inner-page inv-page">
-      <PageHead title="Reorder planning">
+      <PageHead title="Reorder planning" count={`${shown.length} item(s)`}>
         {canWrite && <Btn type="button" kind="primary" disabled={busy || picked.length === 0} onClick={create}>Create draft requests ({picked.length})</Btn>}
       </PageHead>
       {meta && <div className="inv-banner">{meta.note} Average daily use is taken from the last {meta.lookbackDays} days of consumption. Suggested quantities are rounded up to whole packs.</div>}
       <div className="inv-stack">
-        <DataTable columns={columns} rows={rows} loading={loading} error={error} onRetry={load} rowKey={(r) => r.itemId} empty="Nothing needs reordering. Items appear here when stock plus open orders falls to the reorder level." />
+        <Toolbar>
+          <SearchBox placeholder=" Search item" aria-label="Search items" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Priority" value={prio} onChange={(e) => setPrio(e.target.value)}><option value="">All priorities</option>{[...new Set(rows.map((r) => r.priority).filter(Boolean))].map((p) => <option key={p} value={p}>{String(p).replace(/_/g, " ")}</option>)}</Select>
+          <Select aria-label="Supplier" value={supF} onChange={(e) => setSupF(e.target.value)}><option value="">All suppliers</option>{supOptions.map((n) => <option key={n} value={n}>{n}</option>)}</Select>
+        </Toolbar>
+        <DataTable columns={columns} rows={shown} loading={loading} error={error} onRetry={load} rowKey={(r) => r.itemId} empty="Nothing needs reordering. Items appear here when stock plus open orders falls to the reorder level." />
       </div>
     </div>
   );

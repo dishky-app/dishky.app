@@ -2,17 +2,18 @@
  * attenders.js — accounts + sessions for restaurant attenders (waiters).
  *
  * An attender signs in on the user panel (dishky.com/<restaurant>/<venue>/attender)
- * with name / mobile / password, then takes dine-in orders for one or more
+ * with the mobile number + password the restaurant gave them, then takes dine-in orders for one or more
  * tables. The order is stamped with the attender's id + name so the KOT and
  * the receipt can print who took it.
  *
  * Mounted at /attender-auth in server.js (after the tenant middleware, so every
  * query here is already scoped to one restaurant):
  *
- *   POST /attender-auth/signup           { name, mobile, password }
+ *   (no signup: accounts are created by the restaurant from the admin panel, see buildAdminRouter below)
  *   POST /attender-auth/login            { mobile, password }
  *   GET  /attender-auth/me
  *   POST /attender-auth/logout
+ *   POST /attender-auth/change-password  { currentPassword, newPassword }   (signed-in attender)
  *   POST /attender-auth/forgot-password  { mobile }                    -> sends a 6-digit code
  *   POST /attender-auth/reset-password   { mobile, code, newPassword }
  *   GET  /attender-auth/table-orders?venueId=&tables=1,2   open (unpaid) bills, limited to the dishes this attender took
@@ -31,7 +32,7 @@ const crypto = require("crypto");
 const { getModel } = require("../../core/genericModel");
 const { currentTenantId } = require("../../core/tenancy");
 const { buildLimiter } = require("../../core/rateLimitStore");
-const { asPlainString, safeErrorMessage } = require("../../core/validation");
+const { asPlainString, safeErrorMessage, validateOptionalDataUrlFile } = require("../../core/validation");
 
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // one shift; sliding while the attender keeps working
 const RESET_TTL_MS = 10 * 60 * 1000;
@@ -161,46 +162,6 @@ function buildRouter() {
     next();
   });
 
-  // POST /attender-auth/signup
-  router.post("/signup", authLimiter, async (req, res) => {
-    try {
-      const name = asPlainString(req.body && req.body.name).replace(/\s+/g, " ").trim();
-      const mobile = asPlainString(req.body && req.body.mobile).trim();
-      const password = asPlainString(req.body && req.body.password);
-
-      if (name.length < 2 || name.length > 100) return res.status(400).json({ error: "Enter a valid name." });
-      if (!MOBILE_RE.test(mobile)) return res.status(400).json({ error: "Enter a valid 10-digit mobile number." });
-      if (password.length < 6 || password.length > 72) {
-        return res.status(400).json({ error: "Password must be 6 to 72 characters." });
-      }
-
-      if (await Attenders().exists({ mobile })) {
-        return res.status(409).json({ error: "An attender account already exists with this mobile number." });
-      }
-
-      const attender = {
-        id: `attender_${mobile}`,
-        name,
-        mobile,
-        passwordHash: await bcrypt.hash(password, 10),
-        createdAt: new Date().toISOString(),
-      };
-      try {
-        await Attenders().create(attender);
-      } catch (err) {
-        if (err && err.code === 11000) {
-          return res.status(409).json({ error: "An attender account already exists with this mobile number." });
-        }
-        throw err;
-      }
-      await startSession(attender, req, res);
-      res.status(201).json({ attender: publicAttender(attender) });
-    } catch (err) {
-      console.error("POST /attender-auth/signup", err.message);
-      res.status(500).json({ error: safeErrorMessage(err) });
-    }
-  });
-
   // POST /attender-auth/login
   router.post("/login", authLimiter, async (req, res) => {
     try {
@@ -219,6 +180,29 @@ function buildRouter() {
       res.json({ attender: publicAttender(attender) });
     } catch (err) {
       console.error("POST /attender-auth/login", err.message);
+      res.status(500).json({ error: safeErrorMessage(err) });
+    }
+  });
+
+  // POST /attender-auth/change-password — a signed-in attender changes their own password.
+  router.post("/change-password", authLimiter, async (req, res) => {
+    try {
+      const me = await resolveAttender(req);
+      if (!me) return res.status(401).json({ error: "Not logged in", code: "ATTENDER_SESSION_EXPIRED" });
+      const currentPassword = asPlainString(req.body && req.body.currentPassword);
+      const newPassword = asPlainString(req.body && req.body.newPassword);
+      if (newPassword.length < 6 || newPassword.length > 72) return res.status(400).json({ error: "New password must be 6 to 72 characters." });
+      if (newPassword === currentPassword) return res.status(400).json({ error: "Choose a different password from the current one." });
+      const attender = await Attenders().findOne({ id: me.id }).lean();
+      const ok = attender && await bcrypt.compare(currentPassword.slice(0, 72), attender.passwordHash).catch(() => false);
+      if (!ok) return res.status(401).json({ error: "Current password is incorrect." });
+      await Attenders().updateOne({ id: me.id }, { $set: { passwordHash: await bcrypt.hash(newPassword, 10) } });
+      // sign out every other device, keep this one
+      const keep = req.cookies ? req.cookies[cookieName()] : null;
+      await Sessions().deleteMany({ attenderId: me.id, ...(keep ? { sessionId: { $ne: keep } } : {}) });
+      res.json({ success: true });
+    } catch (err) {
+      console.error("POST /attender-auth/change-password", err.message);
       res.status(500).json({ error: safeErrorMessage(err) });
     }
   });
@@ -392,4 +376,117 @@ function buildRouter() {
   return router;
 }
 
-module.exports = { buildRouter, resolveAttender };
+/**
+ * buildAdminRouter — managing attender accounts from the admin panel (mounted at /attenders behind admin auth).
+ * The restaurant creates every account: name, mobile, password and Aadhaar. The attender can only sign in and change
+ * their own password; there is no self-service signup.
+ */
+const AADHAAR_RE = /^\d{12}$/;
+const maskAadhaar = (n) => (n ? `XXXX XXXX ${String(n).slice(-4)}` : "");
+const adminView = (a, full = false) => ({
+  id: a.id, name: a.name, mobile: a.mobile, createdAt: a.createdAt,
+  aadhaarMasked: maskAadhaar(a.aadhaarNumber), hasAadhaarImage: !!a.aadhaarImage,
+  ...(full ? { aadhaarNumber: a.aadhaarNumber || "", aadhaarImage: a.aadhaarImage || "" } : {}),
+});
+
+function buildAdminRouter({ requireAuth, requireRole, logAudit }) {
+  const router = express.Router();
+  const gate = [requireAuth, requireRole("Super Admin", "Manager")];
+  const audit = (req, id, action, extra) => { try { logAudit && logAudit(req, { action, resource: "attenders", targetId: id, after: extra }); } catch (_e) { /* best effort */ } };
+  const fail = (res, err) => { console.error("attenders admin", err.message); res.status(500).json({ error: safeErrorMessage(err) }); };
+
+  function readBody(b, { creating }) {
+    const out = {};
+    if (creating || b.name !== undefined) {
+      const name = asPlainString(b.name).replace(/\s+/g, " ").trim();
+      if (name.length < 2 || name.length > 100) return { error: "Enter the attender's name." };
+      out.name = name;
+    }
+    if (creating) {
+      const mobile = asPlainString(b.mobile).trim();
+      if (!MOBILE_RE.test(mobile)) return { error: "Enter a valid 10-digit mobile number." };
+      out.mobile = mobile;
+    }
+    if (creating || (b.password !== undefined && b.password !== "")) {
+      const password = asPlainString(b.password);
+      if (password.length < 6 || password.length > 72) return { error: "Password must be 6 to 72 characters." };
+      out.password = password;
+    }
+    if (creating || b.aadhaarNumber !== undefined) {
+      const aadhaar = asPlainString(b.aadhaarNumber).replace(/\s|-/g, "");
+      if (!AADHAAR_RE.test(aadhaar)) return { error: "Enter the 12-digit Aadhaar number." };
+      out.aadhaarNumber = aadhaar;
+    }
+    if (b.aadhaarImage !== undefined) {
+      const check = validateOptionalDataUrlFile(b.aadhaarImage);
+      if (!check.ok) return { error: `Aadhaar card file invalid: ${check.error}` };
+      out.aadhaarImage = b.aadhaarImage || "";
+    }
+    return { out };
+  }
+
+  router.get("/", ...gate, async (req, res) => {
+    try {
+      const rows = await Attenders().find({}, { aadhaarImage: 0, passwordHash: 0 }).sort({ createdAt: -1 }).limit(1000).lean();
+      const withImg = new Set((await Attenders().find({ aadhaarImage: { $nin: ["", null] } }, { id: 1 }).lean()).map((r) => r.id));
+      res.json(rows.map((a) => adminView({ ...a, aadhaarImage: withImg.has(a.id) ? "1" : "" })));
+    } catch (err) { fail(res, err); }
+  });
+
+  router.get("/:id", ...gate, async (req, res) => {
+    try {
+      const a = await Attenders().findOne({ id: asPlainString(req.params.id) }).lean();
+      if (!a) return res.status(404).json({ error: "Attender not found" });
+      res.json(adminView(a, true));
+    } catch (err) { fail(res, err); }
+  });
+
+  router.post("/", ...gate, async (req, res) => {
+    try {
+      ensureIndexes();
+      const { out, error } = readBody(req.body || {}, { creating: true });
+      if (error) return res.status(400).json({ error });
+      if (await Attenders().exists({ mobile: out.mobile })) return res.status(409).json({ error: "An attender account already exists with this mobile number." });
+      const doc = {
+        id: `attender_${out.mobile}`, name: out.name, mobile: out.mobile, passwordHash: await bcrypt.hash(out.password, 10),
+        aadhaarNumber: out.aadhaarNumber, aadhaarImage: out.aadhaarImage || "", createdAt: new Date().toISOString(), createdBy: req.admin && req.admin.id,
+      };
+      try { await Attenders().create(doc); }
+      catch (err) { if (err && err.code === 11000) return res.status(409).json({ error: "An attender account already exists with this mobile number." }); throw err; }
+      audit(req, doc.id, "create", { name: doc.name });
+      res.status(201).json(adminView(doc, true));
+    } catch (err) { fail(res, err); }
+  });
+
+  // mobile number is the login and part of the id, so it is not editable; delete and re-create to change it
+  router.patch("/:id", ...gate, async (req, res) => {
+    try {
+      const id = asPlainString(req.params.id);
+      const cur = await Attenders().findOne({ id }).lean();
+      if (!cur) return res.status(404).json({ error: "Attender not found" });
+      const { out, error } = readBody(req.body || {}, { creating: false });
+      if (error) return res.status(400).json({ error });
+      const set = { ...out }; delete set.password;
+      if (out.password) { set.passwordHash = await bcrypt.hash(out.password, 10); }
+      if (Object.keys(set).length) await Attenders().updateOne({ id }, { $set: set });
+      if (out.password) await Sessions().deleteMany({ attenderId: id }); // new password signs them out everywhere
+      audit(req, id, "update", { passwordReset: !!out.password });
+      res.json(adminView({ ...cur, ...set }, true));
+    } catch (err) { fail(res, err); }
+  });
+
+  router.delete("/:id", ...gate, async (req, res) => {
+    try {
+      const id = asPlainString(req.params.id);
+      const r = await Attenders().deleteOne({ id });
+      if (!r.deletedCount) return res.status(404).json({ error: "Attender not found" });
+      await Sessions().deleteMany({ attenderId: id });
+      audit(req, id, "delete", {});
+      res.json({ success: true });
+    } catch (err) { fail(res, err); }
+  });
+
+  return router;
+}
+
+module.exports = { buildRouter, buildAdminRouter, resolveAttender };

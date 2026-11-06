@@ -34,6 +34,8 @@ import CollapseChevron from "../components/CollapseChevron";
 import CollapseSection from "../components/CollapseSection";
 import WorkPlan from "./WorkPlan";
 import { useTabLiquid } from "../hooks/useTabLiquid";
+import { useDashboardData, DxTip, TipBox, SalesSplitTip, profitOf, ClosingCard, MemosCard, TicketsCard, MoneyShortageCard } from "./DashboardInsights";
+import "./DashboardInsights.css";
 
 const COLORS = ["#ff9f43", "#54a0ff", "#FFD700", "#1dd1a1", "#00FFFF", "#e93c3c", "#FFFF00", "#FF8AFF"];
 const STAFF_PALETTE = ["#4361ee", "#06d6a0", "#ffd166", "#ef476f", "#7209b7", "#4cc9f0", "#f72585", "#3a0ca3"];
@@ -92,6 +94,8 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
 
   const toggleFilter = (setter, val) => setter(prev => { const n = new Set(prev); n.has(val) ? n.delete(val) : n.add(val); return n; });
   const [datePreset, setDatePreset] = useState("today");
+  // The Staff tab shows THIS MONTH until the user picks a range on the Sales filters, then it follows that range.
+  const [rangeTouched, setRangeTouched] = useState(false);
 
   // Staff table sorting
   const [staffSortKey, setStaffSortKey] = useState("name");
@@ -115,6 +119,7 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
       setFromDate(first); setToDate(last);
     }
     setDatePreset(preset);
+    setRangeTouched(true);
   }, [today]);
 
   // ── Helpers
@@ -142,22 +147,31 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
   }, [baseFilteredOrders, modeFilteredOrders, statusFilteredOrders, modeFilters, statusFilters]);
 
   const orderModeStats = useMemo(() => { let dineIn = 0, takeaway = 0; baseFilteredOrders.forEach(o => { const m = (o.mode || "").toLowerCase(); if (m === "dine in") dineIn++; else takeaway++; }); return { dineIn, takeaway }; }, [baseFilteredOrders]);
+  // sales / items / orders per order mode — for the hover details on the header KPIs
+  const modeDetail = useMemo(() => {
+    const m = { "dine in": { orders: 0, sales: 0, items: 0 }, "take away": { orders: 0, sales: 0, items: 0 } };
+    baseFilteredOrders.forEach(o => {
+      const k = (o.mode || "").toLowerCase() === "dine in" ? "dine in" : "take away";
+      m[k].orders += 1;
+      o.items.forEach(i => { m[k].sales += resolveRevenue(i); m[k].items += Number(i.quantity ?? 0); });
+    });
+    return m;
+  }, [baseFilteredOrders]);
   const hasOrders = baseFilteredOrders.length > 0;
   const totalSales = baseFilteredOrders.reduce((sum, o) => sum + o.items.reduce((s, i) => s + resolveRevenue(i), 0), 0);
   const totalOrders = baseFilteredOrders.length;
+  const dx = useDashboardData(fromDate, toDate);
+  const profit = profitOf(totalSales, dx.cost);
 
-  const previousOrders = useMemo(() => { const ms = new Date(toDate).getTime() - new Date(fromDate).getTime(); const pf = new Date(new Date(fromDate).getTime() - ms), pt = new Date(fromDate); return orders.filter(o => { const d = new Date(o.date); return d >= pf && d < pt; }); }, [orders, fromDate, toDate]);
-  const previousSales = previousOrders.reduce((s, o) => s + o.items.reduce((ss, i) => ss + resolveRevenue(i), 0), 0);
-  let salesChange = previousSales === 0 ? (totalSales > 0 ? 100 : 0) : Number(((totalSales - previousSales) / previousSales * 100).toFixed(1));
 
   const categorySales = useMemo(() => {
-    const map = {}; let grand = 0;
-    baseFilteredOrders.forEach(o => { o.items.forEach(i => { const a = resolveRevenue(i); if (!a) return; grand += a; map[i.categoryId] = (map[i.categoryId] || 0) + a; }); });
+    const map = {}, itemsMap = {}, ordersMap = {}; let grand = 0;
+    baseFilteredOrders.forEach(o => { const seen = new Set(); o.items.forEach(i => { const a = resolveRevenue(i); if (!a) return; grand += a; map[i.categoryId] = (map[i.categoryId] || 0) + a; itemsMap[i.categoryId] = (itemsMap[i.categoryId] || 0) + resolveQty(i); if (!seen.has(i.categoryId)) { seen.add(i.categoryId); ordersMap[i.categoryId] = (ordersMap[i.categoryId] || 0) + 1; } }); });
     if (!grand) return [];
-    return Object.entries(map).map(([id, v]) => {
+    return Object.entries(map).sort((a, b) => b[1] - a[1]).map(([id, v]) => {
       let label = id;
       for (const c of adminData.categories) { if (c.id === id) { label = c.name; break; } const s = (c.subCategories || []).find(s => s.id === id); if (s) { label = s.name; break; } }
-      return { name: label, value: Number(((v / grand) * 100).toFixed(1)), amount: v };
+      return { name: label, value: Number(((v / grand) * 100).toFixed(1)), amount: roundTo(v, 2), items: itemsMap[id] || 0, orders: ordersMap[id] || 0 };
     });
   }, [baseFilteredOrders, adminData.categories]);
 
@@ -167,33 +181,49 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
     return Object.values(map).map(r => ({ Category: r.category, "Items Sold": r.itemsSold, "Total Revenue": r.revenue, "Revenue %": gRev > 0 ? Number(((r.revenue / gRev) * 100).toFixed(2)) : 0 }));
   }, [baseFilteredOrders]);
 
-  const stockData = useMemo(() => ingredients.map(ing => { const rem = roundTo(ing.stockRemaining ?? 0, 2); const mx = Number(ing.stockMax ?? 0); const pct = mx > 0 ? Math.round((rem / mx) * 100) : 0; return { name: ing.name, stock: rem, stockMax: mx, percent: pct }; }).sort((a, b) => a.percent - b.percent), [ingredients]);
-  const getStockColor = (v) => v >= 60 ? "#1dd1a1" : v >= 35 ? "#ff9f43" : "#ee5253";
-  const dailyRevenue = useMemo(() => { const map = {}; baseFilteredOrders.forEach(o => { o.items.forEach(i => { map[o.date] = (map[o.date] || 0) + resolveRevenue(i); }); }); return Object.entries(map).sort(([a], [b]) => new Date(a) - new Date(b)).map(([date, revenue]) => ({ date, revenue })); }, [baseFilteredOrders]);
+  // Stock figures come from several writers (Ingredients form, Stocks page, the inventory ledger projection), so
+  // values may be strings, null or missing. Parse defensively, and when no max is set show the real kg figure
+  // with a neutral bar instead of a misleading 0 / 0%.
+  const stockData = useMemo(() => ingredients.map(ing => {
+    const rem = roundTo(Math.max(0, num(ing.stockRemaining)), 2);
+    const mx = roundTo(Math.max(0, num(ing.stockMax)), 2);
+    const hasMax = mx > 0;
+    const pct = hasMax ? Math.min(100, Math.round((rem / mx) * 100)) : (rem > 0 ? 100 : 0);
+    return { name: ing.name, stock: rem, stockMax: mx, hasMax, percent: pct, unit: ing.unit || ing.stockUnit || "kg" };
+  }).sort((a, b) => (a.hasMax === b.hasMax ? a.percent - b.percent : a.hasMax ? -1 : 1)), [ingredients]);
+  const getStockColor = (v, hasMax = true) => !hasMax ? "#9ca3af" : v >= 60 ? "#1dd1a1" : v >= 35 ? "#ff9f43" : "#ee5253";
+  const dailyRevenue = useMemo(() => { const map = {}, cnt = {}, itm = {}; baseFilteredOrders.forEach(o => { cnt[o.date] = (cnt[o.date] || 0) + 1; o.items.forEach(i => { map[o.date] = (map[o.date] || 0) + resolveRevenue(i); itm[o.date] = (itm[o.date] || 0) + resolveQty(i); }); }); return Object.entries(map).sort(([a], [b]) => new Date(a) - new Date(b)).map(([date, revenue]) => ({ date, revenue, orders: cnt[date] || 0, items: itm[date] || 0 })); }, [baseFilteredOrders]);
   const monthlyRevenue = useMemo(() => { const map = {}; baseFilteredOrders.forEach(o => { const month = format(new Date(o.date), "yyyy-MM"); o.items.forEach(i => { map[month] = (map[month] || 0) + resolveRevenue(i); }); }); return Object.entries(map).sort(([a], [b]) => new Date(a) - new Date(b)).map(([month, revenue]) => ({ month, revenue })); }, [baseFilteredOrders]);
-  const revenueTrendData = useMemo(() => dailyRevenue.map(d => { const mk = d.date.slice(0, 7); const md = monthlyRevenue.find(m => m.month === mk); return { date: d.date, dailyRevenue: d.revenue, monthlyRevenue: md ? md.revenue : 0 }; }), [dailyRevenue, monthlyRevenue]);
+  const revenueTrendData = useMemo(() => dailyRevenue.map(d => { const mk = d.date.slice(0, 7); const md = monthlyRevenue.find(m => m.month === mk); return { date: d.date, dailyRevenue: d.revenue, monthlyRevenue: md ? md.revenue : 0, orders: d.orders, items: d.items }; }), [dailyRevenue, monthlyRevenue]);
 
+  // Staff analytics follow the From / To filter: attendance by day, grooming by day, and the salary ledger
+  // (advance / deduction) by the months the range touches.
+  const staffFrom = rangeTouched ? fromDate : sharedMonthRange()[0];
+  const staffTo = rangeTouched ? toDate : today;
   const staffStats = useMemo(() => staff.map(s => {
-    const att = s.attendance || [];
+    const inRange = (d) => { const k = String(d || "").slice(0, 10); return k >= staffFrom && k <= staffTo; };
+    const att = (s.attendance || []).filter(a => inRange(a.date));
     const present = att.filter(a => a.status === "present").length;
     const leave = att.filter(a => a.status === "leave").length;
     const absent = att.filter(a => a.status === "absent").length;
     const salary = Number(s.salary) || 0;
-    const advance = (s.remainingSalary || []).reduce((sum, r) => sum + Number(r.advance || 0), 0);
-    const deduction = (s.remainingSalary || []).reduce((sum, r) => sum + Number(r.deduction || 0) + Number(r.penalty || 0), 0);
-    const kDates = adminData.grooming?.[s.id] || {};
-    const sDates = adminData.serviceGrooming?.[s.id] || {};
-    const kTotal = Object.values(kDates).filter(d => typeof d === "object" && d !== null).length;
-    const sTotal = Object.values(sDates).filter(d => typeof d === "object" && d !== null).length;
-    const kPassed = Object.values(kDates).filter(d => d?.uniform && d?.shoes && d?.groom).length;
-    const sPassed = Object.values(sDates).filter(d => d?.uniform && d?.shoes && d?.groom).length;
+    const fromMonth = staffFrom.slice(0, 7), toMonth = staffTo.slice(0, 7);
+    const ledger = (s.remainingSalary || []).filter(r => r.month && r.month >= fromMonth && r.month <= toMonth);
+    const advance = ledger.reduce((sum, r) => sum + Number(r.advance || 0), 0);
+    const deduction = ledger.reduce((sum, r) => sum + Number(r.deduction || 0) + Number(r.penalty || 0), 0);
+    const inRangeEntries = (obj = {}) => Object.entries(obj).filter(([d, v]) => typeof v === "object" && v !== null && inRange(d)).map(([, v]) => v);
+    const kEntries = inRangeEntries(adminData.grooming?.[s.id]);
+    const sEntries = inRangeEntries(adminData.serviceGrooming?.[s.id]);
+    const kTotal = kEntries.length, sTotal = sEntries.length;
+    const kPassed = kEntries.filter(d => d.uniform && d.shoes && d.groom).length;
+    const sPassed = sEntries.filter(d => d.uniform && d.shoes && d.groom).length;
     const groomTotal = Math.max(kTotal, sTotal, 1);
     const groomPassed = kTotal >= sTotal ? kPassed : sPassed;
     const groomPct = Math.min(100, Math.round((groomPassed / groomTotal) * 100));
     const totalTracked = present + leave + absent;
     const attPct = totalTracked > 0 ? Math.round((present / totalTracked) * 100) : 0;
-    return { id: s.id, name: s.name, role: s.role || "Staff", salary, advance, deduction, present, leave, absent, attPct, groomPct };
-  }), [staff, adminData.grooming, adminData.serviceGrooming]);
+    return { id: s.id, name: s.name, role: s.role || "Staff", workType: s.workType === "full-time" ? "Full-time" : "Part-time", salary, advance, deduction, net: salary - advance - deduction, present, leave, absent, tracked: totalTracked, attPct, groomPct, groomPassed, groomTotal: kTotal >= sTotal ? kTotal : sTotal };
+  }), [staff, adminData.grooming, adminData.serviceGrooming, staffFrom, staffTo]);
 
   const sortedStaffStats = useMemo(() => {
     return [...staffStats].sort((a, b) => {
@@ -222,29 +252,71 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
     avgAttendance: staffStats.length > 0 ? Math.round(staffStats.reduce((s, x) => s + x.attPct, 0) / staffStats.length) : 0,
   }), [staffStats]);
 
-  const attendanceBarData = staffStats.map(s => ({ name: s.name.split(" ")[0], Present: s.present, Leave: s.leave, Absent: s.absent, pct: s.attPct }));
-  const salaryPieData = staffStats.map((s, i) => ({ name: s.name.split(" ")[0], value: s.salary, color: STAFF_PALETTE[i % STAFF_PALETTE.length], role: s.role }));
-  const groomBarData = staffStats.map((s, i) => ({ name: s.name.split(" ")[0], value: s.groomPct, color: STAFF_PALETTE[i % STAFF_PALETTE.length] }));
+  const attendanceBarData = staffStats.map(s => ({ name: s.name.split(" ")[0], fullName: s.name, role: s.role, present: s.present, leave: s.leave, absent: s.absent, tracked: s.tracked, pct: s.attPct }));
+  const salaryPieData = staffStats.map((s, i) => ({ name: s.name.split(" ")[0], fullName: s.name, value: s.salary, color: STAFF_PALETTE[i % STAFF_PALETTE.length], role: s.role, workType: s.workType, advance: s.advance, deduction: s.deduction, net: s.net }));
+  const groomBarData = staffStats.map((s, i) => ({ name: s.name.split(" ")[0], fullName: s.name, role: s.role, value: s.groomPct, passed: s.groomPassed, total: s.groomTotal, color: STAFF_PALETTE[i % STAFF_PALETTE.length] }));
+
+  const inr = (v) => `₹${Number(v || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+  const share = (n, t) => (t > 0 ? `${Math.round((n / t) * 1000) / 10}%` : "0%");
+  const rangeLabel = fromDate === toDate ? sharedFmtDateOnly(fromDate) : `${sharedFmtDateOnly(fromDate)} – ${sharedFmtDateOnly(toDate)}`;
+  const staffRangeLabel = staffFrom === staffTo ? sharedFmtDateOnly(staffFrom) : `${sharedFmtDateOnly(staffFrom)} – ${sharedFmtDateOnly(staffTo)}`;
+  const avgOrder = totalOrders > 0 ? totalSales / totalOrders : 0;
 
   const TrendTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
-    return (<div className="trend-tooltip"><div className="trend-tooltip-label">{sharedFmtDateOnly(label)}</div><div className="trend-tooltip-value">₹{num(payload[0].value).toLocaleString()}</div></div>);
+    const d = payload[0].payload;
+    return (
+      <TipBox title={sharedFmtDateOnly(label)} accent="#54a0ff" rows={[
+        ["Revenue", inr(d.dailyRevenue)], ["Orders", d.orders], ["Items sold", d.items],
+        ["Avg per order", inr(d.orders ? d.dailyRevenue / d.orders : 0)],
+        ["Share of range", share(d.dailyRevenue, totalSales)],
+        ["Month total (in range)", inr(d.monthlyRevenue)],
+      ]} />
+    );
   };
   const StockTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
-    const { name, stock, stockMax, percent } = payload[0].payload;
-    const color = getStockColor(percent);
-    return (<div className="trend-tooltip"><div className="trend-tooltip-label" style={{ color }}>{name}</div><div className="trend-tooltip-value" style={{ color }}>{roundTo(stock, 2)}/{roundTo(stockMax, 2)} kg ({percent}%)</div></div>);
+    const { name, stock, stockMax, hasMax, percent, unit } = payload[0].payload;
+    const color = getStockColor(percent, hasMax);
+    const state = !hasMax ? "Max not set" : stock <= 0 ? "Out of stock" : percent < 35 ? "Low" : percent < 60 ? "Medium" : "Healthy";
+    return (
+      <TipBox title={name} accent={color} rows={[
+        ["Remaining", `${roundTo(stock, 2)} ${unit}`],
+        ["Capacity", hasMax ? `${roundTo(stockMax, 2)} ${unit}` : "—"],
+        ["Filled", hasMax ? `${percent}%` : "—"],
+        ["Status", state, state === "Healthy" ? "good" : state === "Low" || state === "Out of stock" ? "bad" : undefined],
+      ]} foot={hasMax ? `${roundTo(Math.max(0, stockMax - stock), 2)} ${unit} to refill` : "Set a max on the Ingredients page"} />
+    );
   };
-  const AttTooltip = ({ active, payload, label }) => {
+  const pieRows = (d) => [["Share of sales", `${d.value}%`], ["Sales", inr(d.amount)], ["Items sold", d.items], ["Orders", d.orders], ["Avg per order", inr(d.orders ? d.amount / d.orders : 0)]];
+  const PieTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
-    return (<div className="trend-tooltip"><div className="trend-tooltip-label">{label}</div>{payload.map((p, i) => (<div key={i} style={{ color: p.color, fontWeight: 600, fontSize: 13 }}>{p.name}: {p.value}</div>))}</div>);
+    const d = payload[0].payload;
+    return <TipBox title={d.name} accent={payload[0].payload.fill || payload[0].color} rows={pieRows(d)} foot="Click to open these orders" />;
   };
   const SalaryTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
     const d = payload[0].payload;
-    return (<div className="trend-tooltip"><div className="trend-tooltip-label">{d.name}</div><div className="trend-tooltip-value" style={{ color: d.color }}>₹{Number(d.value).toLocaleString("en-IN")}</div>{d.role && <div style={{ fontSize: 11, color: "#888" }}>{d.role}</div>}</div>);
+    return <TipBox title={d.name} subtitle={`${d.role || "Staff"} · ${d.workType}`} accent={d.color} rows={salaryRows(d)} />;
   };
+  const salaryRows = (d) => [["Monthly salary", inr(d.value)], ["Share of bill", share(d.value, staffSummary.totalSalaryBill)], ["Advance (range)", inr(d.advance)], ["Deductions (range)", inr(d.deduction)], ["Net payable", inr(d.net), d.net < 0 ? "bad" : undefined]];
+  const attRows = (s) => [["Present", `${s.present} day${s.present === 1 ? "" : "s"}`, "good"], ["Leave", `${s.leave} day${s.leave === 1 ? "" : "s"}`], ["Absent", `${s.absent} day${s.absent === 1 ? "" : "s"}`, s.absent ? "bad" : undefined], ["Days recorded", s.tracked], ["Attendance", `${s.pct}%`]];
+  const modeTip = (key, title) => {
+    const m = modeDetail[key];
+    return (<><div className="dx-tip-title">{title}</div>
+      <div className="dx-tip-row"><span>Orders</span><b>{m.orders} ({share(m.orders, totalOrders)})</b></div>
+      <div className="dx-tip-row"><span>Sales</span><b>{inr(m.sales)} ({share(m.sales, totalSales)})</b></div>
+      <div className="dx-tip-row"><span>Items</span><b>{m.items}</b></div>
+      <div className="dx-tip-row"><span>Avg per order</span><b>{inr(m.orders ? m.sales / m.orders : 0)}</b></div>
+      <div className="dx-tip-foot">{rangeLabel} · click to filter, double-click to open Orders</div></>);
+  };
+  const statusTip = (title, n) => (
+    <><div className="dx-tip-title">{title} items</div>
+      <div className="dx-tip-row"><span>Items</span><b>{n}</b></div>
+      <div className="dx-tip-row"><span>Share of all items</span><b>{share(n, itemStats.total)}</b></div>
+      <div className="dx-tip-row"><span>Orders in range</span><b>{totalOrders}</b></div>
+      <div className="dx-tip-foot">{rangeLabel} · click to open Orders</div></>
+  );
 
   const handleExport = () => {
     // Export everything on the page — all orders (all days), staff, schedules
@@ -344,6 +416,12 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                 <button className={`app-tab-pill ${activeTab === "staff" ? "active" : ""}`} onClick={() => setActiveTab("staff")}>
                   Staff
                 </button>
+                <button className={`app-tab-pill ${activeTab === "memos" ? "active" : ""}`} onClick={() => setActiveTab("memos")}>
+                  Complaints & Memos
+                </button>
+                <button className={`app-tab-pill ${activeTab === "closing" ? "active" : ""}`} onClick={() => setActiveTab("closing")}>
+                  Closing
+                </button>
                 <button className={`app-tab-pill ${activeTab === "schedules" ? "active" : ""}`} onClick={() => setActiveTab("schedules")}>
                   Schedules
                 </button>
@@ -351,9 +429,10 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                   Work Plan
                 </button>
               </div>
+              {activeTab !== "workplan" && <Button3D onClick={handleExport}>Export</Button3D>}
             </div>
           </div>
-          <CollapseSection collapsed={headerCollapsed}>
+          <CollapseSection collapsed={headerCollapsed || !["sales", "memos", "closing"].includes(activeTab)}>
             <div className="dashboard-filter-date">
               <div className="dash-preset-btns">
                 {[["all", "All"], ["today", "Today"], ["weekly", "This Week"], ["monthly", "This Month"], ["lastMonth", "Last Month"]].map(([k, lbl]) => (
@@ -361,63 +440,96 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                 ))}
               </div>
               <div className="dashboard-custom-datepickers">
-                <CustomDatePicker label="From" value={fromDate} max={toDate} onChange={(s) => { setFromDate(s); if (s > toDate) setToDate(s); setDatePreset("custom"); }} />
-                <CustomDatePicker label="To" value={toDate} min={fromDate} max={today} onChange={(s) => { setToDate(s); setDatePreset("custom"); }} />
-                {!headerCollapsed && activeTab !== "workplan" && <Button3D onClick={handleExport}>Export</Button3D>}
+                <CustomDatePicker label="From" value={fromDate} max={toDate} onChange={(s) => { setFromDate(s); if (s > toDate) setToDate(s); setDatePreset("custom"); setRangeTouched(true); }} />
+                <CustomDatePicker label="To" value={toDate} min={fromDate} max={today} onChange={(s) => { setToDate(s); setDatePreset("custom"); setRangeTouched(true); }} />
               </div>
             </div>
           </CollapseSection>
         </div>
 
-        {/* DATE FILTER */}
-        {!headerCollapsed && (
-          <div className="dashboard-header-right">
-            <div className="dashboard-kpi-row-inheader">
+        {/* ORDER / ITEM KPIs — one row, wraps instead of overflowing */}
+        <div className={`dashboard-header-right dx-fold${!headerCollapsed && activeTab === "sales" ? "" : " dx-fold-closed"}`} aria-hidden={headerCollapsed || activeTab !== "sales"}>
+          <div className="dashboard-kpi-grid">
+            <DxTip className="dx-kpi-cell" tip={(<><div className="dx-tip-title">Orders</div>
+              <div className="dx-tip-row"><span>Total orders</span><b>{totalOrders}</b></div>
+              <div className="dx-tip-row"><span>Dine in</span><b>{orderModeStats.dineIn} ({share(orderModeStats.dineIn, totalOrders)})</b></div>
+              <div className="dx-tip-row"><span>Take away</span><b>{orderModeStats.takeaway} ({share(orderModeStats.takeaway, totalOrders)})</b></div>
+              <div className="dx-tip-row"><span>Items ordered</span><b>{itemStats.total}</b></div>
+              <div className="dx-tip-row dx-tip-total"><span>Avg order value</span><b>{inr(avgOrder)}</b></div>
+              <div className="dx-tip-foot">{rangeLabel}</div></>)}>
               <div className="kpi-card kpi-small"><p>Total Orders</p><h3>{totalOrders}</h3></div>
+            </DxTip>
+            <DxTip className="dx-kpi-cell" tip={modeTip("dine in", "Dine in")}>
               <div className={`kpi-card kpi-small link ${modeFilters.has("dine in") ? "active" : ""}`} onClick={() => toggleFilter(setModeFilters, "dine in")} onDoubleClick={() => navigate("/orders", { state: { mode: "dine in", fromDate, toDate } })}><p>Dine In</p><h3>{orderModeStats.dineIn}</h3></div>
+            </DxTip>
+            <DxTip className="dx-kpi-cell" tip={modeTip("take away", "Take away")}>
               <div className={`kpi-card kpi-small link ${modeFilters.has("take away") ? "active" : ""}`} onClick={() => toggleFilter(setModeFilters, "take away")} onDoubleClick={() => navigate("/orders", { state: { mode: "take away", fromDate, toDate } })}><p>Take Away</p><h3>{orderModeStats.takeaway}</h3></div>
-            </div>
-            <div className="dashboard-filter-kpis">
-              <div className="dashboard-kpi-row">
-                <div className="kpi-card kpi-small"><p>Total Items</p><h3>{itemStats.total}</h3></div>
-                <div className={"kpi-card kpi-small status-placed link"} onClick={() => { toggleFilter(setStatusFilters, "placed"); navigate("/orders", { state: { status: "placed", fromDate, toDate } }); }}><p>Placed</p><h3>{itemStats.placed}</h3></div>
-                <div className={"kpi-card kpi-small status-preparing link"} onClick={() => { toggleFilter(setStatusFilters, "preparing"); navigate("/orders", { state: { status: "preparing", fromDate, toDate } }); }}><p>Preparing</p><h3>{itemStats.preparing}</h3></div>
-                <div className={"kpi-card kpi-small status-service-pickup link"} onClick={() => { toggleFilter(setStatusFilters, "service pickup"); navigate("/orders", { state: { status: "service pickup", fromDate, toDate } }); }}><p>Service Pickup</p><h3>{itemStats.servicePickup}</h3></div>
-                <div className={"kpi-card kpi-small status-completed link"} onClick={() => { toggleFilter(setStatusFilters, "completed"); navigate("/orders", { state: { status: "completed", fromDate, toDate } }); }}><p>Completed</p><h3>{itemStats.completed}</h3></div>
-              </div>
-            </div>
+            </DxTip>
+            <DxTip className="dx-kpi-cell" tip={(<><div className="dx-tip-title">Items by status</div>
+              <div className="dx-tip-row"><span>Placed</span><b>{itemStats.placed}</b></div>
+              <div className="dx-tip-row"><span>Preparing</span><b>{itemStats.preparing}</b></div>
+              <div className="dx-tip-row"><span>Service pickup</span><b>{itemStats.servicePickup}</b></div>
+              <div className="dx-tip-row"><span>Completed</span><b>{itemStats.completed} ({share(itemStats.completed, itemStats.total)})</b></div>
+              <div className="dx-tip-row dx-tip-total"><span>Total items</span><b>{itemStats.total}</b></div>
+              <div className="dx-tip-foot">{rangeLabel}</div></>)}>
+              <div className="kpi-card kpi-small"><p>Total Items</p><h3>{itemStats.total}</h3></div>
+            </DxTip>
+            {[["placed", "Placed", itemStats.placed, "status-placed"], ["preparing", "Preparing", itemStats.preparing, "status-preparing"], ["service pickup", "Service Pickup", itemStats.servicePickup, "status-service-pickup"], ["completed", "Completed", itemStats.completed, "status-completed"]].map(([key, lbl, n, cls]) => (
+              <DxTip key={key} className="dx-kpi-cell" tip={statusTip(lbl, n)}>
+                <div className={`kpi-card kpi-small ${cls} link`} onClick={() => { toggleFilter(setStatusFilters, key); navigate("/orders", { state: { status: key, fromDate, toDate } }); }}><p>{lbl}</p><h3>{n}</h3></div>
+              </DxTip>
+            ))}
           </div>
-        )}
+        </div>
       </div>
 
       {/* SALES TAB */}
       {activeTab === "sales" && (
         <div className="dashboard-scroll">
+          <div className="dashboard-kpis dx-kpi-single">
+            <DxTip className="dx-kpi-tip" tip={<SalesSplitTip closings={dx.closings} loading={dx.closings === null} />}>
+              <div className="kpi-card"><p>Total Sales</p><h3>₹{totalSales.toLocaleString("en-IN")}</h3></div>
+            </DxTip>
+            <DxTip className="dx-kpi-tip" tip={(<><div className="dx-tip-title">Orders</div>
+              <div className="dx-tip-row"><span>Total orders</span><b>{totalOrders}</b></div>
+              <div className="dx-tip-row"><span>Dine in</span><b>{orderModeStats.dineIn} · {inr(modeDetail["dine in"].sales)}</b></div>
+              <div className="dx-tip-row"><span>Take away</span><b>{orderModeStats.takeaway} · {inr(modeDetail["take away"].sales)}</b></div>
+              <div className="dx-tip-row"><span>Items ordered</span><b>{itemStats.total}</b></div>
+              <div className="dx-tip-row dx-tip-total"><span>Avg order value</span><b>{inr(avgOrder)}</b></div>
+              <div className="dx-tip-foot">{rangeLabel}</div></>)}>
+              <div className="kpi-card"><p>Total Orders</p><h3>{totalOrders}</h3></div>
+            </DxTip>
+            <DxTip className="dx-kpi-tip" tip={profit ? <><div className="dx-tip-title">Profit</div><div className="dx-tip-row"><span>Sales</span><b>{inr(totalSales)}</b></div><div className="dx-tip-row"><span>Ingredients used</span><b>{inr(dx.cost?.totals?.orderCost)}</b></div><div className="dx-tip-row"><span>Wastage</span><b>{inr(dx.cost?.totals?.wasteCost)}</b></div><div className="dx-tip-row dx-tip-total"><span>Cost of goods</span><b>{inr(profit.goods)}</b></div><div className="dx-tip-row"><span>Profit</span><b className={profit.profit >= 0 ? "dx-good" : "dx-bad"}>{inr(profit.profit)}</b></div><div className="dx-tip-row"><span>Margin</span><b>{profit.margin}%</b></div><div className="dx-tip-foot">Valued from the inventory ledger.{dx.costNote ? ` ${dx.costNote}` : ""}</div></> : <div className="dx-tip-empty">Cost data is not available for these dates (needs inventory items linked to ingredients).</div>}>
+              <div className={`kpi-card ${profit ? (profit.profit >= 0 ? "positive" : "negative") : ""}`}><p>Profit{profit ? ` · ${profit.margin}% margin` : ""}</p><h3>{profit ? `₹${profit.profit.toLocaleString("en-IN")}` : "—"}</h3></div>
+            </DxTip>
+          </div>
           <div className="dashboard-main-layout">
             <div className="dashboard-piechart">
-              <div className="dashboard-kpis">
-                <div className="kpi-card"><p>Total Sales</p><h3>₹{totalSales}</h3></div>
-                <div className="kpi-card"><p>Total Orders</p><h3>{totalOrders}</h3></div>
-                <div className={`kpi-card ${salesChange >= 0 ? "positive" : "negative"}`}><p>Sales Change</p><h3>{salesChange}%</h3></div>
-              </div>
               <div className="chart-card pie">
                 <h4>Category-wise Sales (%)</h4>
                 {categorySales.length === 0 ? <NoChartData message="No category sales data" /> : (
-                  <ResponsiveContainer width="100%" height={260}>
-                    {hasOrders ? (
-                      <PieChart>
-                        <Pie data={categorySales} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={100} isAnimationActive animationBegin={100} animationDuration={800} animationEasing="cubic-bezier(0.4,0,0.2,1)" activeIndex={activeIndex} activeShape={renderActiveShape} onMouseEnter={(_, i) => setActiveIndex(i)} onMouseLeave={() => setActiveIndex(null)}
-                          onClick={(data) => {
-                            // FIX: guard against null/undefined data before navigating
-                            if (data && data.name) {
-                              navigate("/orders", { state: { category: data.name, fromDate, toDate } });
-                            }
-                          }}>
-                          {categorySales.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                        </Pie>
-                      </PieChart>
-                    ) : <p className="empty-state">No data for selected date range</p>}
-                  </ResponsiveContainer>
+                  <>
+                    <div className="dx-chart-fill dx-pie-box">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={categorySales} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius="52%" outerRadius="82%" isAnimationActive animationBegin={100} animationDuration={800} animationEasing="cubic-bezier(0.4,0,0.2,1)" activeIndex={activeIndex} activeShape={renderActiveShape} onMouseEnter={(_, i) => setActiveIndex(i)} onMouseLeave={() => setActiveIndex(null)}
+                            onClick={(data) => { if (data && data.name) navigate("/orders", { state: { category: data.name, fromDate, toDate } }); }}>
+                            {categorySales.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                          </Pie>
+                          <Tooltip content={<PieTooltip />} wrapperStyle={{ zIndex: 50, outline: "none" }} allowEscapeViewBox={{ x: true, y: true }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="dx-legend-list">
+                      {categorySales.map((c, i) => (
+                        <DxTip key={c.name + i} tip={<TipBox title={c.name} accent={COLORS[i % COLORS.length]} rows={pieRows(c)} foot="Click to open these orders" />}>
+                          <div className="dx-legend-row" onClick={() => navigate("/orders", { state: { category: c.name, fromDate, toDate } })}>
+                            <i style={{ background: COLORS[i % COLORS.length] }} /><span>{c.name}</span><b>{c.value}%</b><em>{inr(c.amount)}</em>
+                          </div>
+                        </DxTip>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -426,18 +538,18 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
               <div className="chart-card line">
                 <div className="chart-header"><h4>Revenue Trend</h4></div>
                 {revenueTrendData.length === 0 ? <NoChartData message="No revenue data for selected period" /> : (
-                  <ResponsiveContainer width="100%" height={260}>
+                  <div className="dx-chart-fill"><ResponsiveContainer width="100%" height="100%">
                     <LineChart data={revenueTrendData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                       <CartesianGrid vertical={false} stroke="#e3e3e3" />
                       <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#777" }} tickFormatter={(d) => sharedFmtDateOnly(d)} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: "#777" }} tickFormatter={(v) => `₹${v}`} />
-                      <Tooltip content={<TrendTooltip />} />
+                      <Tooltip content={<TrendTooltip />} wrapperStyle={{ zIndex: 50, outline: "none" }} allowEscapeViewBox={{ x: true, y: true }} />
                       <defs><linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#54a0ff" stopOpacity={0.25} /><stop offset="100%" stopColor="#54a0ff" stopOpacity={0} /></linearGradient></defs>
                       <Area type="monotone" dataKey="dailyRevenue" stroke="none" fill="url(#trendGradient)" isAnimationActive />
                       <Line type="monotone" dataKey="dailyRevenue" stroke="#54a0ff" strokeWidth={3} dot={false} activeDot={{ r: 6, fill: "#54a0ff", stroke: "#fff", strokeWidth: 2 }} isAnimationActive />
                       <Line type="monotone" dataKey="monthlyRevenue" stroke="#ff9f43" strokeWidth={3} dot={false} name="Monthly Revenue" />
                     </LineChart>
-                  </ResponsiveContainer>
+                  </ResponsiveContainer></div>
                 )}
               </div>
             </div>
@@ -459,7 +571,7 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                         layout="vertical"
                         barCategoryGap={4}
                       >
-                        <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#aaa" }} />
+                        <XAxis type="number" domain={[0, 100]} unit="%" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#aaa" }} />
                         <YAxis
                           dataKey="name"
                           type="category"
@@ -468,12 +580,12 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                           tickLine={false}
                           tick={{ fontSize: 10, fill: "#111" }}
                         />
-                        <Tooltip content={<StockTooltip />} />
-                        <Bar dataKey="stock" barSize={4} radius={[0, 3, 3, 0]}>
+                        <Tooltip content={<StockTooltip />} wrapperStyle={{ zIndex: 50, outline: "none" }} allowEscapeViewBox={{ x: true, y: true }} cursor={{ fill: "rgba(0,0,0,0.04)" }} />
+                        <Bar dataKey="percent" barSize={4} radius={[0, 3, 3, 0]}>
                           {stockData.map((entry, index) => (
                             <Cell
                               key={`cell-${index}`}
-                              fill={getStockColor(entry.percent)}
+                              fill={getStockColor(entry.percent, entry.hasMax)}
                             />
                           ))}
                         </Bar>
@@ -487,28 +599,50 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
         </div>
       )}
 
+      {/* COMPLAINTS & MEMOS TAB */}
+      {activeTab === "memos" && (
+        <div className="dashboard-scroll">
+          <div className="dx-insights dx-insights-2">
+            <MemosCard memos={dx.memos} navigate={navigate} />
+            <TicketsCard tickets={dx.tickets} fromDate={fromDate} toDate={toDate} navigate={navigate} />
+          </div>
+        </div>
+      )}
+
+      {/* CLOSING TAB */}
+      {activeTab === "closing" && (
+        <div className="dashboard-scroll">
+          <div className="dx-insights dx-insights-2">
+            <ClosingCard closings={dx.isToday ? dx.opsClosings : dx.closings} isToday={dx.isToday} opsDay={dx.opsDay} fromDate={fromDate} toDate={toDate} navigate={navigate} />
+            <MoneyShortageCard closings={dx.isToday ? dx.opsClosings : dx.closings} isToday={dx.isToday} opsDay={dx.opsDay} navigate={navigate} />
+          </div>
+        </div>
+      )}
+
       {/* STAFF TAB */}
       {activeTab === "staff" && (
         <div className="dashboard-scroll">
           <>
             <div className="staff-section-title">
               <h3>Staff Overview</h3>
-              <span className="staff-section-sub">Month-to-date analytics</span>
+              <span className="staff-section-sub">{rangeTouched ? "" : "This month · "}{staffRangeLabel}</span>
             </div>
 
             {/* STAFF KPIs */}
             <div className="staff-kpi-row">
               {[
-                { label: "Total Staff", value: staffSummary.total, bg: "#e8f4fd", nav: "/staffs", state: {} },
-                { label: "Full-Time", value: staffSummary.fullTime, bg: "#e8fdf4", nav: "/staffs", state: { workType: "full-time" } },
-                { label: "Part-Time", value: staffSummary.partTime, bg: "#fff8e8", nav: "/staffs", state: { workType: "part-time" } },
-                { label: "Salary Bill", value: `₹${staffSummary.totalSalaryBill.toLocaleString("en-IN")}`, bg: "#fde8e8", nav: "/staffs", state: {} },
-                { label: "Avg Attendance", value: `${staffSummary.avgAttendance}%`, bg: "#f3e8fd", nav: "/staff-attendance", state: {} },
-                { label: "Total Advance", value: `₹${staffSummary.totalAdvance.toLocaleString("en-IN")}`, bg: "#e8f4fd", nav: "/staffs", state: {} },
+                { label: "Total Staff", value: staffSummary.total, nav: "/staffs", state: {}, rows: [["Full-time", staffSummary.fullTime], ["Part-time", staffSummary.partTime], ...Object.entries(staffStats.reduce((m, x) => { m[x.role] = (m[x.role] || 0) + 1; return m; }, {})).sort((a, b) => b[1] - a[1]).slice(0, 5)] },
+                { label: "Full-Time", value: staffSummary.fullTime, nav: "/staffs", state: { workType: "full-time" }, rows: [["Salary bill", inr(staffStats.filter(x => x.workType === "Full-time").reduce((t, x) => t + x.salary, 0))], ["Share of staff", share(staffSummary.fullTime, staffSummary.total)]] },
+                { label: "Part-Time", value: staffSummary.partTime, nav: "/staffs", state: { workType: "part-time" }, rows: [["Salary bill", inr(staffStats.filter(x => x.workType === "Part-time").reduce((t, x) => t + x.salary, 0))], ["Share of staff", share(staffSummary.partTime, staffSummary.total)]] },
+                { label: "Salary Bill", value: `₹${staffSummary.totalSalaryBill.toLocaleString("en-IN")}`, nav: "/staffs", state: {}, rows: [["Per month", inr(staffSummary.totalSalaryBill)], ["Average per staff", inr(staffSummary.total ? staffSummary.totalSalaryBill / staffSummary.total : 0)], ["Highest", staffStats.length ? `${[...staffStats].sort((a, b) => b.salary - a.salary)[0].name.split(" ")[0]} · ${inr(Math.max(...staffStats.map(x => x.salary)))}` : "—"], ["Advance in range", inr(staffSummary.totalAdvance)], ["Deductions in range", inr(staffStats.reduce((t, x) => t + x.deduction, 0))]] },
+                { label: "Avg Attendance", value: `${staffSummary.avgAttendance}%`, nav: "/staff-attendance", state: {}, rows: [["Present days", staffStats.reduce((t, x) => t + x.present, 0)], ["Leave days", staffStats.reduce((t, x) => t + x.leave, 0)], ["Absent days", staffStats.reduce((t, x) => t + x.absent, 0)], ["Staff below 50%", staffStats.filter(x => x.tracked > 0 && x.attPct < 50).length]] },
+                { label: "Total Advance", value: `₹${staffSummary.totalAdvance.toLocaleString("en-IN")}`, nav: "/staffs", state: {}, rows: [["Staff with advance", staffStats.filter(x => x.advance > 0).length], ["Largest", staffStats.some(x => x.advance > 0) ? `${[...staffStats].sort((a, b) => b.advance - a.advance)[0].name.split(" ")[0]} · ${inr(Math.max(...staffStats.map(x => x.advance)))}` : "—"]] },
               ].map((k, i) => (
-                <div key={i} className="staff-kpi-card" style={{ cursor: "pointer" }} onClick={() => navigate(k.nav, { state: k.state })}>
-                  <div><p>{k.label}</p><h3>{k.value}</h3></div>
-                </div>
+                <DxTip key={i} className="dx-kpi-cell" tip={<TipBox title={k.label} subtitle={staffRangeLabel} rows={k.rows} foot="Click to open" />}>
+                  <div className="staff-kpi-card" style={{ cursor: "pointer" }} onClick={() => navigate(k.nav, { state: k.state })}>
+                    <div><p>{k.label}</p><h3>{k.value}</h3></div>
+                  </div>
+                </DxTip>
               ))}
             </div>
 
@@ -516,7 +650,7 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
             <div className="staff-charts-grid">
               <div className="chart-card sc-card">
                 <div className="sc-card-head">
-                  <h4>Attendance This Month</h4>
+                  <h4>Attendance</h4>
                   <div className="sc-legend-pills">
                     <span className="sc-pill" style={{ "--c": "#1dd1a1" }}>Present</span>
                     <span className="sc-pill" style={{ "--c": "#ee5253" }}>Leave</span>
@@ -526,7 +660,8 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                 {attendanceBarData.length === 0 ? <NoChartData /> : (
                   <div className="sc-att-rows">
                     {attendanceBarData.map((s, i) => (
-                      <div key={i} className="sc-att-row">
+                      <DxTip key={i} tip={<TipBox title={s.fullName} subtitle={`${s.role} · ${staffRangeLabel}`} accent={STAFF_PALETTE[i % STAFF_PALETTE.length]} rows={attRows(s)} />}>
+                      <div className="sc-att-row">
                         <div className="sc-att-dot" style={{ background: STAFF_PALETTE[i % STAFF_PALETTE.length] }}>{s.name.charAt(0)}</div>
                         <span className="sc-att-name">{s.name}</span>
                         <div className="sc-att-track">
@@ -534,6 +669,7 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                         </div>
                         <span className="sc-att-pct" style={{ color: s.pct >= 75 ? "#1dd1a1" : s.pct >= 50 ? "#ff9f43" : "#ee5253" }}>{s.pct}%</span>
                       </div>
+                      </DxTip>
                     ))}
                   </div>
                 )}
@@ -546,20 +682,22 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                 </div>
                 {salaryPieData.length === 0 ? <NoChartData /> : (
                   <div className="sc-salary-wrap">
-                    <ResponsiveContainer width="50%" height={200}>
+                    <div className="sc-salary-pie"><ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie data={salaryPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={52} outerRadius={82} isAnimationActive animationDuration={700} activeIndex={activeSalIdx} activeShape={<SalaryActiveShape />} onMouseEnter={(_, i) => setActiveSalIdx(i)} onMouseLeave={() => setActiveSalIdx(null)}>
                           {salaryPieData.map((d, i) => <Cell key={i} fill={d.color} />)}
                         </Pie>
-                        <Tooltip content={<SalaryTooltip />} />
+                        <Tooltip content={<SalaryTooltip />} wrapperStyle={{ zIndex: 50, outline: "none" }} allowEscapeViewBox={{ x: true, y: true }} />
                       </PieChart>
-                    </ResponsiveContainer>
+                    </ResponsiveContainer></div>
                     <div className="sc-salary-legend">
                       <div className="sc-sal-header">
                         <span>Staff</span><span>Salary</span><span>Share</span>
                       </div>
+                      <div className="sc-sal-rows">
                       {salaryPieData.map((s, i) => (
-                        <div key={i} className={`sc-sal-row ${activeSalIdx === i ? "sc-sal-active" : ""}`} onMouseEnter={() => setActiveSalIdx(i)} onMouseLeave={() => setActiveSalIdx(null)}>
+                        <DxTip key={i} tip={<TipBox title={s.fullName} subtitle={`${s.role} · ${s.workType}`} accent={s.color} rows={salaryRows(s)} />}>
+                        <div className={`sc-sal-row ${activeSalIdx === i ? "sc-sal-active" : ""}`} onMouseEnter={() => setActiveSalIdx(i)} onMouseLeave={() => setActiveSalIdx(null)}>
                           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                             <span className="sc-sal-dot" style={{ background: s.color }} />
                             <span className="sc-sal-name">{s.name}</span>
@@ -567,7 +705,9 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                           <span className="sc-sal-amount">₹{Number(s.value).toLocaleString("en-IN")}</span>
                           <span className="sc-sal-pct-val">{staffSummary.totalSalaryBill > 0 ? Math.round((s.value / staffSummary.totalSalaryBill) * 100) : 0}%</span>
                         </div>
+                        </DxTip>
                       ))}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -576,12 +716,13 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
               <div className="chart-card sc-card">
                 <div className="sc-card-head">
                   <h4>Grooming Compliance</h4>
-                  <span className="sc-week-badge">7-day avg</span>
+                  <span className="sc-week-badge">{rangeTouched ? "Selected range" : "This month"}</span>
                 </div>
                 {groomBarData.length === 0 ? <NoChartData /> : (
                   <div className="sc-groom-list">
                     {groomBarData.map((g, i) => (
-                      <div key={i} className="sc-groom-row">
+                      <DxTip key={i} tip={<TipBox title={g.fullName} subtitle={`${g.role} · ${staffRangeLabel}`} accent={g.color} rows={[["Days passed", `${g.passed} of ${g.total}`], ["Compliance", `${g.value}%`, g.value >= 80 ? "good" : g.value < 50 ? "bad" : undefined]]} foot="Passed = uniform, shoes and grooming all OK" />}>
+                      <div className="sc-groom-row">
                         <div className="sc-groom-avatar" style={{ background: g.color }}>{g.name.charAt(0)}</div>
                         <span className="sc-groom-name">{g.name}</span>
                         <div className="sc-groom-track">
@@ -591,6 +732,7 @@ const SalesDashboard = ({ adminData, setAdminData, orders = [] }) => {
                           {g.value}%
                         </div>
                       </div>
+                      </DxTip>
                     ))}
                   </div>
                 )}

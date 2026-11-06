@@ -165,7 +165,8 @@ test("credit notes from supplier returns reduce what is payable", async () => {
   const inv2 = (await O.get("/finance/invoices?search=INV-010")).data.data[0];
   assert.equal(inv2.status, "approved");
   // return 2 kg from stock, credited at Rs 100
-  const ret = await O.post("/receiving/returns", { poId: po.id, reasonCategory: "quality", lines: [{ itemId: flour.id, qty: 2, unit: "kg", source: "stock", locationId: loc.id, batchNo: "" }] });
+  const batch = (await O.get(`/inventory/stock${pv()}&limit=200`)).data.data.find((r) => r.itemId === flour.id && r.available >= 2);
+  const ret = await O.post("/receiving/returns", { poId: po.id, reasonCategory: "quality", returnReason: "Spoiled on arrival", lines: [{ itemId: flour.id, qty: 2, unit: "kg", source: "stock", locationId: loc.id, batchNo: batch.batchNo }] });
   assert.equal(ret.status, 201, JSON.stringify(ret.data));
   await O.post(`/receiving/returns/${ret.data.id}/submit`, {}); await O.post(`/receiving/returns/${ret.data.id}/approve`, {}); await O.post(`/receiving/returns/${ret.data.id}/dispatch`, {});
   assert.equal((await O.post(`/finance/invoices/${inv2.id}/apply-credit`, { returnId: ret.data.id })).data.code, "INVALID_STATE", "no credit note yet");
@@ -188,7 +189,9 @@ test("reports: purchase summary, aging, price trend, consumption cost, csv", asy
   assert.equal(ag.invoices.every((i) => i.outstanding > 0), true);
   const pt = (await O.get(`/finance/reports/price-trend?itemId=${flour.id}`)).data;
   assert.equal(pt.series.length, 1); assert.equal(pt.series[0].avgUnitCost, 0.04);
-  await O.post(`/inventory/stock/waste${pv()}`, { itemId: flour.id, locationId: loc.id, qty: 1, unit: "kg", wasteReason: "spoilage" });
+  const wb = (await O.get(`/inventory/stock${pv()}&limit=200`)).data.data.find((r) => r.itemId === flour.id && r.available >= 1);
+  const wr = await O.post(`/inventory/stock/waste${pv()}`, { itemId: flour.id, locationId: loc.id, batchNo: wb.batchNo, qty: 1, unit: "kg", wasteReason: "spoilage" });
+  assert.equal(wr.status < 300, true, JSON.stringify(wr.data));
   const cc = (await O.get("/finance/reports/consumption-cost")).data;
   assert.equal(cc.rows[0].wasteValue, 40);
   const csv = await O.get("/finance/reports/purchase-summary?basis=received&groupBy=supplier&format=csv");

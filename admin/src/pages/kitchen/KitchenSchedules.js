@@ -369,7 +369,7 @@ export default function KitchenSchedules({ adminData, setAdminData }) {
                   label="Department"
                   value={form.department}
                   onChange={(val) => { setForm({ ...form, department: val }); setFormErrors(p => ({ ...p, department: false })); }}
-                  options={["Pest Control", "Maintenance", "Laundry"]}
+                  options={["Pest Control", "Maintenance", "Laundry", "Stock Audit"]}
                   placeholder="Select Department"
                 />
               </div>

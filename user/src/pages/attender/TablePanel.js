@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Button3D from "../shared/Button3D";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 
 // Same rule the server uses for table ids (server/src/modules/platform/slugs.js).
 const TABLE_RE = /^[A-Za-z0-9][A-Za-z0-9-]{0,11}$/;
@@ -29,6 +30,7 @@ const TablePanel = ({
   onRemove,
   onRequestLogout,
 }) => {
+  const [pwOpen, setPwOpen] = useState(false);
   const [tableInput, setTableInput] = useState("");
   const [guestInput, setGuestInput] = useState("");
   const [error, setError] = useState("");
@@ -62,7 +64,10 @@ const TablePanel = ({
           <div className="att-panel-hello">Attender</div>
           <div className="att-panel-name">{attender?.name}</div>
         </div>
-        <button type="button" className="att-logout" onClick={onRequestLogout}>Log out</button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button type="button" className="att-logout" onClick={() => setPwOpen(true)}>Change password</button>
+          <button type="button" className="att-logout" onClick={onRequestLogout}>Log out</button>
+        </div>
       </div>
 
       <div className="att-panel-section-title">
@@ -141,6 +146,7 @@ const TablePanel = ({
           Add &amp; take order
         </Button3D>
       </div>
+      <ChangePasswordDialog open={pwOpen} onClose={() => setPwOpen(false)} />
     </div>
   );
 };

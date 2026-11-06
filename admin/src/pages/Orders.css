@@ -494,7 +494,7 @@
 
 .order-items-table th:last-child,
 .order-items-table td:last-child {
-  width: 210px;
+  width: 300px;
 }
 
 .order-items-table {
@@ -1198,7 +1198,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Order Pickup and Cancel stay on one line */
+}
+
+.order-item-actions > * {
+  flex: none;
+  white-space: nowrap;
 }
 
 .order-item-cancelled {

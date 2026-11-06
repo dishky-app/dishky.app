@@ -6,10 +6,13 @@ import { AppProvider } from "./context/AppContext.js";
 import { OwnerProvider } from "./context/OwnerContext.js";
 import { ToastProvider } from "./components/Toast/Toast.js";
 import protectContent from "./utils/protectContent.js";
+import { installFormRules } from "./utils/formRules.js";
 import "./index.css";
 import "./styles/skins.css";
 
 protectContent();
+// Mobile numbers: 10 digits; name fields capitalised; text 100 chars / 5 words; textareas 500 chars; password eye.
+installFormRules({ limits: true });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

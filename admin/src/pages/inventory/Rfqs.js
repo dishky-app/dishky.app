@@ -5,7 +5,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useOpenParam, useRowFilters, useRef_ } from "./InvUi";
 import { History, KeyVals, LineEditor, ReasonDialog, StatusBadge, linesPayload, statusLabel } from "./PurchUi";
 
 const OPEN = ["sent", "responses_received", "evaluation"];
@@ -22,6 +22,7 @@ export default function Rfqs() {
   const [search, setSearch] = useState("");
   const dSearch = useDebounced(search);
   const list = usePagedList("/purchase/rfqs", { status, search: dSearch });
+  const rf = useRowFilters(list.rows, { date: "deadline", dateLabel: "Reply", future: true });
   const items = useRef_("/inventory/items", { status: "active", limit: 200 }, (d) => d.data);
   const suppliers = useRef_("/inventory/suppliers", { status: "active", limit: 200 }, (d) => d.data);
   const [detail, setDetail] = useState(null);
@@ -81,7 +82,7 @@ export default function Rfqs() {
   const compare = async () => { try { setCmp((await api.get(`/purchase/rfqs/${detail.id}/comparison`)).data); } catch (e) { toast.error(errText(e)); } };
 
   const columns = [
-    { key: "rfqNo", label: "RFQ no.", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.rfqNo}</span> },
+    { key: "rfqNo", label: "RFQ no.", render: (r) => <>{r.rfqNo}</> },
     { key: "suppliers", label: "Suppliers", render: (r) => r.suppliers.map((s) => s.name).join(", ") || "—" },
     { key: "deadline", label: "Reply by", render: (r) => dateShort(r.deadline) },
     { key: "quotationCount", label: "Quotations", num: true },
@@ -90,6 +91,7 @@ export default function Rfqs() {
 
   const awardedQuo = detail?.quotations?.find((q) => q.id === detail.awardedQuotationId);
 
+  useOpenParam(open);
   return (
     <div className="inner-page inv-page">
       <PageHead title="RFQs & quotations" count={`${list.total} RFQ(s)`}>
@@ -99,8 +101,9 @@ export default function Rfqs() {
         <Toolbar>
           <SearchBox placeholder=" Search RFQ no." aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
           <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
+          {rf.controls}
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No RFQs yet. Convert an approved purchase request, or start one here." more={list} />
+        <DataTable detail="purchase/rfqs" columns={columns} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} empty="No RFQs yet. Convert an approved purchase request, or start one here." more={list} />
       </div>
 
       {form && (

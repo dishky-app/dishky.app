@@ -90,8 +90,21 @@ function openPrinter(res, cb) {
 /* =========================================================
    KOT — Kitchen Order Ticket
    POST /print/kot
-   Body: { order: { id, date, time, tableNo, staffName, items: [{ dishName, selectedSize, spiciness, notes, quantity }] } }
+   Body: { order: { id, date, time, tableNo, staffName, priority, notes, items: [{ dishName, selectedSize, spiciness, notes, quantity }] } }
+   `priority` (true) prints a PRIORITY banner; `notes` is the order-level note; each item's own note prints under it.
 ========================================================= */
+// Word-wraps text to the paper width so long notes are never cut off by the printer.
+const wrapText = (text, width, indent = "") => {
+  const words = String(text || "").replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+  const lines = []; let line = "";
+  words.forEach((w) => {
+    while (w.length > width - indent.length) { if (line) { lines.push(line); line = ""; } lines.push(w.slice(0, width - indent.length)); w = w.slice(width - indent.length); }
+    if (!line) line = w; else if ((line + " " + w).length <= width - indent.length) line += " " + w; else { lines.push(line); line = w; }
+  });
+  if (line) lines.push(line);
+  return lines.map((l) => indent + l);
+};
+
 app.post("/print/kot", (req, res) => {
   const { order } = req.body;
 
@@ -110,7 +123,18 @@ app.post("/print/kot", (req, res) => {
       .size(0, 0)
       .text("KITCHEN ORDER TICKET")
       .style("NORMAL")
-      .text(DIVIDER)
+      .text(DIVIDER);
+    if (order.priority) {
+      printer
+        .align("CT")
+        .style("B")
+        .size(1, 1)
+        .text("*** PRIORITY ***")
+        .size(0, 0)
+        .style("NORMAL")
+        .text(DIVIDER);
+    }
+    printer
       .align("LT")
       .text(`Order  : #${order.id}`)
       .text(`Date   : ${formatDate(order.date)}`)
@@ -119,6 +143,11 @@ app.post("/print/kot", (req, res) => {
       .text(`Staff  : ${order.staffName || "Admin"}`);
     if (order.attenderName) printer.text(`Attender: ${order.attenderName}`);
     printer.text(DIVIDER);
+    if (order.notes && String(order.notes).trim()) {
+      printer.style("B").text("ORDER NOTES:").style("NORMAL");
+      wrapText(order.notes, DIVIDER.length).forEach((l) => printer.text(l));
+      printer.text(DIVIDER);
+    }
 
     order.items.forEach((item, i) => {
       printer
@@ -129,8 +158,9 @@ app.post("/print/kot", (req, res) => {
       if (item.selectedSize || item.spiciness) {
         printer.text(`     Variant : ${[item.selectedSize, item.spiciness].filter(Boolean).join(" / ")}`);
       }
-      if (item.notes && item.notes.trim()) {
-        printer.text(`     Note    : ${item.notes}`);
+      if (item.notes && String(item.notes).trim()) {
+        printer.style("B").text("     NOTE:").style("NORMAL");
+        wrapText(item.notes, DIVIDER.length, "       ").forEach((l) => printer.text(l));
       }
 
       if (i < order.items.length - 1) printer.text("  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·");
@@ -140,7 +170,7 @@ app.post("/print/kot", (req, res) => {
       .text(DIVIDER)
       .align("CT")
       .style("B")
-      .text("** Prepare Immediately **")
+      .text(order.priority ? "** PRIORITY - Prepare First **" : "** Prepare Immediately **")
       .style("NORMAL")
       .feed(3)
       .cut()

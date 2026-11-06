@@ -20,6 +20,7 @@ import React, {
 } from "react";
 import "./Toast.css";
 import { onApiResult } from "../api";
+import { justCancelled } from "../utils/confirmGate";
 
 /* ── Context ─────────────────────────────────────────── */
 const ToastCtx = createContext(null);
@@ -129,7 +130,7 @@ export const ToastProvider = ({ children }) => {
     }, 700);
   }), [push]);
 
-  const manual = (type) => (msg, dur) => { lastManual.current = Date.now(); push(type, msg, dur); };
+  const manual = (type) => (msg, dur) => { if (type === "error" && justCancelled()) return; /* the person said No to a confirmation */ lastManual.current = Date.now(); push(type, msg, dur); };
   const toast = {
     success: manual("success"),
     error: manual("error"),

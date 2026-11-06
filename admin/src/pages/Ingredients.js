@@ -130,6 +130,8 @@ const Ingredients = ({ adminData, setAdminData, onAdd, onUpdate, onDelete, toCam
       id: isEditMode ? formData.id : generateIngredientId(formData.name),
       pricePer100g: Number(formData.pricePer100g),
       stockRemaining: Number(formData.stockRemaining),
+      // a new ingredient starts with its opening stock as the stock ceiling (the Stocks page can raise it later)
+      stockMax: Number(formData.stockMax) > 0 ? Number(formData.stockMax) : Number(formData.stockRemaining),
       nutritionPer100g: {
         kcal: Number(formData.nutritionPer100g.kcal),
         protein: Number(formData.nutritionPer100g.protein),

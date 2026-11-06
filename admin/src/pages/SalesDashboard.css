@@ -168,10 +168,17 @@
 .dashboard-linechart,
 .dashboard-barchart {
   width: 100%;
-  max-height: 420px;
+  /* the three chart cards are always the same height, with or without data */
+  height: 400px;
+  min-height: 400px;
+  max-height: 400px;
   display: flex;
   flex-direction: column;
 }
+.dashboard-piechart > .chart-card,
+.dashboard-linechart > .chart-card,
+.dashboard-barchart > .chart-card { flex: 1 1 auto; min-height: 0; height: 100%; box-sizing: border-box; overflow: hidden; }
+.dashboard-piechart > .chart-card.pie { overflow: visible; }
 
 .dashboard-piechart {
   gap: 10px;
@@ -282,7 +289,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   margin-top: 8px;
-  max-height: 320px;
+  min-height: 0;
+  max-height: none;
   scrollbar-width: none;
 }
 
@@ -871,3 +879,76 @@
     font-size: 12px;
   }
 }
+/* stock chart tooltip — coloured name + large coloured value on a clean white card */
+.trend-tooltip.stock-tooltip {
+  background: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  min-width: 120px;
+}
+.trend-tooltip.stock-tooltip .trend-tooltip-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.trend-tooltip.stock-tooltip .trend-tooltip-value {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════
+   ROUND 4 — header alignment, KPI grid, fixed chart cards with inner scroll
+═══════════════════════════════════════════ */
+.dashboard-header { flex-direction: column; gap: 10px; align-items: stretch; }
+.dashboard-header-left { width: 100%; min-width: 0; }
+.dashboard-header-left .justify { justify-content: flex-start; }
+.dashboard-header-left .ae-header-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; width: 100%; }
+.dashboard-header-left .header-title-row { display: flex; align-items: center; gap: 10px; }
+.dashboard-filter-date { align-items: center; row-gap: 8px; }
+.dash-preset-btns { flex-wrap: wrap; }
+.dashboard-custom-datepickers { flex-wrap: wrap; }
+
+/* one tidy row of order / item KPIs that wraps instead of overflowing */
+.dashboard-header-right { width: 100%; min-width: 0; }
+.dashboard-kpi-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; padding: 6px 4px 10px; }
+.dashboard-kpi-grid .dx-kpi-cell { min-width: 0; }
+.dashboard-kpi-grid .kpi-card.kpi-small { min-width: 0; padding: 10px 6px; box-sizing: border-box; }
+.dashboard-kpi-grid .kpi-card.kpi-small p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
+@media (max-width: 1280px) { .dashboard-kpi-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .dashboard-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* KPI cards in the Sales row and Staff row never spill out of their cell */
+.dx-kpi-single .dx-tip-host, .staff-kpi-row .dx-tip-host { min-width: 0; height: 100%; }
+.dx-kpi-single .kpi-card h3, .staff-kpi-card h3 { overflow-wrap: anywhere; }
+.staff-kpi-row > .dx-tip-host > .staff-kpi-card { height: 100%; box-sizing: border-box; }
+
+/* every chart card is the same fixed size, with or without data; content scrolls inside */
+.chart-card.sc-card { height: 400px; min-height: 400px; max-height: 400px; box-sizing: border-box; overflow: hidden; }
+.dx-chart-fill { flex: 1 1 auto; min-height: 0; width: 100%; position: relative; }
+.chart-card.pie, .chart-card.line { gap: 10px; }
+.chart-card.line { gap: 10px; }
+.dashboard-piechart > .chart-card.pie { overflow: hidden; }
+.dx-pie-box { flex: 0 0 190px; height: 190px; }
+.dx-legend-list, .sc-att-rows, .sc-groom-list, .sc-sal-rows, .stock-chart-wrapper { overflow-y: auto; overflow-x: hidden; min-height: 0; scrollbar-width: thin; scrollbar-color: #d1d5db transparent; }
+.dx-legend-list { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; }
+.dx-legend-list::-webkit-scrollbar, .sc-att-rows::-webkit-scrollbar, .sc-groom-list::-webkit-scrollbar, .sc-sal-rows::-webkit-scrollbar, .stock-chart-wrapper::-webkit-scrollbar { width: 6px; display: block; }
+.dx-legend-list::-webkit-scrollbar-thumb, .sc-att-rows::-webkit-scrollbar-thumb, .sc-groom-list::-webkit-scrollbar-thumb, .sc-sal-rows::-webkit-scrollbar-thumb, .stock-chart-wrapper::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 6px; }
+.dx-legend-row { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+.dx-legend-row:hover { background: #f6f7f9; }
+.dx-legend-row i { width: 9px; height: 9px; border-radius: 50%; }
+.dx-legend-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #222; }
+.dx-legend-row b { font-weight: 600; color: #111; }
+.dx-legend-row em { font-style: normal; color: #6b7280; min-width: 64px; text-align: right; }
+
+.sc-att-rows, .sc-groom-list { flex: 1 1 auto; justify-content: flex-start; }
+.sc-salary-wrap { flex: 1 1 auto; min-height: 0; align-items: stretch; overflow: hidden; }
+.sc-salary-pie { flex: 0 0 46%; min-width: 0; height: 100%; min-height: 0; }
+.sc-salary-legend { min-height: 0; overflow: hidden; }
+.sc-sal-rows { flex: 1 1 auto; display: flex; flex-direction: column; gap: 2px; }
+.stock-chart-wrapper { flex: 1 1 auto; }
+.sc-att-row, .sc-groom-row, .sc-sal-row { cursor: default; }
+@media (max-width: 640px) { .sc-salary-wrap { flex-direction: column; } .sc-salary-pie { flex: 0 0 150px; height: 150px; width: 100%; } }

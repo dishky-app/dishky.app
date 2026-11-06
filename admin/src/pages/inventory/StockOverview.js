@@ -5,10 +5,11 @@
  * them becomes an immutable stock-ledger entry on the server.
  */
 import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Tabs, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Badge, Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Tabs, Toolbar, dateShort, errText, money, qty, useDebounced, usePagedList, useRef_, ExportBtn } from "../pi-shared/InvUi";
 
 const ROW_VIEWS = [
   ["all", "All stock"], ["available", "Available"], ["reserved", "Reserved"], ["quarantined", "Quarantined"],
@@ -102,6 +103,7 @@ function PostForm({ action, preset, items, locations, onClose, onDone }) {
 }
 
 export default function StockOverview() {
+  const nav = useNavigate();
   const { hasModulePermission } = useAuth();
   const canWrite = hasModulePermission("inventoryStock", "write");
   const [tab, setTab] = useState("items");
@@ -136,10 +138,10 @@ export default function StockOverview() {
     { key: "sku", label: "SKU", render: (r) => <span className="inv-strong">{r.sku}</span> },
     { key: "name", label: "Item" },
     { key: "onHand", label: "On hand", num: true, render: (r) => `${qty(r.onHand)} ${r.unit}` },
-    { key: "available", label: "Available", num: true, render: (r) => qty(r.available) },
-    { key: "quarantined", label: "Quarantined", num: true, render: (r) => (r.quarantined ? qty(r.quarantined) : "—") },
-    { key: "expired", label: "Expired", num: true, render: (r) => (r.expired ? qty(r.expired) : "—") },
-    { key: "rp", label: "Reorder pt", num: true, render: (r) => (r.reorderPoint ? qty(r.reorderPoint) : "—") },
+    { key: "available", label: "Available", num: true, render: (r) => `${qty(r.available)} ${r.unit}` },
+    { key: "quarantined", label: "Quarantined", num: true, render: (r) => (r.quarantined ? `${qty(r.quarantined)} ${r.unit}` : "—") },
+    { key: "expired", label: "Expired", num: true, render: (r) => (r.expired ? `${qty(r.expired)} ${r.unit}` : "—") },
+    { key: "rp", label: "Reorder pt", num: true, render: (r) => (r.reorderPoint ? `${qty(r.reorderPoint)} ${r.unit}` : "—") },
     { key: "value", label: "Value", num: true, render: (r) => money(r.stockValue) },
     { key: "status", label: "Status", render: (r) => <Badge tone={REORDER_TONE[r.reorderStatus]}>{r.reorderStatus.replace(/_/g, " ")}</Badge> },
   ];
@@ -148,10 +150,10 @@ export default function StockOverview() {
     { key: "locationName", label: "Location" },
     { key: "batchNo", label: "Batch", render: (r) => r.batchNo || "—" },
     { key: "onHand", label: "On hand", num: true, render: (r) => `${qty(r.onHand)} ${r.unit}` },
-    { key: "reserved", label: "Reserved", num: true, render: (r) => (r.reserved ? qty(r.reserved) : "—") },
-    { key: "quarantined", label: "Quarantined", num: true, render: (r) => (r.quarantined ? qty(r.quarantined) : "—") },
-    { key: "damaged", label: "Damaged", num: true, render: (r) => (r.damaged ? qty(r.damaged) : "—") },
-    { key: "available", label: "Available", num: true, render: (r) => qty(r.available) },
+    { key: "reserved", label: "Reserved", num: true, render: (r) => (r.reserved ? `${qty(r.reserved)} ${r.unit}` : "—") },
+    { key: "quarantined", label: "Quarantined", num: true, render: (r) => (r.quarantined ? `${qty(r.quarantined)} ${r.unit}` : "—") },
+    { key: "damaged", label: "Damaged", num: true, render: (r) => (r.damaged ? `${qty(r.damaged)} ${r.unit}` : "—") },
+    { key: "available", label: "Available", num: true, render: (r) => `${qty(r.available)} ${r.unit}` },
     { key: "cost", label: "Unit cost", num: true, render: (r) => money(r.unitCost) },
     { key: "value", label: "Value", num: true, render: (r) => money(r.stockValue) },
     { key: "expiry", label: "Expiry", render: (r) => (r.expiryDate ? <Badge tone={r.isExpired ? "red" : "grey"}>{dateShort(r.expiryDate)}</Badge> : "—") },
@@ -165,6 +167,8 @@ export default function StockOverview() {
   return (
     <div className="inner-page inv-page">
       <PageHead title="Stock overview">
+        <ExportBtn list={active} columns={tab === "items" ? itemCols : rowCols} name={tab === "items" ? "stock_by_item" : "stock_by_batch"} sheet="Stock" />
+        <Btn type="button" kind="plain" onClick={() => nav("/inventory/ledger")}>Movement history</Btn>
         {canWrite && <>
           {canImport && <Btn type="button" kind="plain" onClick={importIngredients}>Import from Ingredients</Btn>}
           <Btn type="button" kind="plain" disabled={noLoc} onClick={() => setPost({ action: "opening" })}>Opening stock</Btn>

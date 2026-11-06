@@ -147,7 +147,7 @@ const BankAccount = () => {
   }
 
   return (
-    <div className="inner-page">
+    <div className="inner-page ba-page">
       <div className="header">
         <div className="header-title-row">
           <div className="header-title-col">

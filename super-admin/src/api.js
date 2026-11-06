@@ -1,5 +1,7 @@
 // Calls the Dishky API's /superadmin routes. The session lives in an httpOnly
 // cookie set by the API; this app never sees or stores a token.
+import { confirmInfoFor, getConfirmHandler, recentlyConfirmed } from "./confirmGate.js";
+
 const ORIGIN = (import.meta.env.VITE_API_ORIGIN || "").replace(/\/$/, "");
 const BASE = ORIGIN ? `${ORIGIN}/superadmin` : "/api/superadmin";
 
@@ -30,6 +32,10 @@ const SILENT_PATHS = ["/auth/login", "/auth/logout", "/auth/forgot-password", "/
 
 async function request(path, opts = {}) {
   const method = String(opts.method || "GET").toUpperCase();
+  // Deletes and sensitive changes ask "are you sure?" first (see confirmGate.js); a page that already confirmed is not asked again.
+  const info = !opts.raw && !opts.confirmed ? confirmInfoFor({ method, url: path }) : null;
+  const ask = getConfirmHandler();
+  if (info && ask && !recentlyConfirmed() && !(await ask(info))) throw new ApiError("Cancelled", 0, "CANCELLED");
   const tracked = WRITE_METHODS.has(method) && !opts.raw && !SILENT_PATHS.some((x) => path.includes(x));
   try {
     const out = await rawRequest(path, opts);

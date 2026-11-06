@@ -19,6 +19,7 @@ const PM = require("./purchaseModels");
 const C = require("./purchaseCalc");
 const P = require("./precision");
 const U = require("./units");
+const CS = require("./creditService");
 
 const MAX_LIMIT = 200;
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -657,8 +658,15 @@ function buildPurchaseRouter({ requireAuth, requirePerm, hasPermission, scopeFil
     for (const f of ["paymentTerms", "deliveryTerms"]) if (b[f] !== undefined) o[f] = str(b[f], 200);
     if (b.deliveryAddress !== undefined) o.deliveryAddress = str(b.deliveryAddress, 500);
     if (b.notes !== undefined) o.notes = str(b.notes, 2000);
+    if (b.purchaseMode !== undefined) {
+      if (!["cash", "credit"].includes(b.purchaseMode)) throw bad("Purchase mode must be cash or credit", "BAD_MODE");
+      o.purchaseMode = b.purchaseMode;
+    }
     return o;
   }
+  const fmtMoney = (paise) => P.fromPaise(paise).toLocaleString("en-IN", { style: "currency", currency: "INR" });
+  /** credit orders must fit the supplier's limit when they enter approval (submit) and again when approved */
+  const creditGate = (po) => CS.assertCreditAllowed(po, { bad, fmt: fmtMoney });
   /** raw lines: { itemId, qty|qtyMilli, unit, unitPrice|unitPriceMicro, discountPct, gstRate, expectedDate, brand } */
   async function buildPoLines(raw, defaults = {}) {
     needLines(raw);
@@ -786,7 +794,8 @@ function buildPurchaseRouter({ requireAuth, requirePerm, hasPermission, scopeFil
     await usableSupplier(cur.supplierId);
     const settings = await getSettings();
     const auto = settings.poApprovalLimitPaise > 0 && cur.totals.grandTotalPaise <= settings.poApprovalLimitPaise;
-    const doc = await move(PM.PurchaseOrder, req, cur.id, C.PO_FLOW, ["draft"], auto ? "approved" : "pending_approval", { entry: { action: auto ? "auto_approved" : "submitted", comment: str(req.body.comment, 500) } });
+    const run = () => move(PM.PurchaseOrder, req, cur.id, C.PO_FLOW, ["draft"], auto ? "approved" : "pending_approval", { entry: { action: auto ? "auto_approved" : "submitted", comment: str(req.body.comment, 500) } });
+    const doc = cur.purchaseMode === "credit" ? await CS.withCreditLock(cur.supplierId, async () => { await creditGate(cur); return run(); }) : await run();
     audit(req, "purchaseOrders", doc.id, "update", { status: doc.status });
     notify("purchaseOrders", doc);
     res.json(outPO(doc));
@@ -797,7 +806,9 @@ function buildPurchaseRouter({ requireAuth, requirePerm, hasPermission, scopeFil
     const comment = str(req.body.comment || req.body.reason, 500);
     if (needComment && !comment) throw bad("A reason is required", "REASON_REQUIRED");
     assertMakerChecker(await getSettings(), cur.buyerId, req);
-    const doc = await move(PM.PurchaseOrder, req, cur.id, C.PO_FLOW, ["pending_approval"], to, { entry: { action, comment } });
+    const run = () => move(PM.PurchaseOrder, req, cur.id, C.PO_FLOW, ["pending_approval"], to, { entry: { action, comment } });
+    // approving re-checks the limit: other credit orders may have been approved since this one was submitted
+    const doc = to === "approved" && cur.purchaseMode === "credit" ? await CS.withCreditLock(cur.supplierId, async () => { await creditGate(cur); return run(); }) : await run();
     audit(req, "purchaseOrders", doc.id, "update", { status: doc.status, comment });
     notify("purchaseOrders", doc);
     res.json(outPO(doc));

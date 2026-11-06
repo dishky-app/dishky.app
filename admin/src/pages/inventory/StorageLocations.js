@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, Field, Modal, PageHead, Select, errText } from "./InvUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, SearchBox, Select, Toolbar, errText, ExportBtn } from "../pi-shared/InvUi";
 
 const TYPES = ["dry_store", "cold_room", "freezer", "kitchen", "bar", "receiving", "quarantine", "other"];
 const label = (t) => t.replace("_", " ");
@@ -55,13 +55,25 @@ export default function StorageLocations() {
       </span>) }] : []),
   ];
 
+  const [search, setSearch] = useState("");
+  const [typeF, setTypeF] = useState("");
+  const [statusF, setStatusF] = useState("");
+  const shown = rows.filter((r) => (!typeF || r.type === typeF) && (!statusF || r.status === statusF) &&
+    (!search.trim() || `${r.code} ${r.name}`.toLowerCase().includes(search.trim().toLowerCase())));
+
   return (
     <div className="inner-page inv-page">
-      <PageHead title="Storage locations">
+      <PageHead title="Storage locations" count={`${shown.length} location(s)`}>
+        <ExportBtn rows={shown} columns={columns} name="storage_locations" sheet="Locations" />
         {canWrite && <Btn type="button" kind="primary" onClick={() => setForm({ code: "", name: "", type: "dry_store" })}>+ New location</Btn>}
       </PageHead>
       <div className="inv-stack">
-        <DataTable columns={columns} rows={rows} loading={loading} error={error} onRetry={load} empty="No storage locations yet. Create one (e.g. Dry store, Cold room) before adding stock." />
+        <Toolbar>
+          <SearchBox placeholder=" Search code or name" aria-label="Search locations" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <Select aria-label="Filter by type" value={typeF} onChange={(e) => setTypeF(e.target.value)}><option value="">All types</option>{TYPES.map((x) => <option key={x} value={x}>{label(x)}</option>)}</Select>
+          <Select aria-label="Filter by status" value={statusF} onChange={(e) => setStatusF(e.target.value)}><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></Select>
+        </Toolbar>
+        <DataTable columns={columns} rows={shown} loading={loading} error={error} onRetry={load} empty="No storage locations yet. Create one (e.g. Dry store, Cold room) before adding stock." />
       </div>
       {form && (
         <Modal title={form.id ? "Edit location" : "New location"} onClose={() => setForm(null)}

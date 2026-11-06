@@ -96,12 +96,11 @@ test("a retried post resumes a partly posted receipt without double posting", as
   const svc = require("../src/modules/inventory/stockService");
   const item = (await O.get(`/inventory/items/${flour.id}`)).data;
   const { runInTenant } = require("../src/core/tenancy");
-  await runInTenant(restId, () => svc.postMovement({ venueId, user: { id: "x", name: "x" } }, { item, itemId: flour.id, locationId: loc.id, batchNo: "", type: "receipt", qtyMilli: 10000000, unitCostMicro: 40000, refType: "grn", refId: c.data.id, reason: "Goods receipt", idempotencyKey: `grn:${c.data.id}:0:in` }));
+  await runInTenant(restId, () => svc.postMovement({ venueId, user: { id: "x", name: "x" } }, { item, itemId: flour.id, locationId: loc.id, batchNo: `${c.data.grnNo}-1`, type: "receipt", qtyMilli: 10000000, unitCostMicro: 40000, refType: "grn", refId: c.data.id, reason: "Goods receipt", idempotencyKey: `grn:${c.data.id}:0:in` }));
   await runAsPlatform(() => Grn.updateOne({ id: c.data.id }, { $set: { status: "posting" } }));
-  const before = (await stock(flour.id))[0].onHand;
-  const r = await O.post(`/receiving/grns/${c.data.id}/post`, {});
+    const r = await O.post(`/receiving/grns/${c.data.id}/post`, {});
   assert.equal(r.status, 201, JSON.stringify(r.data));
-  assert.equal((await stock(flour.id))[0].onHand, before, "the existing entry was replayed, not repeated");
+  assert.equal((await stock(flour.id)).find((r) => r.batchNo === `${c.data.grnNo}-1`).onHand, 10000, "the existing entry was replayed, not repeated");
   assert.equal((await getPo(po.id)).lines[0].received, 68000);
   // put it back for the next tests: return those 10 kg is not needed; PO now 68 kg received
 });
@@ -137,7 +136,7 @@ test("over-receipt tolerance, completing the order, and cancelling a draft", asy
 test("quarantine list and a supplier return of quarantined goods reopens the order", async () => {
   const q = (await O.get(`/receiving/quarantine${pv()}`)).data.data;
   assert.equal(q.length, 1); assert.equal(q[0].quarantined, 3000);
-  const body = { poId: po.id, reasonCategory: "damaged", lines: [{ itemId: flour.id, qty: 3, unit: "kg", source: "quarantine", locationId: loc.id, batchNo: "", reopenPo: true, reason: "torn bags" }] };
+  const body = { poId: po.id, reasonCategory: "damaged", returnReason: "Bags torn in transit", lines: [{ itemId: flour.id, qty: 3, unit: "kg", source: "quarantine", locationId: loc.id, batchNo: q[0].batchNo, reopenPo: true, reason: "torn bags" }] };
   assert.equal((await chef.post("/receiving/returns", body)).status, 403, "chef may only view returns by default");
   const over = await O.post("/receiving/returns", { ...body, lines: [{ ...body.lines[0], qty: 4 }] });
   assert.equal(over.data.code, "INSUFFICIENT_STOCK");
@@ -152,7 +151,8 @@ test("quarantine list and a supplier return of quarantined goods reopens the ord
   assert.equal((await O.post(`/receiving/returns/${r.data.id}/approve`, {})).data.status, "approved");
   const d = await O.post(`/receiving/returns/${r.data.id}/dispatch`, { vehicleNo: "KA01" });
   assert.equal(d.status, 200, JSON.stringify(d.data));
-  const row = (await stock(flour.id))[0];
+  const rows = await stock(flour.id); // every purchase is its own batch now
+  const row = { quarantined: rows.reduce((n, r) => n + r.quarantined, 0), onHand: rows.reduce((n, r) => n + r.onHand, 0) };
   assert.equal(row.quarantined, 0); assert.equal(row.onHand, 97000, "100 kg received, 3 kg sent back");
   assert.equal((await ledger("&type=supplier_return")).length, 1);
   assert.equal((await O.post(`/receiving/returns/${r.data.id}/dispatch`, {})).data.code, "INVALID_STATE", "cannot dispatch twice");
@@ -163,7 +163,7 @@ test("quarantine list and a supplier return of quarantined goods reopens the ord
 });
 
 test("goods rejected at the gate can be returned once, never exceeding what was rejected", async () => {
-  const mk = (qty) => O.post("/receiving/returns", { poId: po.id, reasonCategory: "damaged", lines: [{ itemId: flour.id, qty, unit: "kg", source: "rejected_at_gate", grnId: grn1.id }] });
+  const mk = (qty) => O.post("/receiving/returns", { poId: po.id, reasonCategory: "damaged", returnReason: "Bags torn in transit", lines: [{ itemId: flour.id, qty, unit: "kg", source: "rejected_at_gate", grnId: grn1.id }] });
   assert.equal((await mk(3)).data.code, "OVER_RETURN", "only 2 kg were rejected");
   const r = await mk(2);
   assert.equal(r.status, 201, JSON.stringify(r.data));

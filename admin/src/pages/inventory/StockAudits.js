@@ -7,8 +7,8 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Badge, Btn, DataTable, Field, Modal, PageHead, Select, Toolbar, dateTime, errText, money, qty, usePagedList, useRef_ } from "./InvUi";
-import { History, ReasonDialog, StatusBadge } from "./PurchUi";
+import { Badge, Btn, DataTable, Field, Modal, PageHead, Select, Toolbar, dateTime, errText, money, qty, usePagedList, useOpenParam, useRowFilters, useRef_, ExportBtn } from "../pi-shared/InvUi";
+import { History, ReasonDialog, StatusBadge } from "../pi-shared/PurchUi";
 
 function NewAudit({ locations, onClose, onDone }) {
   const { venueParam } = useVenue();
@@ -76,9 +76,9 @@ function AuditSheet({ id, onClose, onChanged }) {
     ...(showVar ? [{ key: "system", label: "System", num: true, render: (l) => `${qty(l.system)} ${l.unit}` }] : []),
     { key: "counted", label: `Counted (${a.lines[0]?.unit || ""})`, num: true, render: (l) => counting && canWrite
       ? <input className="inv-input inv-w90" aria-label={`Count for ${l.itemName}`} inputMode="decimal" value={edits[l.index]?.qty ?? (l.counted ?? "")} onChange={(e) => setE(l.index, "qty", e.target.value)} />
-      : (l.counted === null ? "—" : qty(l.counted)) },
+      : (l.counted === null ? "—" : `${qty(l.counted)} ${l.unit}`) },
     ...(showVar ? [
-      { key: "variance", label: "Difference", num: true, render: (l) => (l.variance === null ? "—" : <span style={{ color: l.variance < 0 ? "#dc2626" : l.variance > 0 ? "#15803d" : undefined }}>{l.variance > 0 ? "+" : ""}{qty(l.variance)}</span>) },
+      { key: "variance", label: "Difference", num: true, render: (l) => (l.variance === null ? "—" : <span style={{ color: l.variance < 0 ? "#dc2626" : l.variance > 0 ? "#15803d" : undefined }}>{l.variance > 0 ? "+" : ""}{qty(l.variance)} {l.unit}</span>) },
       { key: "varianceValue", label: "Value", num: true, render: (l) => (l.varianceValue ? money(l.varianceValue) : "—") },
     ] : []),
     { key: "reason", label: "Reason", render: (l) => counting && canWrite
@@ -112,11 +112,12 @@ export default function StockAudits() {
   const canWrite = hasModulePermission("stockAudits", "write");
   const [status, setStatus] = useState("");
   const list = usePagedList("/automation/audits", { status });
+  const rf = useRowFilters(list.rows, { date: "createdAt", dateLabel: "Opened" });
   const locations = useRef_("/inventory/locations", {});
   const [creating, setCreating] = useState(false);
   const [open, setOpen] = useState(null);
   const cols = [
-    { key: "auditNo", label: "Audit", render: (r) => <span className="clickable" onClick={() => setOpen(r.id)}>{r.auditNo}</span> },
+    { key: "auditNo", label: "Audit", render: (r) => <>{r.auditNo}</> },
     { key: "title", label: "Title" },
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
     { key: "progress", label: "Counted", num: true, render: (r) => `${r.counted}/${r.lineCount}` },
@@ -124,9 +125,11 @@ export default function StockAudits() {
     { key: "createdByName", label: "Opened by" },
     { key: "createdAt", label: "Opened", render: (r) => dateTime(r.createdAt) },
   ];
+  useOpenParam(setOpen);
   return (
     <div className="inner-page inv-page">
       <PageHead title="Stock audits" count={`${list.total} audit(s)`}>
+        <ExportBtn list={list} apply={rf.apply} columns={cols} name="stock_audits" sheet="Stock audits" />
         {canWrite && <Btn type="button" kind="primary" onClick={() => setCreating(true)}>New audit</Btn>}
       </PageHead>
       <div className="inv-stack">
@@ -134,8 +137,9 @@ export default function StockAudits() {
           <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}>
             <option value="">All statuses</option>{["counting", "pending_approval", "approved", "posted", "cancelled"].map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
           </Select>
+          {rf.controls}
         </Toolbar>
-        <DataTable columns={cols} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} rowKey={(r) => r.id} empty="No audits yet. Open one to count what is physically on the shelves." more={list} />
+        <DataTable detail="inventory/audits" columns={cols} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} rowKey={(r) => r.id} empty="No audits yet. Open one to count what is physically on the shelves." more={list} />
       </div>
       {creating && <NewAudit locations={locations.filter((l) => l.status === "active")} onClose={() => setCreating(false)} onDone={(id) => { setCreating(false); list.reload(); setOpen(id); }} />}
       {open && <AuditSheet id={open} onClose={() => setOpen(null)} onChanged={list.reload} />}

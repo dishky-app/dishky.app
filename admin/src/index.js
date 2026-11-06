@@ -5,7 +5,8 @@ import './pages/ModalCSS.css'; // admin-modal + animation styles (the crop dialo
 import App from './App';
 import { BrowserRouter } from "react-router-dom";
 import { ToastProvider } from "./useToast";
-import TableScrollButtons from "./components/TableScrollButtons";
+import GlobalFormEnhancers from "./components/GlobalFormEnhancers";
+import GlobalConfirm from "./components/GlobalConfirm";
 import { AuthProvider } from "./context/AuthContext";
 import { VenueProvider } from "./context/VenueContext";
 import { CategoryCardsProvider } from "./context/CategoryCardsContext";
@@ -41,7 +42,8 @@ root.render(
             <ToastProvider>
               <ModalProvider>
                 <App />
-                <TableScrollButtons />
+                <GlobalFormEnhancers />
+                <GlobalConfirm />
               </ModalProvider>
             </ToastProvider>
           </CategoryCardsProvider>

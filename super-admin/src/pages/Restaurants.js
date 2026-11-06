@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import * as api from "../api.js";
+import { useToast } from "../useToast.js";
 import Button3D from "../components/Button3D.js";
 import CustomDropdown from "../components/CustomDropdown.js";
 import PageLoader from "../components/PageLoader.js";
@@ -46,6 +47,7 @@ const RESTAURANT_SORT_VALUE = {
 
 export default function Restaurants() {
   const [collapsed, toggleCollapsed] = useCollapse();
+  const { toast } = useToast();
   const [params, setParams] = useSearchParams();
   const q = {
     search: params.get("search") || "",
@@ -100,7 +102,7 @@ export default function Restaurants() {
       a.download = "dishky-restaurants.csv";
       a.click();
       URL.revokeObjectURL(url);
-    } catch (e) { setError(e.message); }
+    } catch (e) { toast.error(e.message || "Export failed"); }
   };
 
   const filtersActive = !!(q.search || q.plan || q.status || q.expiringInDays);

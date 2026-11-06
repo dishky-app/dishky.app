@@ -12,6 +12,7 @@ import React, { createContext, useCallback, useContext, useEffect, useRef, useSt
 import "./Toast.css";
 import Button3D from "./components/Button3D.js";
 import { onApiResult } from "./api.js";
+import { justCancelled } from "./confirmGate.js";
 
 export const TOAST_DURATIONS = { short: 10000, medium: 30000, long: 60000, permanent: Infinity };
 const DEFAULT_DURATION = TOAST_DURATIONS.short;
@@ -111,7 +112,7 @@ export const ToastProvider = ({ children }) => {
   // Stable object so effects that list `toast` as a dependency don't re-run on every render.
   const api = useRef(null);
   if (!api.current) {
-    const manual = (type, d) => (m, dur) => { lastManual.current = Date.now(); push(type, m, dur ?? d); };
+    const manual = (type, d) => (m, dur) => { if (type === "error" && justCancelled()) return; /* the person said No to a confirmation */ lastManual.current = Date.now(); push(type, m, dur ?? d); };
     api.current = {
       toast: {
         success: manual("success", 5000),

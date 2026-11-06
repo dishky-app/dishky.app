@@ -257,8 +257,8 @@ function asPlainString(value) {
 // string-length cap here would otherwise reject legitimate uploads
 // before ever reaching that real check.
 const FILE_DATA_FIELD_NAMES = new Set([
-  "idProof", "bonafide", "certificate", "fileData",
-  "thumbnailData", "idProofThumbnail", "bonafideThumbnail", "certificateThumbnail",
+  "idProof", "bonafide", "payslip", "certificate", "fileData",
+  "thumbnailData", "idProofThumbnail", "bonafideThumbnail", "payslipThumbnail", "certificateThumbnail",
   "photo", "image",
   "images", // event images (array of compressed data URLs); the 10 MB request-body limit still caps the total
   "dataUrl", // support-ticket attachments; real size/type limits are enforced in support/uploads.js

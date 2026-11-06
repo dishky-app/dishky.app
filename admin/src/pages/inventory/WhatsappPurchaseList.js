@@ -56,25 +56,27 @@ export default function WhatsappPurchaseList() {
     <div className="inner-page inv-page">
       <PageHead title="WhatsApp purchase list" />
       <div className="inv-banner">Sending needs the server's WhatsApp (AiSensy) key and an approved template name — set it in <Link to="/purchase/automation">Automation settings</Link>. This sends a message only; it does not create or approve a purchase order.</div>
-      <div className="details-container inv-form">
-        <div className="inv-grid">
-          <Field label="Supplier" required><Select value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">Select…</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>
-        </div>
-        <div className="inv-section">Items to order</div>
-        <LineEditor items={items} value={lines} onChange={setLines} />
-        <div className="inv-btnrow">
-          <Btn type="button" kind="plain" disabled={busy || !lines.length} onClick={doPreview}>Preview</Btn>
-          {canSend && <Btn type="button" kind="primary" disabled={busy || !preview || !preview.phoneValid || !preview.templateConfigured || !preview.apiConfigured} onClick={() => send(false)}>Send on WhatsApp</Btn>}
-        </div>
-        {preview && (
-          <div className="inv-preview">
-            <div><b>{preview.supplier.name}</b> · {preview.phoneValid ? preview.phoneMasked : <Badge tone="red">no valid mobile number on file</Badge>} · {preview.itemCount} item(s)</div>
-            <div className="inv-muted" style={{ marginTop: 6 }}>{preview.variables[2]}</div>
-            {!preview.templateConfigured && <div className="inv-banner" style={{ marginTop: 8 }}>No template name is set.</div>}
-            {!preview.apiConfigured && <div className="inv-banner" style={{ marginTop: 8 }}>WhatsApp is not configured on the server.</div>}
-            <div className="inv-muted" style={{ marginTop: 6 }}>{preview.templateHelp}</div>
+      <div className="inv-wa">
+        <div className="details-container inv-form">
+          <div className="inv-grid">
+            <Field label="Supplier" required full><Select value={supplierId} onChange={(e) => setSupplierId(e.target.value)}><option value="">Select…</option>{suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</Select></Field>
           </div>
-        )}
+          <div className="inv-section">Items to order</div>
+          <LineEditor items={items} value={lines} onChange={setLines} />
+          <div className="inv-btnrow">
+            <Btn type="button" kind="plain" disabled={busy || !lines.length} onClick={doPreview}>Preview</Btn>
+            {canSend && <Btn type="button" kind="primary" disabled={busy || !preview || !preview.phoneValid || !preview.templateConfigured || !preview.apiConfigured} onClick={() => send(false)}>Send on WhatsApp</Btn>}
+          </div>
+        </div>
+        <div className="inv-card inv-preview-card">
+          <div className="inv-section" style={{ marginTop: 0 }}>Message preview</div>
+          {!preview ? <div className="inv-muted">Choose a supplier, add items and press Preview to see the message that will be sent.</div> : (<>
+            <div><b>{preview.supplier.name}</b> · {preview.phoneValid ? preview.phoneMasked : <Badge tone="red">no valid mobile number on file</Badge>} · {preview.itemCount} item(s)</div>
+            <div className="inv-wa-bubble">{preview.variables[2]}</div>
+            {!preview.templateConfigured && <div className="inv-banner">No template name is set.</div>}
+            {!preview.apiConfigured && <div className="inv-banner">WhatsApp is not configured on the server.</div>}
+            <div className="inv-muted">{preview.templateHelp}</div></>)}
+        </div>
       </div>
       <div className="inv-card inv-logcard">
         <div className="inv-panel-title"><b>Send log</b></div>

@@ -144,3 +144,11 @@
   margin-top: 4px;
   line-height: 1.4;
 }
+
+/* .inner-page is overflow:hidden app-wide; this page (summary + payment-gateway settings) is taller than the screen, so it scrolls itself */
+.inner-page.ba-page {
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+  padding-bottom: 24px;
+}

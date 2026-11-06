@@ -26,7 +26,7 @@ const GROWTH_MODULES = [
   "reservations", "celebrations", "preBookings", "cateringOrders", "events", "eventBookings",
   "kitchenActivity", "kitchenSchedules", "kitchenAssign", "kitchenMise", "mise", "grooming",
   "serviceActivity", "serviceSchedules", "serviceAssign", "serviceMise", "serviceGrooming",
-  "workPlan", "memos", "documents", "loyalty", "whatsapp",
+  "workPlan", "memos", "trialDishes", "documents", "loyalty", "whatsapp",
 ];
 
 // Display names: Essential (key "starter"), Professional ("growth"), Premium ("pro"), Custom ("enterprise").

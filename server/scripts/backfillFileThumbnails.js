@@ -87,6 +87,7 @@ async function backfillStaff() {
   const flatFileFields = [
     { dataField: "idProof", typeField: "idProofType", thumbField: "idProofThumbnail" },
     { dataField: "bonafide", typeField: "bonafideType", thumbField: "bonafideThumbnail" },
+    { dataField: "payslip", typeField: "payslipType", thumbField: "payslipThumbnail" },
   ];
 
   const staffList = await StaffModel.find({}).lean();

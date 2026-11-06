@@ -4,7 +4,7 @@ import api from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useVenue } from "../../context/VenueContext";
 import { useToast } from "../../useToast";
-import { Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, useDebounced, usePagedList, useRef_ } from "./InvUi";
+import { Btn, DataTable, DateInput, Field, Modal, PageHead, SearchBox, Select, Toolbar, dateShort, errText, money, useDebounced, usePagedList, useOpenParam, useRowFilters, useRef_ } from "./InvUi";
 import { History, KeyVals, ReasonDialog, StatusBadge, statusLabel } from "./PurchUi";
 
 const METHODS = [["bank_transfer", "Bank transfer"], ["upi", "UPI"], ["cheque", "Cheque"], ["cash", "Cash"], ["card", "Card"], ["other", "Other"]];
@@ -21,6 +21,7 @@ export default function SupplierPayments() {
   const [search, setSearch] = useState("");
   const dSearch = useDebounced(search);
   const list = usePagedList("/finance/payments", { status, search: dSearch });
+  const rf = useRowFilters(list.rows, { supplier: "supplierName", date: "paymentDate", dateLabel: "Paid" });
   const suppliers = useRef_("/inventory/suppliers", { limit: 200 }, (d) => d.data);
   const [form, setForm] = useState(null);
   const [detail, setDetail] = useState(null);
@@ -63,13 +64,14 @@ export default function SupplierPayments() {
   const advance = detail ? detail.advance : 0;
 
   const columns = [
-    { key: "payNo", label: "Payment", render: (r) => <span className="clickable" onClick={() => open(r.id)}>{r.payNo}</span> },
+    { key: "payNo", label: "Payment", render: (r) => <>{r.payNo}</> },
     { key: "supplierName", label: "Supplier" }, { key: "paymentDate", label: "Date", render: (r) => dateShort(r.paymentDate) },
     { key: "method", label: "Method", render: (r) => statusLabel(r.method) }, { key: "reference", label: "Reference", render: (r) => r.reference || "—" },
     { key: "amount", label: "Amount", num: true, render: (r) => money(r.amount) },
     { key: "status", label: "Status", render: (r) => <StatusBadge status={r.status} /> },
   ];
 
+  useOpenParam(open);
   return (
     <div className="inner-page inv-page">
       <PageHead title="Supplier payments" count={`${list.total} payment(s)`}>
@@ -80,8 +82,9 @@ export default function SupplierPayments() {
         <Toolbar>
           <SearchBox placeholder=" Search payment, reference or supplier" aria-label="Search" value={search} onChange={(e) => setSearch(e.target.value)} />
           <Select aria-label="Status" value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All statuses</option>{["pending_approval", "completed", "rejected", "cancelled", "reversed"].map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}</Select>
+          {rf.controls}
         </Toolbar>
-        <DataTable columns={columns} rows={list.rows} loading={list.loading} error={list.error} onRetry={list.reload} empty="No payments recorded yet." more={list} />
+        <DataTable detail="purchase/payments" columns={columns} rows={rf.filtered} loading={list.loading} error={list.error} onRetry={list.reload} empty="No payments recorded yet." more={list} />
       </div>
 
       {form && (

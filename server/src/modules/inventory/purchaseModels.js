@@ -205,6 +205,8 @@ const poSchema = new Schema(
     expectedDate: { type: Date, default: null },
     paymentTerms: { type: String, default: "", maxlength: 200 },
     deliveryTerms: { type: String, default: "", maxlength: 200 },
+    // "credit" draws on the supplier's credit limit and is repaid by a credit settlement (see creditCalc.js)
+    purchaseMode: { type: String, enum: ["cash", "credit"], default: "cash" },
     currency: { type: String, default: "INR" },
     buyerId: { type: String, required: true },
     buyerName: { type: String, default: "" },

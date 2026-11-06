@@ -8,6 +8,8 @@ import TableScrollButtons from "./components/TableScrollButtons.js";
 import { installInputLimits } from "./enforceInputLimits.js";
 import { installContentProtection } from "./contentProtection.js";
 import { installImageCropper } from "./imageCropper.js";
+import { installFormRules } from "./formRules.js";
+import GlobalConfirm from "./components/GlobalConfirm.js";
 // Same stylesheet stack as the Admin Panel: shared Common.css first.
 import "./Common.css";
 import "./admin-shared.css";
@@ -22,6 +24,8 @@ installInputLimits();
 // No dragging images / selecting or copying page text; every picked image goes through the crop step.
 installContentProtection();
 installImageCropper();
+// Mobile numbers: 10 digits; name fields capitalised; password fields get a show/hide eye.
+installFormRules();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -30,6 +34,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <AuthProvider>
           <App />
           <TableScrollButtons />
+          <GlobalConfirm />
         </AuthProvider>
       </ToastProvider>
     </BrowserRouter>
